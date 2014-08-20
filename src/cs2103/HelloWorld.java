@@ -10,6 +10,7 @@ public class HelloWorld {
 	public static void main(String[] args) {
 		System.out.println("I am zhenyu");
 		System.out.println("11/99 = 0.11111111111");
+		System.out.println("testing.");
 	}
 		
 
