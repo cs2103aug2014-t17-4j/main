@@ -10,7 +10,7 @@ public class HelloWorld {
 		System.out.println("I am zhenyu");
 		System.out.println("11/99 = 0.11111111111");
 		System.out.println("testing.");
-		//revert function is useless O_O
+		
 	}
 		
 
