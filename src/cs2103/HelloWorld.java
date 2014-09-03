@@ -1,5 +1,4 @@
 package cs2103;
-import java.util.*;
 public class HelloWorld {
 
 	public HelloWorld() {
