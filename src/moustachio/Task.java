@@ -10,7 +10,6 @@ public class Task implements Serializable {
 	private String description;
 	private LocalDateTime dateStart;
 	private LocalDateTime dateEnd;
-	private ArrayList<String> hashTags;
 
 	// Constructors
 
@@ -80,5 +79,13 @@ public class Task implements Serializable {
 
 	public boolean hasHashTag(String taskHashTag) {
 		return this.hashTags.contains(taskHashTag);
+	}
+	
+	public boolean containsHashtag(String hashtag) {
+	    return false;
+	}
+	
+	public boolean containsKeyword(String keyword) {
+	    return false;
 	}
 }
