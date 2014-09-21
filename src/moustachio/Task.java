@@ -3,11 +3,14 @@ package moustachio;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Task implements Serializable {
 
 	private int id;
 	private String description;
+	private boolean done;
+
 	private LocalDateTime dateStart;
 	private LocalDateTime dateEnd;
 
@@ -23,8 +26,8 @@ public class Task implements Serializable {
 		this.dateStart = dateStart;
 	}
 
-	public Task(int id, String description,
-			LocalDateTime dateStart, LocalDateTime dateEnd) {
+	public Task(int id, String description, LocalDateTime dateStart,
+			LocalDateTime dateEnd) {
 		this(id, description, dateStart);
 		this.dateEnd = dateEnd;
 	}
@@ -63,29 +66,35 @@ public class Task implements Serializable {
 		this.dateEnd = dateEnd;
 	}
 
-	public ArrayList<String> getHashTags() {
-		return hashTags;
+	public List<String> getHashTags() {
+		List<String> hashtagList = new ArrayList<String>();
+		String[] descriptionTokenized = description.split(" ");
+		for (String token : descriptionTokenized) {
+			if (token.startsWith("#")) {
+				hashtagList.add(token);
+			}
+		}
+		return hashtagList;
+	}
+	
+	public boolean isDone() {
+		return done;
 	}
 
-	public void setHashTags(ArrayList<String> hashTags) {
-		this.hashTags = hashTags;
+	public void setDone(boolean done) {
+		this.done = done;
 	}
 
 	// Other Methods
 
-	public void addTaskHashTag(String taskHashTag) {
-		this.hashTags.add(taskHashTag);
+	public boolean hasHashtag(String hashtag) {
+		String hashtagLowerCase = hashtag.toLowerCase();
+		return hasKeyword("#" + hashtagLowerCase);
 	}
 
-	public boolean hasHashTag(String taskHashTag) {
-		return this.hashTags.contains(taskHashTag);
-	}
-	
-	public boolean containsHashtag(String hashtag) {
-	    return false;
-	}
-	
-	public boolean containsKeyword(String keyword) {
-	    return false;
+	public boolean hasKeyword(String keyword) {
+		String descriptionLowerCase = description.toLowerCase();
+		String keywordLowerCase = keyword.toLowerCase();
+		return descriptionLowerCase.contains(keywordLowerCase);
 	}
 }
