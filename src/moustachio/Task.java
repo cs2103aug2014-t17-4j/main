@@ -1,11 +1,10 @@
 package moustachio;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Task implements Serializable {
+public class Task {
 
 	private int id;
 	private String description;
