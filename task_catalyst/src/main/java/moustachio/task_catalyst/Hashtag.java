@@ -1,16 +1,12 @@
 package moustachio.task_catalyst;
 
-import java.util.List;
 
 public class Hashtag extends Action {
 
 	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: %s.";
-	private static final String EXECUTE_ERROR = "Invalid hashtag.";
-	List<Task> targetList;
 	String hashtag;
 
-	public Hashtag(List<Task> targetList, String hashtag) {
-		this.targetList = targetList;
+	public Hashtag(String hashtag) {
 		this.hashtag = hashtag;
 	}
 

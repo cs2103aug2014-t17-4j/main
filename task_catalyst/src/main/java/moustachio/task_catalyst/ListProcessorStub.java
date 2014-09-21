@@ -1,5 +1,6 @@
 package moustachio.task_catalyst;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ListProcessorStub implements moustachio.task_catalyst.ListProcessor {
@@ -11,7 +12,13 @@ public class ListProcessorStub implements moustachio.task_catalyst.ListProcessor
 
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
-		return list;
+		List<Task> searchList = new ArrayList<Task>();
+		for (Task task:list) {
+			if (task.hasKeyword(keyword)) {
+				searchList.add(task);
+			}
+		}
+		return searchList;
 	}
 
 	@Override

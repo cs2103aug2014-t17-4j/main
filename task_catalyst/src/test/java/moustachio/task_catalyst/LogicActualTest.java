@@ -1,7 +1,6 @@
 package moustachio.task_catalyst;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.List;
 
@@ -395,5 +394,36 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("(Redo) Task successfully edited: after",
 				message.getMessage());
+	}
+
+	// Search for non-existent item
+	@Test
+	public void searchTc1() {
+		Message message = logic.processCommand("search hello");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Displaying search: hello.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+	
+	// Search for one matching item
+	@Test
+	public void searchTc2() {
+		logic.processCommand("apple banana");
+		logic.processCommand("apple papaya");
+		Message message = logic.processCommand("search banana");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Displaying search: banana.", message.getMessage());
+		assertEquals(1, logic.getList().size());
+	}
+	
+	// Search for two or more matching item
+	@Test
+	public void searchTc3() {
+		logic.processCommand("apple banana");
+		logic.processCommand("apple papaya");
+		Message message = logic.processCommand("search apple");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Displaying search: apple.", message.getMessage());
+		assertEquals(2, logic.getList().size());
 	}
 }

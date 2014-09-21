@@ -131,6 +131,7 @@ public class LogicActual implements Logic {
 			displayList = listProcessor.searchByKeyword(tasks, keyword);
 			break;
 		}
+		listProcessor.sortByDate(displayList);
 	}
 
 	// Operations
@@ -173,7 +174,7 @@ public class LogicActual implements Logic {
 		String hashtag = removeFirstWord(userCommand);
 		lastDisplayType = DisplayType.HASHTAG;
 		lastDisplayTerm = hashtag;
-		return null;
+		return new Hashtag(hashtag);
 	}
 
 	private Action redo() {
@@ -184,7 +185,7 @@ public class LogicActual implements Logic {
 		String keyword = removeFirstWord(userCommand);
 		lastDisplayType = DisplayType.SEARCH;
 		lastDisplayTerm = keyword;
-		return null;
+		return new Search(keyword);
 	}
 
 	private Action undo() {
