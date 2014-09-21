@@ -5,7 +5,7 @@ import java.util.List;
 public class Hashtag extends Action {
 
 	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: %s.";
-	private static final String EXECUTE_FAILURE = "Invalid hashtag.";
+	private static final String EXECUTE_ERROR = "Invalid hashtag.";
 	List<Task> targetList;
 	String hashtag;
 

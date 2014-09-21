@@ -6,6 +6,7 @@ import java.util.Stack;
 public class Redo extends Action {
 
 	private static final String EXECUTE_ERROR = "There is nothing to redo.";
+	
 	List<Task> targetList;
 	Task task;
 	Stack<Action> undos;

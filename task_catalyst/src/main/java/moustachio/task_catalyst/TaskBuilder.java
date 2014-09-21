@@ -2,42 +2,50 @@ package moustachio.task_catalyst;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import com.joestelmach.natty.DateGroup;
-import com.joestelmach.natty.Parser;
+import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 
 public class TaskBuilder {
 
-	public static void main(String[] args) {
-		Task task = createTask("meet boss tomorrow to friday");
-		System.out.println(task.getDescription());
-		System.out.println(task.getDateStart());
-		System.out.println(task.getDateEnd());
-	}
-
 	public static Task createTask(String userInput) {
 
-		Parser parser = new Parser();
-		List<DateGroup> groups = parser.parse(userInput);
-		Task task = new Task(userInput);
-		if (!groups.isEmpty()) {
-			List<Date> dateList = groups.get(0).getDates();
-			if (!dateList.isEmpty()) {
-				Date dateStart = dateList.get(0);
-				LocalDateTime ldtDateStart = LocalDateTime.ofInstant(
-						dateStart.toInstant(), ZoneId.systemDefault());
-				Date dateEnd = null;
-				LocalDateTime ldtDateEnd = null;
-				if (dateList.size() == 2) {
-					dateEnd = dateList.get(dateList.size() - 1);
-					ldtDateEnd = LocalDateTime.ofInstant(dateEnd.toInstant(),
-							ZoneId.systemDefault());
-				}
-				task = new Task(userInput, ldtDateStart, ldtDateEnd);
-			}
+		if (userInput == null || userInput.trim().isEmpty()) {
+			return null;
+		}
+		
+		List<Date> allDates = new ArrayList<Date>();
+
+		Pattern pattern = Pattern.compile("\\[(.*?)\\]");
+		Matcher matcher = pattern.matcher(userInput);
+		while (matcher.find()) {
+			String word = matcher.group(1);
+			List<Date> currentGroupDates = new PrettyTimeParser().parse(word);
+			allDates.addAll(currentGroupDates);
+		}
+
+		List<LocalDateTime> ldts = toLdtList(allDates);
+		Task task;
+		if (ldts.isEmpty()) {
+			task = new Task(userInput);
+		} else if (ldts.size() == 1) {
+			task = new Task(userInput, ldts.get(0));
+		} else {
+			task = new Task(userInput, ldts.get(0), ldts.get(ldts.size() - 1));
 		}
 		return task;
+	}
+
+	private static List<LocalDateTime> toLdtList(List<Date> dates) {
+		List<LocalDateTime> ldts = new ArrayList<LocalDateTime>();
+		for (Date date : dates) {
+			ldts.add(LocalDateTime.ofInstant(date.toInstant(),
+					ZoneId.systemDefault()));
+		}
+		return ldts;
 	}
 }

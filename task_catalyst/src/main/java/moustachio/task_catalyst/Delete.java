@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Delete extends Action {
 
-	private static final String EXECUTE_SUCCESS = "There was an error deleting the task.";
-	private static final String EXECUTE_ERROR = "Task successfully deleted: %s";
+	private static final String EXECUTE_ERROR = "There was an error deleting the task.";
+	private static final String EXECUTE_SUCCESS = "Task successfully deleted: %s";
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
 	List<Task> targetList;
@@ -18,6 +18,13 @@ public class Delete extends Action {
 
 	@Override
 	public Message execute() {
+		if (task == null) {
+			int type = Message.TYPE_ERROR;
+			String message = String.format(EXECUTE_ERROR);
+
+			return new Message(type, message);
+		}
+
 		boolean isSuccess = targetList.remove(task);
 		int type;
 		String message;

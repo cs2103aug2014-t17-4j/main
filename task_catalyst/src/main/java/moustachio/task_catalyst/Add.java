@@ -4,8 +4,8 @@ import java.util.List;
 
 public class Add extends Action {
 
-	private static final String EXECUTE_SUCCESS = "There was an error adding the task.";
-	private static final String EXECUTE_ERROR = "Task successfully added: %s";
+	private static final String EXECUTE_ERROR = "There was an error adding the task.";
+	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
 	private static final String UNDO_ERROR = "There was an error removing the task.";
 	private static final String UNDO_SUCCESS = "Task successfully removed: %s";
 	List<Task> targetList;
@@ -18,11 +18,18 @@ public class Add extends Action {
 
 	@Override
 	public Message execute() {
+		if (task == null) {
+			int type = Message.TYPE_ERROR;
+			String message = String.format(EXECUTE_ERROR);
+
+			return new Message(type, message);
+		}
+
 		boolean addSuccess = targetList.add(task);
-		String taskDescription = task.getDescription();
 		int type;
 		String message;
 		if (addSuccess) {
+			String taskDescription = task.getDescription();
 			type = Message.TYPE_SUCCESS;
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else {

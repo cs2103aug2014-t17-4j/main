@@ -5,7 +5,8 @@ import java.util.List;
 public class Search extends Action {
 
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
-	private static final String EXECUTE_FAILURE = "Invalid search term.";
+	private static final String EXECUTE_ERROR = "Invalid search term.";
+	
 	List<Task> targetList;
 	String keyword;
 

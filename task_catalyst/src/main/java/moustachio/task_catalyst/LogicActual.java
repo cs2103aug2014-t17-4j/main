@@ -9,7 +9,7 @@ import java.util.TreeSet;
 public class LogicActual implements Logic {
 
 	private static enum CommandType {
-		ADD, DELETE, DISPLAY, EDIT, HASHTAG, REDO, SEARCH, UNDO
+		ADD, DELETE, DISPLAY, EDIT, HASHTAG, INVALID, REDO, SEARCH, UNDO
 	};
 
 	private static enum DisplayType {
@@ -92,7 +92,8 @@ public class LogicActual implements Logic {
 			action = undo();
 			break;
 		default:
-			throw new Error();
+			action = null;
+			break;
 		}
 		return action;
 	}
@@ -154,8 +155,20 @@ public class LogicActual implements Logic {
 	}
 
 	private Action edit(String userCommand) {
-		// TODO Auto-generated method stub
-		return null;
+		String taskNumberString = getFirstWord(removeFirstWord(userCommand));
+		int taskNumber = parseInt(taskNumberString);
+		Task targetTask;
+		try {
+			targetTask = displayList.get(taskNumber - 1);
+		} catch (Exception e) {
+			targetTask = null;
+		}
+		String userInput = removeFirstWord(removeFirstWord(userCommand));
+		Task replacementTask = TaskBuilder.createTask(userInput);
+		System.out.println("1"+targetTask);
+		System.out.println("2"+replacementTask);
+		Action action = new Edit(tasks, targetTask, replacementTask);
+		return action;
 	}
 
 	private Action hashtag(String userCommand) {
@@ -166,7 +179,7 @@ public class LogicActual implements Logic {
 	}
 
 	private Action redo() {
-		return new Redo(displayList, undos, redos);
+		return new Redo(tasks, undos, redos);
 	}
 
 	private Action search(String userCommand) {
@@ -177,7 +190,7 @@ public class LogicActual implements Logic {
 	}
 
 	private Action undo() {
-		return new Undo(displayList, undos, redos);
+		return new Undo(tasks, undos, redos);
 	}
 
 	// API Methods
@@ -195,7 +208,7 @@ public class LogicActual implements Logic {
 	public List<String> getHashtags() {
 		SortedSet<String> allHashtagsSet = new TreeSet<String>();
 		for (Task task : tasks) {
-			List<String> taskHashtags = task.getHashTags();
+			List<String> taskHashtags = task.getHashtags();
 			allHashtagsSet.addAll(taskHashtags);
 		}
 		List<String> allHashtagsList = new ArrayList<String>(allHashtagsSet);
@@ -236,7 +249,7 @@ public class LogicActual implements Logic {
 
 	private String removeFirstWord(String userCommand) {
 		String blank = "";
-		String firstWord = getFirstWord(userCommand);
+		String firstWord = getFirstWord(userCommand).replaceAll("\\[", blank);
 		String removedFirstWord = userCommand.replaceFirst(firstWord, blank);
 		String removedFirstWordTrimmed = removedFirstWord.trim();
 		return removedFirstWordTrimmed;
@@ -254,6 +267,10 @@ public class LogicActual implements Logic {
 	}
 
 	private CommandType getCommandType(String userCommand) {
+		if (userCommand == null || userCommand.trim().isEmpty()) {
+			return CommandType.INVALID;
+		}
+
 		String command = getFirstWord(userCommand);
 		String parameters = removeFirstWord(userCommand);
 		String commandLowerCase = command.toLowerCase();

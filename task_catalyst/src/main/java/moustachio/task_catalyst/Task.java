@@ -55,13 +55,13 @@ public class Task implements Comparable<Task> {
 		this.dateEnd = dateEnd;
 	}
 
-	public List<String> getHashTags() {
+	public List<String> getHashtags() {
 		List<String> hashtagList = new ArrayList<String>();
 		String[] descriptionTokenized = description.split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#")) {
-				String tokenLowerCase = token.toLowerCase();
-				hashtagList.add(tokenLowerCase);
+				String tokenLowerAlphabets = token.toLowerCase().replaceAll("[^A-Za-z0-9]+", "");
+				hashtagList.add(tokenLowerAlphabets);
 			}
 		}
 		return hashtagList;
