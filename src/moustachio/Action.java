@@ -1,6 +1,6 @@
 package moustachio;
 
-public abstract class UndoableAction {
+public abstract class Action {
 
 	public abstract Message execute();
 

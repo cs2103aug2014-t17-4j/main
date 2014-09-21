@@ -2,7 +2,7 @@ package moustachio;
 
 import java.util.List;
 
-public class Add extends UndoableAction {
+public class Add extends Action {
 
 	private static final String EXECUTE_SUCCESS = "There was an error adding the task: %s";
 	private static final String EXECUTE_ERROR = "Task successfully added: %s";
@@ -47,5 +47,4 @@ public class Add extends UndoableAction {
 		}
 		return new Message(type, message);
 	}
-
 }

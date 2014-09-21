@@ -3,11 +3,13 @@ package moustachio;
 import java.util.List;
 
 public interface Logic {
-    public List<Task> processCommand(String userCommand);
+    public Message processCommand(String userCommand);
 
     public List<String> getHashtags();
+    
+    public List<String> getDefaultHashtags();
 
     public Message getMessageTyping(String userCommand);
-
-    public Message getMessageLast();
+    
+    public List<Task> getList();
 }
