@@ -9,7 +9,7 @@ import java.util.TreeSet;
 public class LogicActual implements Logic {
 
 	private static enum CommandType {
-		ADD, DELETE, DISPLAY, EXIT, HASHTAG, REDO, SEARCH, UNDO
+		ADD, DELETE, DISPLAY, EDIT, HASHTAG, REDO, SEARCH, UNDO
 	};
 
 	private static enum DisplayType {
@@ -20,6 +20,7 @@ public class LogicActual implements Logic {
 			"#tmr", "#upc", "#smd", "#dne" };
 
 	private static final String[] DICTIONARY_DELETE = { "delete", "rm", "del" };
+	private static final String[] DICTIONARY_EDIT = { "edit" };
 	private static final String[] DICTIONARY_REDO = { "redo" };
 	private static final String[] DICTIONARY_SEARCH = { "search" };
 	private static final String[] DICTIONARY_UNDO = { "undo" };
@@ -62,7 +63,6 @@ public class LogicActual implements Logic {
 		Action action = generateAction(userCommand);
 		Message message = doAction(action);
 		save();
-		refreshList();
 		return message;
 	}
 
@@ -75,6 +75,9 @@ public class LogicActual implements Logic {
 			break;
 		case DELETE:
 			action = delete(userCommand);
+			break;
+		case EDIT:
+			action = edit(userCommand);
 			break;
 		case HASHTAG:
 			action = hashtag(userCommand);
@@ -104,6 +107,9 @@ public class LogicActual implements Logic {
 			if (isSuccess && isUndoable) {
 				undos.push(action);
 				redos.clear();
+			}
+			if (isSuccess) {
+				refreshList();
 			}
 		}
 		return message;
@@ -145,6 +151,11 @@ public class LogicActual implements Logic {
 		}
 		Action action = new Delete(tasks, deleteTask);
 		return action;
+	}
+
+	private Action edit(String userCommand) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private Action hashtag(String userCommand) {
@@ -256,8 +267,9 @@ public class LogicActual implements Logic {
 			return CommandType.HASHTAG;
 		} else if (isFromDictionary(DICTIONARY_DELETE, commandLowerCase)) {
 			return CommandType.DELETE;
-		} else if (isFromDictionary(DICTIONARY_REDO, commandLowerCase)
-				&& noParameters) {
+		} else if (isFromDictionary(DICTIONARY_EDIT, commandLowerCase)) {
+			return CommandType.EDIT;
+		} else if (isFromDictionary(DICTIONARY_REDO, commandLowerCase)) {
 			return CommandType.REDO;
 		} else if (isFromDictionary(DICTIONARY_SEARCH, commandLowerCase)) {
 			return CommandType.SEARCH;

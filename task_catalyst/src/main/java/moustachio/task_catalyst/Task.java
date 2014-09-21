@@ -60,7 +60,8 @@ public class Task implements Comparable<Task> {
 		String[] descriptionTokenized = description.split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#")) {
-				hashtagList.add(token);
+				String tokenLowerCase = token.toLowerCase();
+				hashtagList.add(tokenLowerCase);
 			}
 		}
 		return hashtagList;
@@ -78,7 +79,7 @@ public class Task implements Comparable<Task> {
 
 	public boolean hasHashtag(String hashtag) {
 		String hashtagLowerCase = hashtag.toLowerCase();
-		return hasKeyword("#" + hashtagLowerCase);
+		return hasKeyword(hashtagLowerCase+" ") || hasKeyword(hashtagLowerCase+"\n");
 	}
 
 	public boolean hasKeyword(String keyword) {
