@@ -16,28 +16,35 @@ public class LogicActual implements Logic {
 		HASHTAG, SEARCH
 	};
 
-	private static final String[] HASHTAGS_DEFAULT = { "#all", "#pri", "#tdy",
+	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#tdy",
 			"#tmr", "#upc", "#smd", "#dne" };
+
 	private static final String[] DICTIONARY_DELETE = { "delete", "rm", "del" };
-	private static final String[] DICTIONARY_DISPLAY = { "display", "ls", "dir" };
-	private static final String[] DICTIONARY_EXIT = { "exit", "quit" };
 	private static final String[] DICTIONARY_REDO = { "redo" };
 	private static final String[] DICTIONARY_SEARCH = { "search" };
 	private static final String[] DICTIONARY_UNDO = { "undo" };
 
 	private Storage storage;
 	private ListProcessor listProcessor;
+
 	private List<Task> tasks;
 	private List<Task> displayList;
-	private Stack<Action> undos;
-	private Stack<Action> redos;
 
 	private DisplayType lastDisplayType;
 	private String lastDisplayTerm;
 
+	private Stack<Action> undos;
+	private Stack<Action> redos;
+
+	private static final DisplayType DEFAULT_DISPLAY_TYPE = DisplayType.HASHTAG;
+	private static final String DEFAULT_DISPLAY_TERM = "all";
+	private static final String DEFAULT_FILE_NAME = "tasks.txt";
+
+	private static final int INVALID_INTEGER = -1;
+
 	public LogicActual() {
-		lastDisplayType = DisplayType.HASHTAG;
-		lastDisplayTerm = "all";
+		lastDisplayType = DEFAULT_DISPLAY_TYPE;
+		lastDisplayTerm = DEFAULT_DISPLAY_TERM;
 
 		undos = new Stack<Action>();
 		redos = new Stack<Action>();
@@ -45,8 +52,10 @@ public class LogicActual implements Logic {
 		storage = new StorageStub();
 		listProcessor = new ListProcessorStub();
 
-		tasks = storage.loadTasks("tasks.txt");
+		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 	}
+
+	// High Level Implementation
 
 	@Override
 	public Message processCommand(String userCommand) {
@@ -65,27 +74,43 @@ public class LogicActual implements Logic {
 			action = add(userCommand);
 			break;
 		case DELETE:
-			break;
-		case DISPLAY:
+			action = delete(userCommand);
 			break;
 		case HASHTAG:
+			action = hashtag(userCommand);
 			break;
 		case REDO:
+			action = redo();
 			break;
 		case SEARCH:
+			action = search(userCommand);
 			break;
 		case UNDO:
-			break;
-		case EXIT:
+			action = undo();
 			break;
 		default:
-			break;
+			throw new Error();
 		}
 		return action;
 	}
 
+	private Message doAction(Action action) {
+		Message message = new Message(Message.TYPE_ERROR,
+				"Invalid Action Encountered");
+		if (action != null) {
+			message = action.execute();
+			boolean isSuccess = message.getType() == Message.TYPE_SUCCESS;
+			boolean isUndoable = action.isUndoable();
+			if (isSuccess && isUndoable) {
+				undos.push(action);
+				redos.clear();
+			}
+		}
+		return message;
+	}
+
 	private void save() {
-		storage.saveTasks(tasks, "tasks.txt");
+		storage.saveTasks(tasks, DEFAULT_FILE_NAME);
 	}
 
 	private void refreshList() {
@@ -101,27 +126,55 @@ public class LogicActual implements Logic {
 		}
 	}
 
-	private Message doAction(Action action) {
-		Message message = new Message(Message.TYPE_ERROR, "Invalid Action Encountered");
-		if (action != null) {
-			message = action.execute();
-			undos.push(action);
-			redos.clear();
-		}
-		return message;
-	}
+	// Operations
 
 	private Action add(String userCommand) {
-		Action action;
 		Task newTask = TaskBuilder.createTask(userCommand);
-		action = new Add(tasks, newTask);
+		Action action = new Add(tasks, newTask);
 		return action;
 	}
+
+	private Action delete(String userCommand) {
+		String taskNumberString = removeFirstWord(userCommand);
+		int taskNumber = parseInt(taskNumberString);
+		Task deleteTask;
+		try {
+			deleteTask = displayList.get(taskNumber - 1);
+		} catch (Exception e) {
+			deleteTask = null;
+		}
+		Action action = new Delete(tasks, deleteTask);
+		return action;
+	}
+
+	private Action hashtag(String userCommand) {
+		String hashtag = removeFirstWord(userCommand);
+		lastDisplayType = DisplayType.HASHTAG;
+		lastDisplayTerm = hashtag;
+		return null;
+	}
+
+	private Action redo() {
+		return new Redo(displayList, undos, redos);
+	}
+
+	private Action search(String userCommand) {
+		String keyword = removeFirstWord(userCommand);
+		lastDisplayType = DisplayType.SEARCH;
+		lastDisplayTerm = keyword;
+		return null;
+	}
+
+	private Action undo() {
+		return new Undo(displayList, undos, redos);
+	}
+
+	// API Methods
 
 	@Override
 	public List<String> getDefaultHashtags() {
 		List<String> defaultHashtagsList = new ArrayList<String>();
-		for (String hashtag : HASHTAGS_DEFAULT) {
+		for (String hashtag : DEFAULT_HASHTAGS) {
 			defaultHashtagsList.add(hashtag);
 		}
 		return defaultHashtagsList;
@@ -147,7 +200,21 @@ public class LogicActual implements Logic {
 		}
 	}
 
+	@Override
+	public List<Task> getList() {
+		return displayList;
+	}
+
 	// Parsing Methods
+
+	private int parseInt(String intString) {
+		try {
+			int value = Integer.parseInt(intString);
+			return value;
+		} catch (Exception e) {
+			return INVALID_INTEGER;
+		}
+	}
 
 	private String getFirstWord(String userCommand) {
 		String oneOrMoreSpaces = "\\s+";
@@ -181,27 +248,24 @@ public class LogicActual implements Logic {
 		String commandLowerCase = command.toLowerCase();
 		String parametersTrimmed = parameters.trim();
 
-		if (commandLowerCase.startsWith("#") && parametersTrimmed.isEmpty()) {
+		boolean noParameters = parametersTrimmed.isEmpty();
+		boolean hashtagged = commandLowerCase.startsWith("#");
+		boolean isHashtag = hashtagged && noParameters;
+
+		if (isHashtag) {
 			return CommandType.HASHTAG;
 		} else if (isFromDictionary(DICTIONARY_DELETE, commandLowerCase)) {
 			return CommandType.DELETE;
-		} else if (isFromDictionary(DICTIONARY_DISPLAY, commandLowerCase)) {
-			return CommandType.DISPLAY;
-		} else if (isFromDictionary(DICTIONARY_EXIT, commandLowerCase)) {
-			return CommandType.EXIT;
-		} else if (isFromDictionary(DICTIONARY_REDO, commandLowerCase)) {
+		} else if (isFromDictionary(DICTIONARY_REDO, commandLowerCase)
+				&& noParameters) {
 			return CommandType.REDO;
 		} else if (isFromDictionary(DICTIONARY_SEARCH, commandLowerCase)) {
 			return CommandType.SEARCH;
-		} else if (isFromDictionary(DICTIONARY_UNDO, commandLowerCase)) {
+		} else if (isFromDictionary(DICTIONARY_UNDO, commandLowerCase)
+				&& noParameters) {
 			return CommandType.UNDO;
 		} else {
 			return CommandType.ADD;
 		}
-	}
-
-	@Override
-	public List<Task> getList() {
-		return displayList;
 	}
 }
