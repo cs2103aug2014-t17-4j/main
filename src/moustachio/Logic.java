@@ -1,13 +1,13 @@
 package moustachio;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public interface Logic {
-    public ArrayList<Task> processCommand(String userCommand);
+    public List<Task> processCommand(String userCommand);
 
-    public ArrayList<String> getHashtags();
+    public List<String> getHashtags();
 
-    public String getHint(String userCommand);
+    public Message getMessageTyping(String userCommand);
 
-    public String getMessage();
+    public Message getMessageLast();
 }

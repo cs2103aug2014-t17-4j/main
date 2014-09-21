@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Task {
+public class Task implements Comparable<Task> {
 
 	private int id;
 	private String description;
@@ -75,7 +75,7 @@ public class Task {
 		}
 		return hashtagList;
 	}
-	
+
 	public boolean isDone() {
 		return done;
 	}
@@ -95,5 +95,14 @@ public class Task {
 		String descriptionLowerCase = description.toLowerCase();
 		String keywordLowerCase = keyword.toLowerCase();
 		return descriptionLowerCase.contains(keywordLowerCase);
+	}
+
+	// Interfaces
+	
+	@Override
+	public int compareTo(Task o) {
+		LocalDateTime thisDateTime = this.getDateStart();
+		LocalDateTime otherDateTime = o.getDateStart();
+		return thisDateTime.compareTo(otherDateTime);
 	}
 }
