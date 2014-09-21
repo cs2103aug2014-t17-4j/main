@@ -22,7 +22,9 @@ public class Undo extends Action {
 	public Message execute() {
 		try {
 			redos.push(undos.pop());
-			return redos.peek().undo();
+			Message message = redos.peek().undo();
+			message.setMessage("(Undo) "+message.getMessage());
+			return message;
 		} catch (Exception e) {
 			int type = Message.TYPE_ERROR;
 			return new Message(type, EXECUTE_ERROR);

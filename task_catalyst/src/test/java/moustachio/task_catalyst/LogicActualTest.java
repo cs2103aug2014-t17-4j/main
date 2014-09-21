@@ -242,4 +242,158 @@ public class LogicActualTest {
 		List<String> userHashtags = logic.getHashtags();
 		assertEquals(3, userHashtags.size());
 	}
+
+	// Undo nothing.
+	@Test
+	public void undoTc1() {
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals("There is nothing to undo.", message.getMessage());
+	}
+
+	// Undo add, and then redo.
+	@Test
+	public void undoTc2() {
+		logic.processCommand("this is the first item");
+		assertEquals(1, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Undo) Task successfully removed: this is the first item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Redo) Task successfully added: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+	}
+
+	// Undo multiple, and then redo multiple.
+	@Test
+	public void undoTc3() {
+		logic.processCommand("this is the first item");
+		logic.processCommand("this is the second item");
+		assertEquals(2, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Undo) Task successfully removed: this is the second item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Undo) Task successfully removed: this is the first item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Redo) Task successfully added: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Redo) Task successfully added: this is the second item",
+				message.getMessage());
+		assertEquals(2, logic.getList().size());
+	}
+
+	// Undo multiple deletes, and then redo multiple deletes.
+	@Test
+	public void undoTc4() {
+		logic.processCommand("this is the first item");
+		logic.processCommand("this is the second item");
+		logic.processCommand("delete 1");
+		logic.processCommand("delete 1");
+		assertEquals(0, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Undo) Task successfully restored: this is the second item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Undo) Task successfully restored: this is the first item",
+				message.getMessage());
+		assertEquals(2, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Redo) Task successfully deleted: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Redo) Task successfully deleted: this is the second item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Undo multiple deletes, and then redo multiple deletes.
+	@Test
+	public void undoTc5() {
+		logic.processCommand("before");
+		logic.processCommand("edit 1 after");
+
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Undo) Task successfully restored: before",
+				message.getMessage());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Redo) Task successfully edited: after",
+				message.getMessage());
+	}
+
+	// Ensure redos are cleared after doing something.
+	@Test
+	public void undoTc6() {
+		logic.processCommand("before");
+		logic.processCommand("edit 1 after");
+
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Undo) Task successfully restored: before",
+				message.getMessage());
+
+		logic.processCommand("something else");
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals("There is nothing to redo.", message.getMessage());
+	}
+
+	// Test that invalid commands are not added to undo list.
+	@Test
+	public void undoTc7() {
+		logic.processCommand("before");
+		logic.processCommand("edit 1 after");
+		logic.processCommand("edit 1");
+		logic.processCommand("delete");
+
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Undo) Task successfully restored: before",
+				message.getMessage());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("(Redo) Task successfully edited: after",
+				message.getMessage());
+	}
 }

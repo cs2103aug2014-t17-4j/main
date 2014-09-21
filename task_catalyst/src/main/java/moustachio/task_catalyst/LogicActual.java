@@ -165,8 +165,6 @@ public class LogicActual implements Logic {
 		}
 		String userInput = removeFirstWord(removeFirstWord(userCommand));
 		Task replacementTask = TaskBuilder.createTask(userInput);
-		System.out.println("1"+targetTask);
-		System.out.println("2"+replacementTask);
 		Action action = new Edit(tasks, targetTask, replacementTask);
 		return action;
 	}

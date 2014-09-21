@@ -22,7 +22,9 @@ public class Redo extends Action {
 	public Message execute() {
 		try {
 			undos.push(redos.pop());
-			return undos.peek().execute();
+			Message message = undos.peek().execute();
+			message.setMessage("(Redo) "+message.getMessage());
+			return message;
 		} catch (Exception e) {
 			int type = Message.TYPE_ERROR;
 			return new Message(type, EXECUTE_ERROR);
