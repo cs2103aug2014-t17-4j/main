@@ -6,7 +6,6 @@ import java.util.List;
 
 public class Task implements Comparable<Task> {
 
-	private int id;
 	private String description;
 	private boolean done;
 
@@ -15,31 +14,22 @@ public class Task implements Comparable<Task> {
 
 	// Constructors
 
-	public Task(int id, String description) {
-		this.id = id;
+	public Task(String description) {
 		this.description = description;
 	}
 
-	public Task(int id, String description, LocalDateTime dateStart) {
-		this(id, description);
+	public Task(String description, LocalDateTime dateStart) {
+		this(description);
 		this.dateStart = dateStart;
 	}
 
-	public Task(int id, String description, LocalDateTime dateStart,
+	public Task(String description, LocalDateTime dateStart,
 			LocalDateTime dateEnd) {
-		this(id, description, dateStart);
+		this(description, dateStart);
 		this.dateEnd = dateEnd;
 	}
 
 	// Mutators
-
-	public int getId() {
-		return this.id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
-	}
 
 	public String getDescription() {
 		return this.description;

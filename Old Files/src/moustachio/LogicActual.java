@@ -50,6 +50,14 @@ public class LogicActual implements Logic {
 
 	@Override
 	public Message processCommand(String userCommand) {
+		Action action = generateAction(userCommand);
+		Message message = doAction(action);
+		save();
+		refreshList();
+		return message;
+	}
+
+	private Action generateAction(String userCommand) {
 		CommandType COMMAND_TYPE = getCommandType(userCommand);
 		Action action = null;
 		switch (COMMAND_TYPE) {
@@ -73,10 +81,7 @@ public class LogicActual implements Logic {
 		default:
 			break;
 		}
-		Message message = doAction(action);
-		save();
-		refreshList();
-		return message;
+		return action;
 	}
 
 	private void save() {
