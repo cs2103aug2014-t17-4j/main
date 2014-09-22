@@ -269,28 +269,19 @@ public class LogicActual implements Logic {
 				} catch (Exception e) {
 					editTask = null;
 				}
-				if (editTask == null && endsWithSpace) {
+				boolean isValidTask = editTask != null;
+				boolean hasFurtherParameters = !userCommand
+						.replaceFirst("edit " + taskNumberString, "").trim()
+						.isEmpty();
+				if (!isValidTask && (endsWithSpace || hasFurtherParameters)) {
 					message = "Edit: Invalid task number specified.";
-				} else {
-					if (userCommand
-							.replaceFirst("edit " + taskNumberString, "")
-							.trim().isEmpty()
-							&& endsWithSpace) {
-						type = Message.TYPE_AUTOCOMPLETE;
-						message = userCommand.trim() + " "
-								+ editTask.getDescription();
-					} else if (!userCommand
-							.replaceFirst("edit " + taskNumberString, "")
-							.trim().isEmpty()
-							&& editTask != null) {
-						type = Message.TYPE_HINT;
-						message = "Edit: Hit enter after making your changes.";
-					} else if (!userCommand
-							.replaceFirst("edit " + taskNumberString, "")
-							.trim().isEmpty()
-							&& editTask == null) {
-						message = "Edit: Invalid task number specified.";
-					}
+				} else if (!hasFurtherParameters && endsWithSpace) {
+					type = Message.TYPE_AUTOCOMPLETE;
+					message = userCommand.trim() + " "
+							+ editTask.getDescription();
+				} else if (hasFurtherParameters && isValidTask) {
+					type = Message.TYPE_HINT;
+					message = "Edit: Hit enter after making your changes.";
 				}
 			}
 			break;

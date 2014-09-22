@@ -22,13 +22,13 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.joestelmach</groupId>
-			<artifactId>natty</artifactId>
-			<version>0.8</version>
+			<groupId>org.ocpsoft.prettytime</groupId>
+			<artifactId>prettytime-nlp</artifactId>
+			<version>3.2.5.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>org.ocpsoft.prettytime</groupId>
-			<artifactId>prettytime-nlp</artifactId>
+			<artifactId>prettytime</artifactId>
 			<version>3.2.5.Final</version>
 		</dependency>
 	</dependencies>
