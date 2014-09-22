@@ -122,7 +122,7 @@ public class LogicActualTest {
 				message.getMessage());
 	}
 
-	// Delete without specification.
+	// Delete without parameters.
 	@Test
 	public void deleteTc3() {
 		Message message = logic.processCommand("rm");
@@ -138,6 +138,44 @@ public class LogicActualTest {
 		Message message = logic.processCommand("rm 1");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("Task successfully deleted: Hello kitty!",
+				message.getMessage());
+	}
+	
+	// Complete invalid index.
+	@Test
+	public void doneTc1() {
+		Message message = logic.processCommand("done -1");
+		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals("There was an error completing the task.",
+				message.getMessage());
+	}
+
+	// Complete invalid index.
+	@Test
+	public void doneTc2() {
+		logic.processCommand("Hello kitty!");
+		Message message = logic.processCommand("done 2");
+		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals("There was an error completing the task.",
+				message.getMessage());
+	}
+
+	// Complete without parameters.
+	@Test
+	public void doneTc3() {
+		Message message = logic.processCommand("done");
+		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals("There was an error completing the task.",
+				message.getMessage());
+	}
+
+	// Complete one item.
+	@Test
+	public void doneTc4() {
+		logic.processCommand("Hello kitty!");
+		Message message = logic.processCommand("done 1");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Task successfully completed: Hello kitty!",
 				message.getMessage());
 	}
 

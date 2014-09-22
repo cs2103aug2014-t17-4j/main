@@ -9,7 +9,7 @@ import java.util.TreeSet;
 public class LogicActual implements Logic {
 
 	private static enum CommandType {
-		ADD, DELETE, DISPLAY, EDIT, HASHTAG, INVALID, REDO, SEARCH, UNDO
+		ADD, DELETE, DONE, EDIT, HASHTAG, INVALID, REDO, SEARCH, UNDO
 	};
 
 	private static enum DisplayType {
@@ -20,6 +20,7 @@ public class LogicActual implements Logic {
 			"#tmr", "#upc", "#smd", "#dne" };
 
 	private static final String[] DICTIONARY_DELETE = { "delete", "rm", "del" };
+	private static final String[] DICTIONARY_DONE = { "done", "complete"};
 	private static final String[] DICTIONARY_EDIT = { "edit" };
 	private static final String[] DICTIONARY_REDO = { "redo" };
 	private static final String[] DICTIONARY_SEARCH = { "search" };
@@ -75,6 +76,9 @@ public class LogicActual implements Logic {
 			break;
 		case DELETE:
 			action = delete(userCommand);
+			break;
+		case DONE:
+			action = done(userCommand);
 			break;
 		case EDIT:
 			action = edit(userCommand);
@@ -152,6 +156,19 @@ public class LogicActual implements Logic {
 			deleteTask = null;
 		}
 		Action action = new Delete(tasks, deleteTask);
+		return action;
+	}
+	
+	private Action done(String userCommand) {
+		String taskNumberString = removeFirstWord(userCommand);
+		int taskNumber = parseInt(taskNumberString);
+		Task doneTask;
+		try {
+			doneTask = displayList.get(taskNumber - 1);
+		} catch (Exception e) {
+			doneTask = null;
+		}
+		Action action = new Done(tasks, doneTask);
 		return action;
 	}
 
@@ -283,6 +300,8 @@ public class LogicActual implements Logic {
 			return CommandType.HASHTAG;
 		} else if (isFromDictionary(DICTIONARY_DELETE, commandLowerCase)) {
 			return CommandType.DELETE;
+		} else if (isFromDictionary(DICTIONARY_DONE, commandLowerCase)) {
+			return CommandType.DONE;
 		} else if (isFromDictionary(DICTIONARY_EDIT, commandLowerCase)) {
 			return CommandType.EDIT;
 		} else if (isFromDictionary(DICTIONARY_REDO, commandLowerCase)) {
