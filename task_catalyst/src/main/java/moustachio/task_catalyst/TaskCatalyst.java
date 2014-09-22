@@ -17,7 +17,7 @@ public class TaskCatalyst extends Application {
 	
 	@Override
 	public void start(Stage primaryStage) throws Exception{
-		Parent root = FXMLLoader.load(getClass().getResource("interface.fxml"));
+		Parent root = FXMLLoader.load(getClass().getResource("userinterface.fxml"));
 		Scene scene = new Scene(root);
 		addDragListeners(root);
 		// set stylesheet
