@@ -1,13 +1,16 @@
 #exitButton {          
-    -fx-background-image: url("images/close24.png");
+    -fx-background-image: url("../images/close24.png");
     -fx-background-size: 24 24;
     -fx-background-repeat: no-repeat;
     -fx-background-position:left;   
     -fx-background-color: transparent;  
 }
+#programTitle{
+	-fx-image: url("../images/title.png");
+}
 
 #settingsButton {          
-    -fx-background-image: url("images/settings24.png");
+    -fx-background-image: url("../images/settings24.png");
     -fx-background-size: 24 24;
     -fx-background-repeat: no-repeat;
     -fx-background-position:left;   
