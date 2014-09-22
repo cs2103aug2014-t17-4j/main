@@ -20,7 +20,7 @@ public class LogicActual implements Logic {
 			"#tmr", "#upc", "#smd", "#dne" };
 
 	private static final String[] DICTIONARY_DELETE = { "delete", "rm", "del" };
-	private static final String[] DICTIONARY_DONE = { "done", "complete"};
+	private static final String[] DICTIONARY_DONE = { "done", "complete" };
 	private static final String[] DICTIONARY_EDIT = { "edit" };
 	private static final String[] DICTIONARY_REDO = { "redo" };
 	private static final String[] DICTIONARY_SEARCH = { "search" };
@@ -158,7 +158,7 @@ public class LogicActual implements Logic {
 		Action action = new Delete(tasks, deleteTask);
 		return action;
 	}
-	
+
 	private Action done(String userCommand) {
 		String taskNumberString = removeFirstWord(userCommand);
 		int taskNumber = parseInt(taskNumberString);
@@ -233,11 +233,101 @@ public class LogicActual implements Logic {
 
 	@Override
 	public Message getMessageTyping(String userCommand) {
-		CommandType COMMAND_TYPE = getCommandType(userCommand);
-		switch (COMMAND_TYPE) {
-		default:
-			return new Message(Message.TYPE_SUCCESS, userCommand);
+		if (userCommand == null || userCommand.trim().isEmpty()) {
+			return new Message(Message.TYPE_HINT, "Type something to begin.");
 		}
+
+		int type = Message.TYPE_HINT;
+		String message = getMatchingCommands(getFirstWord(userCommand));
+
+		if (!message.isEmpty()) {
+			return new Message(Message.TYPE_HINT, "Do you mean " + message
+					+ "?");
+		}
+
+		CommandType COMMAND_TYPE = getCommandType(userCommand);
+
+		switch (COMMAND_TYPE) {
+		case ADD:
+			message = "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
+			break;
+		case DELETE:
+			message = "Delete: Enter the task number to delete. Eqv. commands: delete, rm, del";
+			break;
+		case DONE:
+			message = "Complete: Enter the task number to complete. Eqv. commands: done, complete";
+			break;
+		case EDIT:
+			message = "Edit: Press space or enter after entering a valid task number to continue.";
+			String taskNumberString = getFirstWord(removeFirstWord(userCommand));
+			boolean endsWithSpace = userCommand.endsWith(" ");
+			int taskNumber = parseInt(taskNumberString);
+			if (taskNumber > 0) {
+				Task editTask;
+				try {
+					editTask = displayList.get(taskNumber - 1);
+				} catch (Exception e) {
+					editTask = null;
+				}
+				if (editTask == null && endsWithSpace) {
+					message = "Edit: Invalid task number specified.";
+				} else {
+					if (userCommand
+							.replaceFirst("edit " + taskNumberString, "")
+							.trim().isEmpty() && endsWithSpace) {
+						type = Message.TYPE_AUTOCOMPLETE;
+						message = userCommand.trim() + " "
+								+ editTask.getDescription();
+					} else if (!userCommand
+							.replaceFirst("edit " + taskNumberString, "")
+							.trim().isEmpty()) {
+						type = Message.TYPE_HINT;
+						message = "Edit: Hit enter after making your changes.";
+					}
+				}
+			}
+			break;
+		case HASHTAG:
+			message = "Hashtag: Enter a hashtag category to continue.";
+			break;
+		case REDO:
+			message = "Redo: Press enter to redo task.";
+			break;
+		case SEARCH:
+			message = "Search: Enter a keyword to search for (case-insensitive).";
+			break;
+		case UNDO:
+			message = "Undo: Press enter to undo task.";
+			break;
+		default:
+			message = "Type something to begin.";
+			break;
+		}
+		Message returnMessage = new Message(type, message);
+		return returnMessage;
+	}
+
+	private String getMatchingCommands(String firstWord) {
+		if (firstWord.trim().isEmpty()) {
+			return "";
+		}
+		String matchingCommands = "";
+		ArrayList<String[]> dictionaries = new ArrayList<String[]>();
+		dictionaries.add(DICTIONARY_DELETE);
+		dictionaries.add(DICTIONARY_DONE);
+		dictionaries.add(DICTIONARY_EDIT);
+		dictionaries.add(DICTIONARY_REDO);
+		dictionaries.add(DICTIONARY_SEARCH);
+		dictionaries.add(DICTIONARY_UNDO);
+		for (String[] dictionary : dictionaries) {
+			for (String keyword : dictionary) {
+				if (!keyword.equalsIgnoreCase(firstWord)
+						&& keyword.startsWith(firstWord.toLowerCase())) {
+					matchingCommands += "\"" + keyword + "\", ";
+				}
+			}
+		}
+		return matchingCommands.replaceAll(", $", "");
 	}
 
 	@Override

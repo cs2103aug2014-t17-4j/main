@@ -103,6 +103,115 @@ public class LogicActualTest {
 		assertEquals("Invalid Action Encountered", message.getMessage());
 	}
 
+	// Test empty string
+	@Test
+	public void getMessageTypingTc1() {
+		Message message = logic.getMessageTyping("");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Type something to begin.", message.getMessage());
+	}
+
+	// Test whitespace string
+	@Test
+	public void getMessageTypingTc2() {
+		Message message = logic.getMessageTyping(" ");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Type something to begin.", message.getMessage());
+	}
+
+	// Test null
+	@Test
+	public void getMessageTypingTc3() {
+		Message message = logic.getMessageTyping(null);
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Type something to begin.", message.getMessage());
+	}
+
+	// Test command partial match
+	@Test
+	public void getMessageTypingTc4() {
+		Message message = logic.getMessageTyping("e");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Do you mean \"edit\"?", message.getMessage());
+	}
+
+	// Test multiple command partial match
+	@Test
+	public void getMessageTypingTc5() {
+		Message message = logic.getMessageTyping("d");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Do you mean \"delete\", \"del\", \"done\"?",
+				message.getMessage());
+	}
+
+	// Test edit command match with no parameters
+	@Test
+	public void getMessageTypingTc6() {
+		Message message = logic.getMessageTyping("edit");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(
+				"Edit: Press space or enter after entering a valid task number to continue.",
+				message.getMessage());
+	}
+
+	// Test edit command match with space
+	@Test
+	public void getMessageTypingTc7() {
+		Message message = logic.getMessageTyping("edit ");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(
+				"Edit: Press space or enter after entering a valid task number to continue.",
+				message.getMessage());
+	}
+
+	// Test edit command match with parameter
+	@Test
+	public void getMessageTypingTc8() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 2");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(
+				"Edit: Press space or enter after entering a valid task number to continue.",
+				message.getMessage());
+	}
+
+	// Test command match with non-matching parameter and space
+	@Test
+	public void getMessageTypingTc9() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 2 ");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Edit: Invalid task number specified.",
+				message.getMessage());
+	}
+
+	// Test command match with matching parameter and space
+	@Test
+	public void getMessageTypingTc10() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 1 ");
+		assertEquals(Message.TYPE_AUTOCOMPLETE, message.getType());
+		assertEquals("edit 1 item 1", message.getMessage());
+	}
+	
+	// Test command match with matching parameter and double-space
+	@Test
+	public void getMessageTypingTc11() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 1  ");
+		//assertEquals(Message.TYPE_AUTOCOMPLETE, message.getType());
+		assertEquals("edit 1 item 1", message.getMessage());
+	}
+	
+	// Test command match with matching parameter and double-space
+	@Test
+	public void getMessageTypingTc12() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 1 item 1");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Edit: Hit enter after making your changes.", message.getMessage());
+	}
+
 	// Delete invalid index.
 	@Test
 	public void deleteTc1() {
@@ -140,7 +249,7 @@ public class LogicActualTest {
 		assertEquals("Task successfully deleted: Hello kitty!",
 				message.getMessage());
 	}
-	
+
 	// Complete invalid index.
 	@Test
 	public void doneTc1() {
@@ -280,6 +389,37 @@ public class LogicActualTest {
 		assertEquals(3, userHashtags.size());
 	}
 
+	// Search for non-existent item
+	@Test
+	public void searchTc1() {
+		Message message = logic.processCommand("search hello");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Displaying search: hello.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Search for one matching item
+	@Test
+	public void searchTc2() {
+		logic.processCommand("apple banana");
+		logic.processCommand("apple papaya");
+		Message message = logic.processCommand("search banana");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Displaying search: banana.", message.getMessage());
+		assertEquals(1, logic.getList().size());
+	}
+
+	// Search for two or more matching item
+	@Test
+	public void searchTc3() {
+		logic.processCommand("apple banana");
+		logic.processCommand("apple papaya");
+		Message message = logic.processCommand("search apple");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Displaying search: apple.", message.getMessage());
+		assertEquals(2, logic.getList().size());
+	}
+
 	// Undo nothing.
 	@Test
 	public void undoTc1() {
@@ -379,7 +519,7 @@ public class LogicActualTest {
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
-	
+
 	// Undo multiple completes, then redo multiple completes.
 	@Test
 	public void undoTc5() {
@@ -470,36 +610,5 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("(Redo) Task successfully edited: after",
 				message.getMessage());
-	}
-
-	// Search for non-existent item
-	@Test
-	public void searchTc1() {
-		Message message = logic.processCommand("search hello");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("Displaying search: hello.", message.getMessage());
-		assertEquals(0, logic.getList().size());
-	}
-	
-	// Search for one matching item
-	@Test
-	public void searchTc2() {
-		logic.processCommand("apple banana");
-		logic.processCommand("apple papaya");
-		Message message = logic.processCommand("search banana");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("Displaying search: banana.", message.getMessage());
-		assertEquals(1, logic.getList().size());
-	}
-	
-	// Search for two or more matching item
-	@Test
-	public void searchTc3() {
-		logic.processCommand("apple banana");
-		logic.processCommand("apple papaya");
-		Message message = logic.processCommand("search apple");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("Displaying search: apple.", message.getMessage());
-		assertEquals(2, logic.getList().size());
 	}
 }

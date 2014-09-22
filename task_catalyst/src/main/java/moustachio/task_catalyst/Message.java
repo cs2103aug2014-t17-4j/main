@@ -4,7 +4,8 @@ public class Message {
 
 	public static final int TYPE_SUCCESS = 0;
 	public static final int TYPE_ERROR = 1;
-	public static final int TYPE_AUTOCOMPLETE = 2;
+	public static final int TYPE_HINT = 2;
+	public static final int TYPE_AUTOCOMPLETE = 3;
 
 	int type;
 	String message;
