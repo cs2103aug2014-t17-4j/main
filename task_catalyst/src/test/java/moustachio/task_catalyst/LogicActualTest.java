@@ -308,7 +308,7 @@ public class LogicActualTest {
 		assertEquals(1, logic.getList().size());
 	}
 
-	// Undo multiple, and then redo multiple.
+	// Undo multiple add, and then redo multiple add.
 	@Test
 	public void undoTc3() {
 		logic.processCommand("this is the first item");
@@ -379,10 +379,48 @@ public class LogicActualTest {
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
-
-	// Undo multiple deletes, and then redo multiple deletes.
+	
+	// Undo multiple completes, then redo multiple completes.
 	@Test
 	public void undoTc5() {
+		logic.processCommand("this is the first item");
+		logic.processCommand("this is the second item");
+		logic.processCommand("done 1");
+		logic.processCommand("done 1");
+		assertEquals(0, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Undo) Task successfully restored: this is the second item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("undo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Undo) Task successfully restored: this is the first item",
+				message.getMessage());
+		assertEquals(2, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Redo) Task successfully completed: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(
+				"(Redo) Task successfully completed: this is the second item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Undo single edit.
+	@Test
+	public void undoTc6() {
 		logic.processCommand("before");
 		logic.processCommand("edit 1 after");
 
@@ -399,7 +437,7 @@ public class LogicActualTest {
 
 	// Ensure redos are cleared after doing something.
 	@Test
-	public void undoTc6() {
+	public void undoTc7() {
 		logic.processCommand("before");
 		logic.processCommand("edit 1 after");
 
@@ -417,7 +455,7 @@ public class LogicActualTest {
 
 	// Test that invalid commands are not added to undo list.
 	@Test
-	public void undoTc7() {
+	public void undoTc8() {
 		logic.processCommand("before");
 		logic.processCommand("edit 1 after");
 		logic.processCommand("edit 1");

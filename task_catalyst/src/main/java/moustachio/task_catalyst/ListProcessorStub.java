@@ -7,7 +7,13 @@ public class ListProcessorStub implements moustachio.task_catalyst.ListProcessor
 
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
-		return list;
+		List<Task> searchList = new ArrayList<Task>();
+		for (Task task:list) {
+			if (!task.isDone()) {
+				searchList.add(task);
+			}
+		}
+		return searchList;
 	}
 
 	@Override

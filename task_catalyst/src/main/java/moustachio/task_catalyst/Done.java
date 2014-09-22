@@ -42,7 +42,7 @@ public class Done extends Action {
 
 	@Override
 	public Message undo() {
-		task.setDone(true);
+		task.setDone(false);
 		boolean isSuccess = !task.isDone();
 		int type;
 		String message;
