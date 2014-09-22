@@ -8,17 +8,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane fx:id="rootBorderPane" prefHeight="412.0" prefWidth="532.0" styleClass="theme" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.Controller">
+<BorderPane fx:id="rootBorderPane" prefHeight="412.0" prefWidth="532.0" styleClass="theme" stylesheets="@DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.GraphicalInterfaceController">
    <top>
       <HBox alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
          <children>
             <HBox prefHeight="25.0" prefWidth="504.0" styleClass="theme">
                <children>
-                  <ImageView fitHeight="27.0" fitWidth="200.0">
-                     <image>
-                        <Image url="@images/title.png" />
-                     </image>
-                  </ImageView>
+                  <ImageView fx:id="programTitle" fitHeight="27.0" fitWidth="200.0" />
                </children>
             </HBox>
             <Button id="settingsButton" fx:id="settingsButton" alignment="CENTER" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" textAlignment="CENTER" HBox.hgrow="NEVER" />
