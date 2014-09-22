@@ -14,11 +14,14 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 
 public class GraphicalInterfaceController {
 	@FXML
 	private BorderPane rootBorderPane;
+	@FXML
+	private ImageView programTitle;
 	@FXML
 	private TableView<Task> taskTable;
 	@FXML
@@ -59,7 +62,7 @@ public class GraphicalInterfaceController {
 	}
 
 	private void initializeForms() {
-		displayTask();
+		//displayTask();
 		displayHashTags();
 	}
 
@@ -102,7 +105,7 @@ public class GraphicalInterfaceController {
 
 	private ObservableList<String> getHashTagFromList() {
 		List<String> DefaultHashTags = logic.getDefaultHashtags();
-		List<String> hashTags = logic.getDefaultHashtags();
+		List<String> hashTags = logic.getHashtags();
 
 		hashTagToBeDisplayed.addAll(DefaultHashTags);
 		hashTagToBeDisplayed.addAll(hashTags);
@@ -112,6 +115,7 @@ public class GraphicalInterfaceController {
 
 	private void testInterface() {
 		assert rootBorderPane != null : "fx:id=\"rootBorderPane\" was not injected: check your FXML file 'interface.fxml'.";
+		assert programTitle != null : "fx:id=\"rootBorderPane\" was not injected: check your FXML file 'interface.fxml'.";
 		assert taskTable != null : "fx:id=\"taskTable\" was not injected: check your FXML file 'interface.fxml'.";
 		assert idColumn != null : "fx:id=\"idColumn\" was not injected: check your FXML file 'interface.fxml'.";
 		assert taskColumn != null : "fx:id=\"taskColumn\" was not injected: check your FXML file 'interface.fxml'.";
