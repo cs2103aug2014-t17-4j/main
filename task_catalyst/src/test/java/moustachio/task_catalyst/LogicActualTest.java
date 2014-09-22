@@ -211,6 +211,15 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals("Edit: Hit enter after making your changes.", message.getMessage());
 	}
+	
+	// Test command match with matching parameter and double-space
+	@Test
+	public void getMessageTypingTc13() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 2 item 1");
+		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals("Edit: Invalid task number specified.", message.getMessage());
+	}
 
 	// Delete invalid index.
 	@Test

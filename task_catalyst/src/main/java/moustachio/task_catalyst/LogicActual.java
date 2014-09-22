@@ -274,15 +274,22 @@ public class LogicActual implements Logic {
 				} else {
 					if (userCommand
 							.replaceFirst("edit " + taskNumberString, "")
-							.trim().isEmpty() && endsWithSpace) {
+							.trim().isEmpty()
+							&& endsWithSpace) {
 						type = Message.TYPE_AUTOCOMPLETE;
 						message = userCommand.trim() + " "
 								+ editTask.getDescription();
 					} else if (!userCommand
 							.replaceFirst("edit " + taskNumberString, "")
-							.trim().isEmpty()) {
+							.trim().isEmpty()
+							&& editTask != null) {
 						type = Message.TYPE_HINT;
 						message = "Edit: Hit enter after making your changes.";
+					} else if (!userCommand
+							.replaceFirst("edit " + taskNumberString, "")
+							.trim().isEmpty()
+							&& editTask == null) {
+						message = "Edit: Invalid task number specified.";
 					}
 				}
 			}
