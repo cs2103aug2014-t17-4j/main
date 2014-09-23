@@ -137,7 +137,7 @@ public class LogicActual implements Logic {
 			displayList = listProcessor.searchByKeyword(tasks, keyword);
 			break;
 		}
-		listProcessor.sortByDate(displayList);
+		displayList = listProcessor.sortByDate(displayList);
 	}
 
 	// Operations

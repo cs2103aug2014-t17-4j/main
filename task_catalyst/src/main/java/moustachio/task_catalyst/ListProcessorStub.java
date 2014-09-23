@@ -3,6 +3,8 @@ package moustachio.task_catalyst;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
+
 public class ListProcessorStub implements moustachio.task_catalyst.ListProcessor {
 
 	@Override
@@ -29,7 +31,9 @@ public class ListProcessorStub implements moustachio.task_catalyst.ListProcessor
 
 	@Override
 	public List<Task> sortByDate(List<Task> list) {
-		return list;
+		List<Task> newList = new ArrayList<Task>(list);
+		Collections.sort(newList);
+		return newList;
 	}
 
 }
