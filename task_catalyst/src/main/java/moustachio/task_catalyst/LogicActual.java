@@ -28,6 +28,7 @@ public class LogicActual implements Logic {
 
 	private Storage storage;
 	private ListProcessor listProcessor;
+	private TaskBuilder taskBuilder;
 
 	private List<Task> tasks;
 	private List<Task> displayList;
@@ -53,6 +54,7 @@ public class LogicActual implements Logic {
 
 		storage = new StorageStub();
 		listProcessor = new ListProcessorStub();
+		taskBuilder = new TaskBuilderBasic();
 
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 	}
@@ -141,7 +143,7 @@ public class LogicActual implements Logic {
 	// Operations
 
 	private Action add(String userCommand) {
-		Task newTask = TaskBuilder.createTask(userCommand);
+		Task newTask = taskBuilder.createTask(userCommand);
 		Action action = new Add(tasks, newTask);
 		return action;
 	}
@@ -182,7 +184,7 @@ public class LogicActual implements Logic {
 			targetTask = null;
 		}
 		String userInput = removeFirstWord(removeFirstWord(userCommand));
-		Task replacementTask = TaskBuilder.createTask(userInput);
+		Task replacementTask = taskBuilder.createTask(userInput);
 		Action action = new Edit(tasks, targetTask, replacementTask);
 		return action;
 	}
