@@ -62,24 +62,41 @@ public class GraphicalInterfaceController {
 	}
 
 	private void initializeForms() {
-		//displayTask();
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				commandBar.requestFocus();
+			}
+		});
+		// displayTask();
 		displayHashTags();
 	}
 
 	public void handleTextFieldOnAction(ActionEvent event) {
 		// TextField entered was clicked, do something...
 		Message message = logic.processCommand(commandBar.getText());
-		statusMessage.setText(message.getMessage());
-		displayHashTags();
-		displayTask();
-		clearForm();
+		switch (message.getType()) {
+		case Message.TYPE_SUCCESS:
+			statusMessage.setText(message.getMessage());
+			displayHashTags();
+			displayTask();
+			clearForm();
+			break;
+		case Message.TYPE_ERROR:
+			statusMessage.setText(message.getMessage());
+			commandBar.clear();
+			break;
+		}
 	}
 
 	public void handleTextFieldWhileUserTyping() {
-		// TextField entered was clicked, do something...
-		// TODO: Haven figure out which event handler
-		Message message = logic.processCommand(commandBar.getText());
-		statusMessage.setText(message.getMessage());
+		Message message = logic.getMessageTyping(commandBar.getText());
+		
+		if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
+			commandBar.setText(message.getMessage());
+		} else {
+			statusMessage.setText(message.getMessage());
+		}
 	}
 
 	private void displayHashTags() {
@@ -88,6 +105,7 @@ public class GraphicalInterfaceController {
 
 	public void clearForm() {
 		commandBar.clear();
+		statusMessage.setText(null);
 	}
 
 	private void displayTask() {
