@@ -7,8 +7,7 @@
 	<version>0.1</version>
 	<packaging>jar</packaging>
 
-	<name>task_catalyst</name>
-	<url>http://maven.apache.org</url>
+	<name>Task Catalyst</name>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -32,17 +31,40 @@
 			<version>3.2.5.Final</version>
 		</dependency>
 	</dependencies>
-
+	
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<configuration>
-					<source>1.8</source>
-					<target>1.8</target>
-				</configuration>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-compiler-plugin</artifactId>
+		        <version>3.0</version>
+		        <configuration>
+		           <source>1.8</source>
+		           <target>1.8</target>
+		        </configuration>
 			</plugin>
+			<plugin>
+		        <groupId>org.apache.maven.plugins</groupId>
+		        <artifactId>maven-jar-plugin</artifactId>
+		        <configuration>
+		          <archive>
+		            <manifest>
+		              <addClasspath>true</addClasspath>
+		              <mainClass>moustachio.task_catalyst.TaskCatalyst</mainClass>
+		            </manifest>
+		          </archive>
+		        </configuration>
+		      </plugin>
 		</plugins>
 	</build>
+	
+	
+	<profiles>
+	  <profile>
+	    <id>Default</id>
+	    <activation>
+	      <activeByDefault>true</activeByDefault>
+	    </activation>
+	  </profile>
+	</profiles>
 </project>

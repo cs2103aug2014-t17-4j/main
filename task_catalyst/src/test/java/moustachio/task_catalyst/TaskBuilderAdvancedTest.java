@@ -29,8 +29,8 @@ public class TaskBuilderAdvancedTest {
 	// Test for basic date recognition.
 	@Test
 	public void tc1() {
-		Task task = taskBuilder.createTask("Meet boss [21 jun 10:05am]");
-		assertEquals("Meet boss [21 Jun 10AM]", task.getDescription());
+		Task task = taskBuilder.createTask("Meet boss [21 Jun 10:05am]");
+		assertEquals("Meet boss [21 Jun 10:05AM]", task.getDescription());
 	}
 	
 	// Test for basic date range recognition.

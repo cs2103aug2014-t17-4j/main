@@ -144,7 +144,7 @@ public class TaskAdvanced extends TaskBasic {
 	}
 
 	private boolean isThisWeek(Date date) {
-		return daysFromToday(date) <= 6;
+		return daysFromToday(date) <= 6 && daysFromToday(date) > 0;
 	}
 
 	private int daysFromToday(Date date) {
