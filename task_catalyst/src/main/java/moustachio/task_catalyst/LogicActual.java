@@ -239,19 +239,20 @@ public class LogicActual implements Logic {
 			return new Message(Message.TYPE_HINT, "Type something to begin.");
 		}
 
-		int type = Message.TYPE_HINT;
-		String message = getMatchingCommands(getFirstWord(userCommand));
-
-		if (!message.isEmpty()) {
-			return new Message(Message.TYPE_HINT, "Do you mean " + message
-					+ "?");
-		}
-
 		CommandType COMMAND_TYPE = getCommandType(userCommand);
-
+		int type = Message.TYPE_HINT;
+		String message;
+		
 		switch (COMMAND_TYPE) {
 		case ADD:
-			message = "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
+			message = getMatchingCommands(getFirstWord(userCommand));
+
+			if (!message.isEmpty()) {
+				return new Message(Message.TYPE_HINT, "Do you mean " + message
+						+ "?");
+			} else {
+				message = "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
+			}
 			break;
 		case DELETE:
 			message = "Delete: Enter the task number to delete. Eqv. commands: delete, rm, del";
