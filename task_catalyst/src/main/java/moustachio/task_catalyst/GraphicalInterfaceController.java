@@ -70,6 +70,7 @@ public class GraphicalInterfaceController {
 		// TextField entered was clicked, do something...
 		Message message = logic.processCommand(commandBar.getText());
 		statusMessage.setText(message.getMessage());
+		displayTask();
 		clearForm();
 	}
 
@@ -98,7 +99,7 @@ public class GraphicalInterfaceController {
 
 	private ObservableList<Task> getTaskFromList() {
 		List<Task> task = logic.getList();
-
+		taskToBeDisplayed.clear();
 		taskToBeDisplayed.addAll(task);
 		return taskToBeDisplayed;
 	}
