@@ -1,14 +1,17 @@
 package moustachio.task_catalyst;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
+
+import javafx.beans.property.StringProperty;
 
 public interface Task extends Comparable<Task> {
 
 	public String getDescription();
 
 	public void setDescription(String description);
+
+	public StringProperty getDescriptionProperty();
 
 	public LocalDateTime getDateStart();
 

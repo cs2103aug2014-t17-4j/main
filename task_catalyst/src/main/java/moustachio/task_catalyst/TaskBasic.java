@@ -4,9 +4,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+
 public class TaskBasic implements Task {
 
-	private String description;
+	protected StringProperty description;
 	private boolean done;
 
 	private LocalDateTime dateStart;
@@ -15,7 +18,8 @@ public class TaskBasic implements Task {
 	// Constructors
 
 	public TaskBasic(String description) {
-		this.description = description;
+		this.description = new SimpleStringProperty();
+		this.description.set(description);
 	}
 
 	public TaskBasic(String description, LocalDateTime dateStart) {
@@ -32,11 +36,15 @@ public class TaskBasic implements Task {
 	// Mutators
 
 	public String getDescription() {
-		return this.description;
+		return this.description.get();
 	}
 
 	public void setDescription(String description) {
-		this.description = description;
+		this.description.set(description);
+	}
+	
+	public StringProperty getDescriptionProperty() {
+		return this.description;
 	}
 
 	public LocalDateTime getDateStart() {
@@ -57,7 +65,7 @@ public class TaskBasic implements Task {
 
 	public List<String> getHashtags() {
 		List<String> hashtagList = new ArrayList<String>();
-		String[] descriptionTokenized = description.split(" ");
+		String[] descriptionTokenized = this.description.get().split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#")) {
 				String tokenLowerAlphabets = token.toLowerCase().replaceAll(
@@ -85,7 +93,7 @@ public class TaskBasic implements Task {
 	}
 
 	public boolean hasKeyword(String keyword) {
-		String descriptionLowerCase = description.toLowerCase();
+		String descriptionLowerCase = this.description.get().toLowerCase();
 		String keywordLowerCase = keyword.toLowerCase();
 		return descriptionLowerCase.contains(keywordLowerCase);
 	}
