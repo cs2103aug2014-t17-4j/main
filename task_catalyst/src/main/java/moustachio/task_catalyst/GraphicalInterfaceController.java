@@ -94,6 +94,7 @@ public class GraphicalInterfaceController {
 		
 		if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
 			commandBar.setText(message.getMessage());
+			commandBar.positionCaret(commandBar.getText().length());
 		} else {
 			statusMessage.setText(message.getMessage());
 		}
