@@ -42,7 +42,7 @@ public class TaskBasic implements Task {
 	public void setDescription(String description) {
 		this.description.set(description);
 	}
-	
+
 	public StringProperty getDescriptionProperty() {
 		return this.description;
 	}
@@ -68,8 +68,8 @@ public class TaskBasic implements Task {
 		String[] descriptionTokenized = this.description.get().split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#")) {
-				String tokenLowerAlphabets = "#"+token.toLowerCase().replaceAll(
-						"[^A-Za-z0-9]+", "");
+				String tokenLowerAlphabets = "#"
+						+ token.toLowerCase().replaceAll("[^A-Za-z0-9]+", "");
 				hashtagList.add(tokenLowerAlphabets);
 			}
 		}
@@ -104,6 +104,14 @@ public class TaskBasic implements Task {
 	public int compareTo(Task o) {
 		LocalDateTime thisDateTime = this.getDateStart();
 		LocalDateTime otherDateTime = o.getDateStart();
-		return thisDateTime.compareTo(otherDateTime);
+		if (thisDateTime == null && otherDateTime == null) {
+			return 0;
+		} else if (thisDateTime == null) {
+			return -1;
+		} else if (otherDateTime == null) {
+			return 1;
+		} else {
+			return thisDateTime.compareTo(otherDateTime);
+		}
 	}
 }

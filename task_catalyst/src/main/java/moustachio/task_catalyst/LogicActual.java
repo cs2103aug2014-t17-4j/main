@@ -190,7 +190,7 @@ public class LogicActual implements Logic {
 	}
 
 	private Action hashtag(String userCommand) {
-		String hashtag = removeFirstWord(userCommand);
+		String hashtag = getFirstWord(userCommand);
 		lastDisplayType = DisplayType.HASHTAG;
 		lastDisplayTerm = hashtag;
 		return new Hashtag(hashtag);
