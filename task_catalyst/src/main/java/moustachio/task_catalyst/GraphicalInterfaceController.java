@@ -70,6 +70,7 @@ public class GraphicalInterfaceController {
 		// TextField entered was clicked, do something...
 		Message message = logic.processCommand(commandBar.getText());
 		statusMessage.setText(message.getMessage());
+		displayHashTags();
 		displayTask();
 		clearForm();
 	}
@@ -108,6 +109,7 @@ public class GraphicalInterfaceController {
 		List<String> DefaultHashTags = logic.getDefaultHashtags();
 		List<String> hashTags = logic.getHashtags();
 
+		hashTagToBeDisplayed.clear();
 		hashTagToBeDisplayed.addAll(DefaultHashTags);
 		hashTagToBeDisplayed.addAll(hashTags);
 

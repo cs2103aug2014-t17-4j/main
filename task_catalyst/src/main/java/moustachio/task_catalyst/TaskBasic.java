@@ -68,7 +68,7 @@ public class TaskBasic implements Task {
 		String[] descriptionTokenized = this.description.get().split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#")) {
-				String tokenLowerAlphabets = token.toLowerCase().replaceAll(
+				String tokenLowerAlphabets = "#"+token.toLowerCase().replaceAll(
 						"[^A-Za-z0-9]+", "");
 				hashtagList.add(tokenLowerAlphabets);
 			}

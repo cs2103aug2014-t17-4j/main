@@ -54,7 +54,7 @@ public class LogicActual implements Logic {
 
 		storage = new StorageStub();
 		listProcessor = new ListProcessorStub();
-		taskBuilder = new TaskBuilderBasic();
+		taskBuilder = new TaskBuilderAdvanced();
 
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 	}
@@ -106,7 +106,7 @@ public class LogicActual implements Logic {
 
 	private Message doAction(Action action) {
 		Message message = new Message(Message.TYPE_ERROR,
-				"Invalid Action Encountered");
+				"Type something to begin.");
 		if (action != null) {
 			message = action.execute();
 			boolean isSuccess = message.getType() == Message.TYPE_SUCCESS;
