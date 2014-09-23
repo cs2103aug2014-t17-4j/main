@@ -28,8 +28,8 @@
    <bottom>
       <VBox id="statusMessageLabel" prefHeight="10.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField id="cmdTextField" fx:id="commandBar" onAction="#handleTextFieldOnAction" />
-            <Label fx:id="statusMessage" />
+            <TextField id="cmdTextField" fx:id="commandBar" onAction="#handleTextFieldOnAction" onKeyTyped="#handleTextFieldWhileUserTyping" />
+            <Label fx:id="statusMessage" text="Type something to begin." />
          </children>
       </VBox>
    </bottom>
@@ -39,8 +39,8 @@
             <ListView fx:id="hashTagList" prefHeight="200.0" prefWidth="200.0" styleClass="lightList" />
             <TableView fx:id="taskTable">
               <columns>
-                <TableColumn fx:id="idColumn" minWidth="-Infinity" prefWidth="38.0" resizable="false" text="ID" />
-                <TableColumn fx:id="taskColumn" minWidth="-Infinity" prefWidth="327.0" resizable="false" text="TASK" />
+                <TableColumn fx:id="idColumn" minWidth="-Infinity" prefWidth="38.0" text="ID" />
+                <TableColumn fx:id="taskColumn" minWidth="-Infinity" prefWidth="327.0" text="TASK" />
               </columns>
             </TableView>
         </items>
