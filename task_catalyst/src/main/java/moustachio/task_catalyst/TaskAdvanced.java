@@ -130,7 +130,9 @@ public class TaskAdvanced extends TaskBasic {
 	}
 
 	private int getMinutes(Date date) {
-		return 0;
+		Calendar cal1 = Calendar.getInstance();
+		cal1.setTime(date);
+		return cal1.get(Calendar.MINUTE);
 	}
 
 	private boolean isToday(Date date) {
