@@ -28,7 +28,7 @@
    <bottom>
       <VBox id="statusMessageLabel" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <TextField id="cmdTextField" fx:id="commandBar" onAction="#handleTextFieldOnAction" onKeyReleased="#handleTextFieldWhileUserTyping" />
+            <TextField id="cmdTextField" fx:id="commandBar" onKeyReleased="#handleTextFieldWhileUserTyping" onAction="#handleTextFieldOnAction" />
             <Label fx:id="statusMessage" text="Type something to begin." />
          </children>
       </VBox>

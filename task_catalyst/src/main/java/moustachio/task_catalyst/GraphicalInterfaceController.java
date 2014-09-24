@@ -18,6 +18,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.util.Callback;
 
@@ -89,19 +91,20 @@ public class GraphicalInterfaceController {
 			break;
 		case Message.TYPE_ERROR:
 			statusMessage.setText(message.getMessage());
-			commandBar.clear();
 			break;
 		}
 	}
 
-	public void handleTextFieldWhileUserTyping() {
-		Message message = logic.getMessageTyping(commandBar.getText());
+	public void handleTextFieldWhileUserTyping(KeyEvent event) {
+		if (!event.getCode().equals(KeyCode.ENTER)) {
+			Message message = logic.getMessageTyping(commandBar.getText());
 
-		if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
-			commandBar.setText(message.getMessage());
-			commandBar.positionCaret(commandBar.getText().length());
-		} else {
-			statusMessage.setText(message.getMessage());
+			if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
+				commandBar.setText(message.getMessage());
+				commandBar.positionCaret(commandBar.getText().length());
+			} else {
+				statusMessage.setText(message.getMessage());
+			}
 		}
 	}
 
@@ -111,7 +114,6 @@ public class GraphicalInterfaceController {
 
 	public void clearForm() {
 		commandBar.clear();
-		statusMessage.setText(null);
 	}
 
 	private void displayTask() {
