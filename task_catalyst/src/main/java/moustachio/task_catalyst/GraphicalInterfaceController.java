@@ -12,7 +12,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
@@ -97,7 +96,7 @@ public class GraphicalInterfaceController {
 
 	public void handleTextFieldWhileUserTyping() {
 		Message message = logic.getMessageTyping(commandBar.getText());
-		
+
 		if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
 			commandBar.setText(message.getMessage());
 			commandBar.positionCaret(commandBar.getText().length());
@@ -116,10 +115,18 @@ public class GraphicalInterfaceController {
 	}
 
 	private void displayTask() {
-		//idColumn.setCellValueFactory(new PropertyValueFactory<Task, Integer>("id"));
-		idColumn.setSortable(false);
+		idColumn.setCellValueFactory(new Callback<CellDataFeatures<Task, Integer>, ObservableValue<Integer>>() {
+			@Override
+			public ObservableValue<Integer> call(
+					CellDataFeatures<Task, Integer> p) {
+				return new ReadOnlyObjectWrapper<Integer>((Integer) taskTable
+						.getItems().indexOf(p.getValue()) + 1);
+			}
+		});
 		taskColumn.setCellValueFactory(new PropertyValueFactory<Task, String>(
 				"description"));
+		idColumn.setSortable(false);
+		taskColumn.setSortable(false);
 		taskTable.setItems(getTaskFromList());
 	}
 

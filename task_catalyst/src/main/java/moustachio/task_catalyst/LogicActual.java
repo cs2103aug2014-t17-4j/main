@@ -369,7 +369,7 @@ public class LogicActual implements Logic {
 	private boolean isFromDictionary(String[] dictionary, String command) {
 		boolean isFound = false;
 		for (int i = 0; i < dictionary.length; i++) {
-			if (dictionary[i].equals(command)) {
+			if (dictionary[i].equalsIgnoreCase(command)) {
 				isFound = true;
 				break;
 			}
