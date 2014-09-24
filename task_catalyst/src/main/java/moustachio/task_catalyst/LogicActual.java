@@ -251,7 +251,10 @@ public class LogicActual implements Logic {
 				return new Message(Message.TYPE_HINT, "Do you mean " + message
 						+ "?");
 			} else {
-				message = "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
+				message = TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced.interpretedString(userCommand))));
+				message += "\nAdd: You can include date information. Use []s to ignore processing.";
+				//message = TaskBuilderAdvanced.interpretedString(userCommand);
+				//message = "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
 			}
 			break;
 		case DELETE:
@@ -281,10 +284,11 @@ public class LogicActual implements Logic {
 				} else if (!hasFurtherParameters && endsWithSpace) {
 					type = Message.TYPE_AUTOCOMPLETE;
 					message = userCommand.trim() + " "
-							+ editTask.getDescription();
+							+ editTask.getDescriptionEdit();
 				} else if (hasFurtherParameters && isValidTask) {
 					type = Message.TYPE_HINT;
-					message = "Edit: Hit enter after making your changes.";
+					message = TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced.interpretedString(userCommand))));
+					message += "\nEdit: Hit enter after making your changes.";
 				}
 			}
 			break;
@@ -356,7 +360,7 @@ public class LogicActual implements Logic {
 
 	private String removeFirstWord(String userCommand) {
 		String blank = "";
-		String firstWord = getFirstWord(userCommand).replaceAll("\\[", blank);
+		String firstWord = getFirstWord(userCommand).replaceAll("\\[|\\]|\\\\|\\{|\\}", blank);
 		String removedFirstWord = userCommand.replaceFirst(firstWord, blank);
 		String removedFirstWordTrimmed = removedFirstWord.trim();
 		return removedFirstWordTrimmed;
