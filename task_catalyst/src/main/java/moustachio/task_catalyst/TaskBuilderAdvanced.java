@@ -42,6 +42,8 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 																				// brackets.
 		parsingInput = parsingInput.replaceAll(" to |on", " *e*s*c*a*p*e* ")
 				.replaceAll("\\s+", " ");
+		parsingInput = parsingInput.replaceAll("\\d{5,}", "");
+
 		List<DateGroup> dateGroups = new PrettyTimeParser()
 				.parseSyntax(parsingInput);
 		for (DateGroup dateGroup : dateGroups) {
