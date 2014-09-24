@@ -68,7 +68,9 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 				interpretedInput = interpretedInput.replaceAll(
 						dateGroup.getText(), dateString);
 			} else {
-				interpretedInput = interpretedInput.replaceAll(dateGroup.getText()+"(?=[^\\}]*(\\{|$))", "["+dateGroup.getText()+"]");
+				interpretedInput = interpretedInput.replaceAll(
+						dateGroup.getText() + "(?=[^\\}]*(\\{|$))", "["
+								+ dateGroup.getText() + "]");
 			}
 		}
 		return interpretedInput;
@@ -107,7 +109,7 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 				if (!formatString.isEmpty()) {
 					formatString = " " + formatString;
 				}
-				//Can add some more, like yesterday, last Tuesday, etc.
+				// Can add some more, like yesterday, last Tuesday, etc.
 				if (isToday(currentDate)) {
 					formatString = "'today'" + formatString;
 				} else if (isTomorrow(currentDate)) {
@@ -188,7 +190,7 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 		return cal1.get(Calendar.DAY_OF_YEAR) - cal2.get(Calendar.DAY_OF_YEAR)
 				+ (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 365;
 	}
-	
+
 	public static List<Date> getAllDates(String interpretedString) {
 		Pattern pattern = Pattern.compile("\\{(.*?)\\}");
 		Matcher matcher = pattern.matcher(interpretedString);
