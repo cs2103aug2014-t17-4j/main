@@ -8,6 +8,8 @@ import javafx.beans.property.StringProperty;
 public interface Task extends Comparable<Task> {
 
 	public String getDescription();
+	
+	public String getDescriptionEdit();
 
 	public void setDescription(String description);
 
