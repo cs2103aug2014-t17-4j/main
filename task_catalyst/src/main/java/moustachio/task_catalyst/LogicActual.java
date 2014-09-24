@@ -287,7 +287,7 @@ public class LogicActual implements Logic {
 							+ editTask.getDescriptionEdit();
 				} else if (hasFurtherParameters && isValidTask) {
 					type = Message.TYPE_HINT;
-					message = TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced.interpretedString(userCommand))));
+					message = TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced.interpretedString(removeFirstWord(removeFirstWord(userCommand))))));
 					message += "\nEdit: Hit enter after making your changes.";
 				}
 			}
