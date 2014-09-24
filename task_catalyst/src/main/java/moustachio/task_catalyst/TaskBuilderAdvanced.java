@@ -29,53 +29,87 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 	public static String interpretedString(String userInput) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy KK:mm a");
 		String interpretedInput = userInput;
-		interpretedInput = interpretedInput.replaceAll(",", " and "); // Change
+		//interpretedInput = interpretedInput.replaceAll(",", " and "); // Change
 																		// , to
 																		// and.
+
 		interpretedInput = interpretedInput.replaceAll("\\s+", " "); // Fix
 																		// consecutive
 																		// whitespaces.
+		
+		interpretedInput = interpretedInput.replaceAll("tmr", "tomorrow");
+
+		interpretedInput = ignoreBasedOnRegex(interpretedInput, "\\d{5,}"); // Fix
+																			// handphone
+																			// number
+																			// problem
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				"[^0-9\\s]+[0-9]+"); // Ignore anything ending with numbers.
+										// Fixes LT5 problem.
+		
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				"[#][a-zA-Z0-9]+"); // Ignore anything with hashtag
+
 		String parsingInput = interpretedInput.replaceAll("\\[(.*?)\\]", ""); // Remove
 																				// all
 																				// items
 																				// in
 																				// brackets.
-		parsingInput = parsingInput.replaceAll(" to |on", " *e*s*c*a*p*e* ")
-				.replaceAll("\\s+", " ");
-		parsingInput = parsingInput.replaceAll("\\d{5,}", "");
+		//parsingInput = parsingInput.replaceAll(" to ", " *e*s*c*a*p*e* ");
+		parsingInput = parsingInput.replaceAll(" at | at$| in | in$", " ");
+		// parsingInput = parsingInput.replaceAll("#(\\S+)", "");
+		parsingInput = parsingInput.replaceAll("\\s+", " ");
 
 		List<DateGroup> dateGroups = new PrettyTimeParser()
 				.parseSyntax(parsingInput);
+		
 		for (DateGroup dateGroup : dateGroups) {
-			List<Date> dates = dateGroup.getDates();
-			int dateCount = dates.size();
-			String dateString = "";
-			String finalConnector;
-			if (dateGroup.getText().contains(" to ")) {
-				finalConnector = " to ";
-			} else {
-				finalConnector = " and ";
-			}
-			for (int i = 0; i < dateCount; i++) {
-				dateString += "{" + formatter.format(dates.get(i)) + "}";
-				if (i == dateCount - 2) {
-					dateString += finalConnector;
-				} else if (i != dateCount - 1) {
-					dateString += ", ";
-				}
-			}
-			// This is a quickfix for bad matches. (most of them are 1 or 2
-			// characters long)
+			// This is a quickfix for bad matches. (most of them are below 4
+			// characters. This fixes 5 apples problem.
 			if (dateGroup.getText().length() > 2) {
+				List<Date> dates = dateGroup.getDates();
+				Collections.sort(dates);
+				int dateCount = dates.size();
+				String dateString = "";
+				String finalConnector;
+				String intermediateConnector;
+				if (dateGroup.getText().contains(" to ")) {
+					finalConnector = " to ";
+					intermediateConnector = " and ";
+				} else {
+					finalConnector = " and ";
+					intermediateConnector = " and ";
+				}
+				for (int i = 0; i < dateCount; i++) {
+					dateString += "{" + formatter.format(dates.get(i)) + "}";
+					if (i == dateCount - 2) {
+						dateString += finalConnector;
+					} else if (i != dateCount - 1) {
+						dateString += intermediateConnector;
+					}
+				}
 				interpretedInput = interpretedInput.replaceAll(
-						dateGroup.getText(), dateString);
-			} else {
-				interpretedInput = interpretedInput.replaceAll(
-						dateGroup.getText() + "(?=[^\\}]*(\\{|$))", "["
-								+ dateGroup.getText() + "]");
+						dateGroup.getText()+"(?=[^\\]]*(\\[|$))", dateString);
 			}
 		}
+		interpretedInput = interpretedInput.replaceAll("at \\{","\\{");
+		interpretedInput = interpretedInput.replaceAll("on \\{","\\{");
 		return interpretedInput;
+	}
+
+	public static String ignoreBasedOnRegex(String input, String regex) {
+		String ignoredString = input;
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(input);
+		DateGroup previousGroup = null;
+		while (matcher.find()) {
+			if (previousGroup == null) {
+				String matching = matcher.group();
+				ignoredString = ignoredString.replace(matching, "[" + matching
+						+ "]");
+			}
+		}
+		return ignoredString;
 	}
 
 	public static String prettyString(String userInput) {
@@ -117,16 +151,23 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 				} else if (isTomorrow(currentDate)) {
 					formatString = "'tomorrow'" + formatString;
 				} else if (isThisWeek(currentDate)) {
-					formatString = "E" + formatString;
+					formatString = "'on' E" + formatString;
 				} else {
-					formatString = "d MMM" + formatString;
+					formatString = "'on' d MMM" + formatString;
 				}
 			}
+			
 			SimpleDateFormat formatter = new SimpleDateFormat(formatString);
 			editedUserInput = editedUserInput.replace(dateGroups.get(i)
 					.getText(), formatter.format(currentDate));
 			previousDate = currentDate;
 		}
+		editedUserInput = editedUserInput.replaceAll("by \\{on","by\\{");
+		editedUserInput = editedUserInput.replaceAll("by \\{at","by\\{");
+		editedUserInput = editedUserInput.replaceAll("to \\{on","to\\{");
+		editedUserInput = editedUserInput.replaceAll("to \\{at","to\\{");
+		editedUserInput = editedUserInput.replaceAll("from \\{on","from\\{");
+		editedUserInput = editedUserInput.replaceAll("from \\{at","from\\{");
 		return editedUserInput;
 	}
 

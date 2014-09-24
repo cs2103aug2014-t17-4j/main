@@ -242,19 +242,23 @@ public class LogicActual implements Logic {
 		CommandType COMMAND_TYPE = getCommandType(userCommand);
 		int type = Message.TYPE_HINT;
 		String message;
-		
+
 		switch (COMMAND_TYPE) {
 		case ADD:
-			message = getMatchingCommands(getFirstWord(userCommand));
+			message = getMatchingCommands(userCommand);
 
 			if (!message.isEmpty()) {
 				return new Message(Message.TYPE_HINT, "Do you mean " + message
 						+ "?");
 			} else {
-				message = TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced.interpretedString(userCommand))));
+				message = TaskBuilderAdvanced
+						.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced
+								.prettyString(TaskBuilderAdvanced
+										.interpretedString(userCommand))));
 				message += "\nAdd: You can include date information. Use []s to ignore processing.";
 				//message = TaskBuilderAdvanced.interpretedString(userCommand);
-				//message = "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
+				// message =
+				// "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
 			}
 			break;
 		case DELETE:
@@ -287,7 +291,9 @@ public class LogicActual implements Logic {
 							+ editTask.getDescriptionEdit();
 				} else if (hasFurtherParameters && isValidTask) {
 					type = Message.TYPE_HINT;
-					message = TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced.interpretedString(removeFirstWord(removeFirstWord(userCommand))))));
+					message = TaskBuilderAdvanced
+							.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced
+									.interpretedString(removeFirstWord(removeFirstWord(userCommand))))));
 					message += "\nEdit: Hit enter after making your changes.";
 				}
 			}
@@ -360,7 +366,8 @@ public class LogicActual implements Logic {
 
 	private String removeFirstWord(String userCommand) {
 		String blank = "";
-		String firstWord = getFirstWord(userCommand).replaceAll("\\[|\\]|\\\\|\\{|\\}", blank);
+		String firstWord = getFirstWord(userCommand).replaceAll(
+				"\\[|\\]|\\\\|\\{|\\}", blank);
 		String removedFirstWord = userCommand.replaceFirst(firstWord, blank);
 		String removedFirstWordTrimmed = removedFirstWord.trim();
 		return removedFirstWordTrimmed;
