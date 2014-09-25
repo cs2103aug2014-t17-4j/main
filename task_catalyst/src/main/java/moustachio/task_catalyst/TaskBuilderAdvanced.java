@@ -29,44 +29,65 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 	public static String interpretedString(String userInput) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy KK:mm a");
 		String interpretedInput = userInput;
-		//interpretedInput = interpretedInput.replaceAll(",", " and "); // Change
-																		// , to
-																		// and.
+		// interpretedInput = interpretedInput.replaceAll(",", " and "); //
+		// Change
+		// , to
+		// and.
 
 		interpretedInput = interpretedInput.replaceAll("\\s+", " "); // Fix
 																		// consecutive
 																		// whitespaces.
-		
+
 		interpretedInput = interpretedInput.replaceAll("tmr", "tomorrow");
 
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, "\\d{5,}"); // Fix
 																			// handphone
 																			// number
 																			// problem
-		interpretedInput = ignoreBasedOnRegex(interpretedInput,
-				"[^0-9\\s]+[0-9]+"); // Ignore anything ending with numbers.
-										// Fixes LT5 problem.
-		
-		interpretedInput = ignoreBasedOnRegex(interpretedInput,
-				"[#][a-zA-Z0-9]+"); // Ignore anything with hashtag
+		/*
+		 * interpretedInput = ignoreBasedOnRegex(interpretedInput,
+		 * "[a-zA-Z-_]+[0-9]+"); // Ignore anything ending with numbers. //
+		 * Fixes LT5 problem.
+		 * 
+		 * interpretedInput = ignoreBasedOnRegex(interpretedInput,
+		 * "[#][a-zA-Z0-9]+"); // Ignore anything with hashtag
+		 * 
+		 * /* interpretedInput = ignoreBasedOnRegex(interpretedInput,
+		 * "[a-zA-Z]*tomorrow[a-zA-Z]+|[a-zA-Z]+tomorrow[a-zA-Z]*"); // Ignore
+		 * // anything // containing // tomorrow
+		 */
 
 		String parsingInput = interpretedInput.replaceAll("\\[(.*?)\\]", ""); // Remove
 																				// all
 																				// items
 																				// in
 																				// brackets.
-		//parsingInput = parsingInput.replaceAll(" to ", " *e*s*c*a*p*e* ");
-		parsingInput = parsingInput.replaceAll(" at | at$| in | in$", " ");
+		// parsingInput = parsingInput.replaceAll(" to ", " *e*s*c*a*p*e* ");
+		parsingInput = parsingInput.replaceAll(" at | at$| in | in$| from |from$", " ");
+		parsingInput = parsingInput.replaceAll(", "," and ");
 		// parsingInput = parsingInput.replaceAll("#(\\S+)", "");
+		parsingInput = parsingInput.replaceAll("( and)+", " and ");
+		parsingInput = parsingInput.replaceAll("( on)+", " ");
 		parsingInput = parsingInput.replaceAll("\\s+", " ");
 
 		List<DateGroup> dateGroups = new PrettyTimeParser()
 				.parseSyntax(parsingInput);
-		
+
 		for (DateGroup dateGroup : dateGroups) {
+
+			// This fixes the partial matching problem, for almost everything! OMG!
+			int position = dateGroup.getPosition();
+			int length = dateGroup.getText().length();
+			int startIndex = Math.max(0,position-5);
+			int endIndex = Math.min(position+length+5,parsingInput.length());
+			boolean wholeWord = parsingInput.substring(startIndex,endIndex).matches(".*(^|\\b)"
+					+ Pattern.quote(dateGroup.getText()) + "(\\b|$).*");
+
 			// This is a quickfix for bad matches. (most of them are below 4
 			// characters. This fixes 5 apples problem.
-			if (dateGroup.getText().length() > 2) {
+			boolean longMatch = dateGroup.getText().length() > 2;
+			
+			if (longMatch && wholeWord) {
 				List<Date> dates = dateGroup.getDates();
 				Collections.sort(dates);
 				int dateCount = dates.size();
@@ -75,10 +96,10 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 				String intermediateConnector;
 				if (dateGroup.getText().contains(" to ")) {
 					finalConnector = " to ";
-					intermediateConnector = " and ";
+					intermediateConnector = ", ";
 				} else {
 					finalConnector = " and ";
-					intermediateConnector = " and ";
+					intermediateConnector = ", ";
 				}
 				for (int i = 0; i < dateCount; i++) {
 					dateString += "{" + formatter.format(dates.get(i)) + "}";
@@ -88,12 +109,19 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 						dateString += intermediateConnector;
 					}
 				}
-				interpretedInput = interpretedInput.replaceAll(
-						dateGroup.getText()+"(?=[^\\]]*(\\[|$))", dateString);
+				//interpretedInput = interpretedInput.replaceAll(dateGroup.getText() + "(?=[^\\]]*(\\[|$))", dateString);
+				String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
+				//String matchingText = Pattern.quote(dateGroup.getText());
+
+				String matchingText = dateGroup.getText().replaceAll(" and ", " ").replaceAll("\\s+", " ").replaceAll(" ", "( | at | from |, | and |, and |, and on | and on )?");
+				System.out.println(interpretedInput);
+				System.out.println(parsingInput);
+				System.out.println(matchingText);
+				interpretedInput = interpretedInput.replaceAll("(^|\\b)"+matchingText+"(\\b|$)"+onlyOutsideBrackets, dateString);
 			}
 		}
-		interpretedInput = interpretedInput.replaceAll("at \\{","\\{");
-		interpretedInput = interpretedInput.replaceAll("on \\{","\\{");
+		interpretedInput = interpretedInput.replaceAll("at \\{", "\\{");
+		interpretedInput = interpretedInput.replaceAll("on \\{", "\\{");
 		return interpretedInput;
 	}
 
@@ -134,40 +162,44 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 				nextDate = null;
 			}
 			String formatString = "";
+			if (!isSameDate(previousDate, currentDate)) {
+				// Can add some more, like yesterday, last Tuesday, etc.
+				if (isToday(currentDate)) {
+					formatString = "'today'";
+				} else if (isTomorrow(currentDate)) {
+					formatString = "'tomorrow'";
+				} else if (isThisWeek(currentDate)) {
+					formatString = "'on' E";
+				} else {
+					formatString = "'on' d MMM";
+				}
+
+				if (!isThisYear(currentDate)) {
+					formatString = formatString + " yyyy";
+				}
+			}
 			if (!isSameTime(currentDate, nextDate)) {
+				if (!formatString.isEmpty()) {
+					formatString = formatString + " ";
+				}
 				formatString = formatString + "h";
 				if (hasMinutes(currentDate)) {
 					formatString = formatString + ":mm";
 				}
 				formatString = formatString + "a";
 			}
-			if (!isSameDate(previousDate, currentDate)) {
-				if (!formatString.isEmpty()) {
-					formatString = " " + formatString;
-				}
-				// Can add some more, like yesterday, last Tuesday, etc.
-				if (isToday(currentDate)) {
-					formatString = "'today'" + formatString;
-				} else if (isTomorrow(currentDate)) {
-					formatString = "'tomorrow'" + formatString;
-				} else if (isThisWeek(currentDate)) {
-					formatString = "'on' E" + formatString;
-				} else {
-					formatString = "'on' d MMM" + formatString;
-				}
-			}
-			
+
 			SimpleDateFormat formatter = new SimpleDateFormat(formatString);
 			editedUserInput = editedUserInput.replace(dateGroups.get(i)
 					.getText(), formatter.format(currentDate));
 			previousDate = currentDate;
 		}
-		editedUserInput = editedUserInput.replaceAll("by \\{on","by\\{");
-		editedUserInput = editedUserInput.replaceAll("by \\{at","by\\{");
-		editedUserInput = editedUserInput.replaceAll("to \\{on","to\\{");
-		editedUserInput = editedUserInput.replaceAll("to \\{at","to\\{");
-		editedUserInput = editedUserInput.replaceAll("from \\{on","from\\{");
-		editedUserInput = editedUserInput.replaceAll("from \\{at","from\\{");
+		editedUserInput = editedUserInput.replaceAll("by \\{on ", "by \\{");
+		editedUserInput = editedUserInput.replaceAll("by \\{at ", "by \\{");
+		editedUserInput = editedUserInput.replaceAll("to \\{on ", "to \\{");
+		editedUserInput = editedUserInput.replaceAll("to \\{at ", "to \\{");
+		editedUserInput = editedUserInput.replaceAll("from \\{on ", "from \\{");
+		editedUserInput = editedUserInput.replaceAll("from \\{at ", "from \\{");
 		return editedUserInput;
 	}
 
@@ -232,6 +264,14 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 		// Can possibly explode if they are of different years, untested.
 		return cal1.get(Calendar.DAY_OF_YEAR) - cal2.get(Calendar.DAY_OF_YEAR)
 				+ (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 365;
+	}
+
+	private static boolean isThisYear(Date date) {
+		Calendar cal1 = Calendar.getInstance();
+		Calendar cal2 = Calendar.getInstance();
+		cal1.setTime(date);
+		cal2.setTime(new Date());
+		return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
 	}
 
 	public static List<Date> getAllDates(String interpretedString) {
