@@ -22,4 +22,16 @@ public class StorageStub implements Storage {
 		return this.list;
 	}
 
+	@Override
+	public boolean saveSetting(String name, String fileName, String value) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public String loadSetting(String name, String fileName) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }
