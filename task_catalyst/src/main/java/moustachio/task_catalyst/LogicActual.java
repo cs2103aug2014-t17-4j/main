@@ -57,6 +57,7 @@ public class LogicActual implements Logic {
 		taskBuilder = new TaskBuilderAdvanced();
 
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+		displayList = tasks;
 	}
 
 	// High Level Implementation

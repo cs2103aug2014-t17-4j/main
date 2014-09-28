@@ -45,7 +45,7 @@ public class GraphicalInterfaceController {
 	@FXML
 	private Button exitButton;
 
-	private static LogicActual logic = new LogicActual();
+	private static LogicActual logic;
 
 	private static ObservableList<Task> taskToBeDisplayed = FXCollections
 			.observableArrayList();
@@ -58,6 +58,7 @@ public class GraphicalInterfaceController {
 	 */
 	@FXML
 	private void initialize() {
+		logic = new LogicActual();
 		testInterface();
 		initializeForms();
 	}
