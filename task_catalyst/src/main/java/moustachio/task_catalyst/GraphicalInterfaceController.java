@@ -75,7 +75,7 @@ public class GraphicalInterfaceController {
 				commandBar.requestFocus();
 			}
 		});
-		// displayTask();
+		displayTask();
 		displayHashTags();
 	}
 
@@ -118,19 +118,23 @@ public class GraphicalInterfaceController {
 	}
 
 	private void displayTask() {
-		idColumn.setCellValueFactory(new Callback<CellDataFeatures<Task, Integer>, ObservableValue<Integer>>() {
-			@Override
-			public ObservableValue<Integer> call(
-					CellDataFeatures<Task, Integer> p) {
-				return new ReadOnlyObjectWrapper<Integer>((Integer) taskTable
-						.getItems().indexOf(p.getValue()) + 1);
-			}
-		});
-		taskColumn.setCellValueFactory(new PropertyValueFactory<Task, String>(
-				"description"));
-		idColumn.setSortable(false);
-		taskColumn.setSortable(false);
-		taskTable.setItems(getTaskFromList());
+		if (logic.getList() != null) {
+			idColumn.setCellValueFactory(new Callback<CellDataFeatures<Task, Integer>, ObservableValue<Integer>>() {
+				@Override
+				public ObservableValue<Integer> call(
+						CellDataFeatures<Task, Integer> p) {
+					return new ReadOnlyObjectWrapper<Integer>(
+							(Integer) taskTable.getItems()
+									.indexOf(p.getValue()) + 1);
+				}
+			});
+			taskColumn
+					.setCellValueFactory(new PropertyValueFactory<Task, String>(
+							"description"));
+			idColumn.setSortable(false);
+			taskColumn.setSortable(false);
+			taskTable.setItems(getTaskFromList());
+		}
 	}
 
 	private ObservableList<Task> getTaskFromList() {
