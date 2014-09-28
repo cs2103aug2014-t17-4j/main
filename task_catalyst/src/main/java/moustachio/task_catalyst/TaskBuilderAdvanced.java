@@ -44,6 +44,8 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 																			// handphone
 																			// number
 																			// problem
+		
+		interpretedInput = ignoreBasedOnRegex(interpretedInput, "[a-zA-Z-_]+[0-9]+");
 		/*
 		 * interpretedInput = ignoreBasedOnRegex(interpretedInput,
 		 * "[a-zA-Z-_]+[0-9]+"); // Ignore anything ending with numbers. //

@@ -52,7 +52,7 @@ public class LogicActual implements Logic {
 		undos = new Stack<Action>();
 		redos = new Stack<Action>();
 
-		storage = new StorageStub();
+		storage = new StorageActual();
 		listProcessor = new ListProcessorStub();
 		taskBuilder = new TaskBuilderAdvanced();
 
