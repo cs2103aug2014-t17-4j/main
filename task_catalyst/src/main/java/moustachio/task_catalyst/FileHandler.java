@@ -2,10 +2,12 @@ package moustachio.task_catalyst;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +20,6 @@ public class FileHandler {
 	public static void writeTask(Task task, String fileName) throws IOException{
 		try{
 			writeJSONFile(task, fileName);
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
@@ -119,7 +120,7 @@ public class FileHandler {
 		BufferedReader breader = new BufferedReader(reader);
 		return breader;
 	}
-
+	
 	private static boolean isEmptyFile(String fileName) {
 		try {
 			BufferedReader reader = getReader(fileName);
