@@ -16,46 +16,41 @@ public class FileHandler {
 	private static String fileName;
 
 	public static void writeTask(Task task, String fileName) throws IOException{
-
-		FileWriter JSONFile = new FileWriter(fileName, true);
-		BufferedWriter writer = new BufferedWriter(JSONFile);
 		try{
-			JSONObject object = new JSONObject();
-			JSONConverter objCodec = new JSONConverter();
-			object = objCodec.encode(task);
-			writer.write(object.toJSONString());
-			writer.newLine();
-			writer.flush();
-			writer.close();
+			writeJSONFile(task, fileName);
 
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
+	}
+
+	private static void writeJSONFile(Task task, String fileName) throws IOException {
+		FileWriter JSONFile = new FileWriter(fileName, true);
+		BufferedWriter writer = new BufferedWriter(JSONFile);
+		JSONObject object = new JSONObject();
+		JSONConverter objCodec = new JSONConverter();
+		object = objCodec.encode(task);
+		writer.write(object.toJSONString());
+		writer.newLine();
+		writer.flush();
+		writer.close();
 	}
 	
 	public static List<Task> readTask(String fileName){
 		List<Task> list = new ArrayList<Task> ();
 		
 		if(isEmptyFile(fileName)){
-			throw new Error("Empty file.");
+			return new ArrayList<Task>();
 		}
 		else{
-			readFromFile(fileName, list);
+			readJSONFile(fileName, list);
 		}
 		return list;
 	}
 
-	private static void readFromFile(String fileName, List<Task> list) {
+	private static void readJSONFile(String fileName, List<Task> list) {
 		try {
-			String lineString;
-			BufferedReader breader = getReader(fileName);
-			JSONConverter ObjCodec = new JSONConverter();
-
-			while ((lineString = breader.readLine()) != null){
-				System.out.println(lineString);
-				list.add(ObjCodec.decodeToStr(lineString));
-			}
-			breader.close();
+			readJSONFormat(fileName, list);
 		}catch (FileNotFoundException e){
 			e.printStackTrace();
 		}catch (IOException e){
@@ -64,20 +59,39 @@ public class FileHandler {
 			e.printStackTrace();
 		}
 	}
+
+	private static void readJSONFormat(String fileName, List<Task> list)
+			throws FileNotFoundException, IOException, ParseException {
+		String lineString;
+		BufferedReader breader = getReader(fileName);
+		JSONConverter ObjCodec = new JSONConverter();
+
+		while ((lineString = breader.readLine()) != null){
+			System.out.println(lineString);
+			list.add(ObjCodec.decodeToStr(lineString));
+		}
+		breader.close();
+	}
 	
 	public static boolean writeSetting(String name, String fileName, String value) {
 		Boolean isSuccess = false;
 		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,true));
-			writer.write(name+ "," + value);
-			writer.newLine();
-			writer.close();
-			isSuccess = true;
+			isSuccess = write(name, fileName, value);
 		}catch (FileNotFoundException e){
 			e.printStackTrace();
 		}catch (IOException e) {
 			e.printStackTrace();
 		}
+		return isSuccess;
+	}
+
+	private static Boolean write(String name, String fileName, String value) throws IOException {
+		Boolean isSuccess;
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,true));
+		writer.write(name+ "," + value);
+		writer.newLine();
+		writer.close();
+		isSuccess = true;
 		return isSuccess;
 	} 
 	
