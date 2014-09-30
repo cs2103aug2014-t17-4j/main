@@ -38,6 +38,10 @@ public class TaskBasic implements Task {
 	public String getDescription() {
 		return this.description.get();
 	}
+
+	public String getDescriptionRaw() {
+		return getDescription();
+	}
 	
 	public String getDescriptionEdit() {
 		return getDescription();

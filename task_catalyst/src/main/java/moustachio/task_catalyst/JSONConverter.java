@@ -1,6 +1,6 @@
 package moustachio.task_catalyst;
 
-import moustachio.task_catalyst.TaskBasic;
+import moustachio.task_catalyst.TaskAdvanced;
 import java.time.LocalDateTime;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -28,13 +28,13 @@ public class JSONConverter {
 		}
 		object.put("dateStart", dateStart);
 		object.put("dateEnd", dateEnd);
-		object.put("description", task.getDescription());
+		object.put("description", task.getDescriptionRaw());
 		
 		return object;	
 	}
 	
 	public Task decode (JSONObject obj){
-		Task task = new TaskBasic("");
+		Task task = new TaskAdvanced("");
 		if (obj.get("description") != null) {
 			task.setDescription((String) obj.get("description"));
 		}
