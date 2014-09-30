@@ -53,7 +53,7 @@ public class LogicActual implements Logic {
 		redos = new Stack<Action>();
 
 		storage = new StorageActual();
-		listProcessor = new ListProcessorStub();
+		listProcessor = new ListProcessorActual();
 		taskBuilder = new TaskBuilderAdvanced();
 
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
