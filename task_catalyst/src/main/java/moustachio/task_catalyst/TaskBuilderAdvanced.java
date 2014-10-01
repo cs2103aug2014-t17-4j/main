@@ -65,7 +65,7 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 																				// in
 																				// brackets.
 		// parsingInput = parsingInput.replaceAll(" to ", " *e*s*c*a*p*e* ");
-		parsingInput = parsingInput.replaceAll(" at | at$| in | in$| from |from$", " ");
+		parsingInput = parsingInput.replaceAll(" at | at$| in | in$| from |from$| on$| on ", " ");
 		parsingInput = parsingInput.replaceAll(", "," and ");
 		// parsingInput = parsingInput.replaceAll("#(\\S+)", "");
 		parsingInput = parsingInput.replaceAll("( and)+", " and ");
