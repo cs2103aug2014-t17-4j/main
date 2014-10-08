@@ -11,7 +11,7 @@ public class ListProcessorActual implements ListProcessor{
 
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
-		List<Task> searchList = new ArrayList<Task>();
+		List<Task> filteredList = new ArrayList<Task>();
 		SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
 		Calendar date = Calendar.getInstance();
 		Date today = date.getTime();
@@ -22,33 +22,38 @@ public class ListProcessorActual implements ListProcessor{
 		String tomorrowDate = dateFormat.format(tomorrow);
 		switch(hashtag) {
 			case "all": 
+				for(Task task:list) {
+					if(!task.isDone()) {
+						filteredList.add(task);
+					}
+				}
 				return list;
 			case "tdy": 
 				for(Task task:list) {
-					if(task.getDescriptionRaw().contains(todayDate)) {
-						searchList.add(task);
+					if(task.getDescriptionRaw().contains(todayDate) && !task.isDone()) {
+						filteredList.add(task);
 					}
 				}
-				return searchList;
+				return filteredList;
 			case "tmr": 
 				for(Task task:list) {
-					if(task.getDescriptionRaw().contains(tomorrowDate)) {
-						searchList.add(task);
+					if(task.getDescriptionRaw().contains(tomorrowDate) && !task.isDone()) {
+						filteredList.add(task);
 					}
 				}
-				return searchList;
+				return filteredList;
 			case "upc": 
 				for(Task task:list) {
-					if(task.getDescriptionRaw().contains(todayDate) || task.getDescriptionRaw().contains(tomorrowDate)) {
+					if((task.getDescriptionRaw().contains(todayDate) || task.getDescriptionRaw().contains(tomorrowDate)) && task.isDone()) {
 						continue;
 					}
 					else {
-						searchList.add(task);
+						filteredList.add(task);
 					}
 				}
-				return searchList;
+				return filteredList;
 			default:
-				return searchList;
+				return filteredList;
 		}
 	}
 
