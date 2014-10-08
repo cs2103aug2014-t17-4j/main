@@ -1,6 +1,5 @@
 package moustachio.task_catalyst;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -58,9 +57,13 @@ public class Delete extends Action {
 		}
 		return new Message(type, message);
 	}
-	
+
 	public static boolean isThisAction(String command) {
 		return Arrays.asList(DICTIONARY).contains(command);
+	}
+	
+	public static String[] getDictionary() {
+		return DICTIONARY;
 	}
 
 	@Override

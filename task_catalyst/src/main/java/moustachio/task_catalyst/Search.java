@@ -29,6 +29,10 @@ public class Search extends Action {
 	public static boolean isThisAction(String command) {
 		return Arrays.asList(DICTIONARY).contains(command);
 	}
+	
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
 
 	@Override
 	public boolean isUndoable() {

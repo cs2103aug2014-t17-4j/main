@@ -64,6 +64,10 @@ public class Done extends Action {
 		return Arrays.asList(DICTIONARY).contains(command);
 	}
 	
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+	
 	@Override
 	public boolean isUndoable() {
 		return true;

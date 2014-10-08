@@ -19,13 +19,6 @@ public class LogicActual implements Logic {
 	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#tdy",
 			"#tmr", "#upc", "#smd", "#dne" };
 
-	private static final String[] DICTIONARY_DELETE = { "delete", "rm", "del" };
-	private static final String[] DICTIONARY_DONE = { "done", "complete" };
-	private static final String[] DICTIONARY_EDIT = { "edit" };
-	private static final String[] DICTIONARY_REDO = { "redo" };
-	private static final String[] DICTIONARY_SEARCH = { "search" };
-	private static final String[] DICTIONARY_UNDO = { "undo" };
-
 	private Storage storage;
 	private ListProcessor listProcessor;
 	private TaskBuilder taskBuilder;
@@ -340,12 +333,12 @@ public class LogicActual implements Logic {
 		}
 		String matchingCommands = "";
 		ArrayList<String[]> dictionaries = new ArrayList<String[]>();
-		dictionaries.add(DICTIONARY_DELETE);
-		dictionaries.add(DICTIONARY_DONE);
-		dictionaries.add(DICTIONARY_EDIT);
-		dictionaries.add(DICTIONARY_REDO);
-		dictionaries.add(DICTIONARY_SEARCH);
-		dictionaries.add(DICTIONARY_UNDO);
+		dictionaries.add(Delete.getDictionary());
+		dictionaries.add(Done.getDictionary());
+		dictionaries.add(Edit.getDictionary());
+		dictionaries.add(Redo.getDictionary());
+		dictionaries.add(Search.getDictionary());
+		dictionaries.add(Undo.getDictionary());
 		for (String[] dictionary : dictionaries) {
 			for (String keyword : dictionary) {
 				if (!keyword.equalsIgnoreCase(firstWord)
