@@ -21,23 +21,23 @@ public class ListProcessorActual implements ListProcessor{
 		Date tomorrow = date.getTime();
 		String tomorrowDate = dateFormat.format(tomorrow);
 		switch(hashtag) {
-			case "#all": 
+			case "all": 
 				return list;
-			case "#tdy": 
+			case "tdy": 
 				for(Task task:list) {
 					if(task.getDescriptionRaw().contains(todayDate)) {
 						searchList.add(task);
 					}
 				}
 				return searchList;
-			case "#tmr": 
+			case "tmr": 
 				for(Task task:list) {
 					if(task.getDescriptionRaw().contains(tomorrowDate)) {
 						searchList.add(task);
 					}
 				}
 				return searchList;
-			case "#upc": 
+			case "upc": 
 				for(Task task:list) {
 					if(task.getDescriptionRaw().contains(todayDate) || task.getDescriptionRaw().contains(tomorrowDate)) {
 						continue;

@@ -15,6 +15,7 @@ public class LogicActualTest {
 	@Before
 	public void setUp() throws Exception {
 		logic = new LogicActual();
+		((LogicActual)logic).testMode();
 	}
 
 	@After
@@ -35,7 +36,7 @@ public class LogicActualTest {
 	// Basic Add with Start Date
 	@Test
 	public void addTc2() {
-		String userCommand = "Meet boss at MR5 at [21 Sep 5pm]";
+		String userCommand = "Meet boss at MR5 at 21 Sep 5pm";
 		Message message = logic.processCommand(userCommand);
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		// assertEquals("Task successfully added: " + userCommand,
@@ -49,7 +50,7 @@ public class LogicActualTest {
 	// Basic Add with End Date
 	@Test
 	public void addTc3() {
-		String userCommand = "Meet boss at MR5 at [21 Sep 5pm to 6pm]";
+		String userCommand = "Meet boss at MR5 at 21 Sep 5pm to 6pm";
 		Message message = logic.processCommand(userCommand);
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		// assertEquals("Task successfully added: " + userCommand,
@@ -209,7 +210,7 @@ public class LogicActualTest {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 1 item 1");
 		assertEquals(Message.TYPE_HINT, message.getType());
-		assertEquals("Edit: Hit enter after making your changes.",
+		assertEquals("item 1\nEdit: Hit enter after making your changes.",
 				message.getMessage());
 	}
 

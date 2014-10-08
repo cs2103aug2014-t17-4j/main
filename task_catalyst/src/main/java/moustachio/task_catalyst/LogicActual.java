@@ -59,6 +59,21 @@ public class LogicActual implements Logic {
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 		displayList = tasks;
 	}
+	
+	public void testMode() {
+		lastDisplayType = DEFAULT_DISPLAY_TYPE;
+		lastDisplayTerm = DEFAULT_DISPLAY_TERM;
+
+		undos = new Stack<Action>();
+		redos = new Stack<Action>();
+
+		storage = new StorageStub();
+		listProcessor = new ListProcessorStub();
+		taskBuilder = new TaskBuilderAdvanced();
+
+		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+		displayList = tasks;
+	}
 
 	// High Level Implementation
 
