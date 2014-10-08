@@ -1,8 +1,11 @@
 package moustachio.task_catalyst;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Done extends Action {
+
+	private static final String[] DICTIONARY = { "done", "complete" };
 
 	private static final String EXECUTE_ERROR = "There was an error completing the task.";
 	private static final String EXECUTE_SUCCESS = "Task successfully completed: %s";
@@ -55,6 +58,14 @@ public class Done extends Action {
 			message = String.format(UNDO_ERROR);
 		}
 		return new Message(type, message);
+	}
+
+	public static boolean isThisAction(String command) {
+		return Arrays.asList(DICTIONARY).contains(command);
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
 	}
 
 	@Override

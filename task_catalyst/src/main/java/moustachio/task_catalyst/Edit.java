@@ -1,8 +1,11 @@
 package moustachio.task_catalyst;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class Edit extends Action {
+
+	private static final String[] DICTIONARY = { "edit" };
 
 	private static final String EXECUTE_ERROR = "There was an error editing the task.";
 	private static final String EXECUTE_SUCCESS = "Task successfully edited: %s";
@@ -58,7 +61,7 @@ public class Edit extends Action {
 	public static boolean isThisAction(String command) {
 		return Arrays.asList(DICTIONARY).contains(command);
 	}
-	
+
 	public static String[] getDictionary() {
 		return DICTIONARY;
 	}
