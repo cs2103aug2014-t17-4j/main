@@ -53,7 +53,7 @@ public class JSONConverter {
 		return task;
 	}
 
-	public Task decodeToStr(String str) throws ParseException{
+	public Task decodeToString(String str) throws ParseException{
 		JSONObject obj = (JSONObject) JSONValue.parseWithException(str);
 		return decode(obj);
 	}

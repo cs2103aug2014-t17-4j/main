@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 public class FileHandler {
-	private static String fileName;
 
 	public static void writeTask(Task task, String fileName) throws IOException{
 		try{
@@ -61,13 +61,13 @@ public class FileHandler {
 
 	private static void readJSONFormat(String fileName, List<Task> list)
 			throws FileNotFoundException, IOException, ParseException {
-		String lineString;
+		String stringLine;
 		BufferedReader breader = getReader(fileName);
 		JSONConverter ObjCodec = new JSONConverter();
 
-		while ((lineString = breader.readLine()) != null){
-			System.out.println(lineString);
-			list.add(ObjCodec.decodeToStr(lineString));
+		while ((stringLine = breader.readLine()) != null){
+			System.out.println(stringLine);
+			list.add(ObjCodec.decodeToString(stringLine));
 		}
 		breader.close();
 	}
@@ -133,11 +133,14 @@ public class FileHandler {
 		return false;
 	}
 	
-	public static String getFileName() {
-		return fileName;
+	public static void clear(String fileName) {
+		try {
+			PrintWriter writer;
+			writer = new PrintWriter(fileName);
+			writer.print("");
+			writer.close();
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
-
-	public static void setFileName(String fileName) {
-		FileHandler.fileName = fileName;
-	}	
 }
