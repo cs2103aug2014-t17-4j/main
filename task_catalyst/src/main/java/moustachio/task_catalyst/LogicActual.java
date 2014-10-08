@@ -8,10 +8,6 @@ import java.util.TreeSet;
 
 public class LogicActual implements Logic {
 
-	private static enum CommandType {
-		ADD, DELETE, DONE, EDIT, HASHTAG, INVALID, REDO, SEARCH, UNDO
-	};
-
 	private static enum DisplayType {
 		HASHTAG, SEARCH
 	};
