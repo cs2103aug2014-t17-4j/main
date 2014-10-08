@@ -55,6 +55,14 @@ public class Edit extends Action {
 		return new Message(type, message);
 	}
 
+	public static boolean isThisAction(String command) {
+		return Arrays.asList(DICTIONARY).contains(command);
+	}
+	
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
 	@Override
 	public boolean isUndoable() {
 		return true;

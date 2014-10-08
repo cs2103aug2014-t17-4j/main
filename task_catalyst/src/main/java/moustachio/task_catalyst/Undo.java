@@ -1,12 +1,15 @@
 package moustachio.task_catalyst;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Stack;
 
 public class Undo extends Action {
 
+	private static final String[] DICTIONARY = { "undo" };
+
 	private static final String EXECUTE_ERROR = "There is nothing to undo.";
-	
+
 	List<Task> targetList;
 	Task task;
 	Stack<Action> undos;
@@ -23,7 +26,7 @@ public class Undo extends Action {
 		try {
 			redos.push(undos.pop());
 			Message message = redos.peek().undo();
-			message.setMessage("(Undo) "+message.getMessage());
+			message.setMessage("(Undo) " + message.getMessage());
 			return message;
 		} catch (Exception e) {
 			int type = Message.TYPE_ERROR;
@@ -34,6 +37,14 @@ public class Undo extends Action {
 	@Override
 	public Message undo() {
 		return execute();
+	}
+
+	public static boolean isThisAction(String command) {
+		return Arrays.asList(DICTIONARY).contains(command);
+	}
+	
+	public static String[] getDictionary() {
+		return DICTIONARY;
 	}
 
 	@Override

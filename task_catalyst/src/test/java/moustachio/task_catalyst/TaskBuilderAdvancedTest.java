@@ -2,13 +2,9 @@ package moustachio.task_catalyst;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.List;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
-import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class TaskBuilderAdvancedTest {
 
@@ -75,14 +71,14 @@ public class TaskBuilderAdvancedTest {
 	@Test
 	public void tc7() {
 		Task task = taskBuilder.createTask("Meet boss today 10am at LT5");
-		assertEquals("Meet boss today 10AM at LT5", task.getDescriptionEdit());
+		assertEquals("Meet boss today 10AM at [LT5]", task.getDescriptionEdit());
 	}
 
 	// Ignore text/symbol+number
 	@Test
 	public void tc8() {
 		Task task = taskBuilder.createTask("Meet boss today 10am at MR-23");
-		assertEquals("Meet boss today 10AM at MR-23", task.getDescriptionEdit());
+		assertEquals("Meet boss today 10AM at [MR-23]", task.getDescriptionEdit());
 	}
 
 	// Ignore numbers of 5 or more digits
@@ -146,8 +142,8 @@ public class TaskBuilderAdvancedTest {
 	// Ignore partial matches.
 	@Test
 	public void tc16() {
-		Task task = taskBuilder.createTask("LT5 sep programme on 5 sep 10am");
-		assertEquals("LT5 sep programme on 5 Sep 10AM",
+		Task task = taskBuilder.createTask("LT5 [sep] programme on 5 sep 10am");
+		assertEquals("[LT5] [sep] programme on 5 Sep 10AM",
 				task.getDescriptionEdit());
 	}
 	
@@ -155,7 +151,7 @@ public class TaskBuilderAdvancedTest {
 	@Test
 	public void tc17() {
 		Task task = taskBuilder.createTask("Meet boss today 5pm to 6pm at LT5");
-		assertEquals("Meet boss today 5PM to 6PM at LT5",
+		assertEquals("Meet boss today 5PM to 6PM at [LT5]",
 				task.getDescriptionEdit());
 	}
 	

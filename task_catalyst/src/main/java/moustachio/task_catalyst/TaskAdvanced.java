@@ -26,6 +26,10 @@ public class TaskAdvanced extends TaskBasic {
 		return TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.prettyString(this.description.get())));
 	}
 	
+	public String getDescriptionRaw() {
+		return this.description.get();
+	}
+	
 	public String getDescriptionEdit() {
 		return TaskBuilderAdvanced.removeCurlyBraces(TaskBuilderAdvanced.prettyString(this.description.get()));
 	}
