@@ -54,6 +54,10 @@ public class Add extends Action {
 		}
 		return new Message(type, message);
 	}
+	
+	public static boolean isThisAction(String command) {
+		return true;
+	}
 
 	@Override
 	public boolean isUndoable() {

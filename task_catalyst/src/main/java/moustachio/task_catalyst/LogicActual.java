@@ -59,7 +59,7 @@ public class LogicActual implements Logic {
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 		displayList = tasks;
 	}
-	
+
 	public void testMode() {
 		lastDisplayType = DEFAULT_DISPLAY_TYPE;
 		lastDisplayTerm = DEFAULT_DISPLAY_TERM;
@@ -272,7 +272,7 @@ public class LogicActual implements Logic {
 								.prettyString(TaskBuilderAdvanced
 										.interpretedString(userCommand))));
 				message += "\nAdd: You can include date information. Use []s to ignore processing.";
-				//message = TaskBuilderAdvanced.interpretedString(userCommand);
+				// message = TaskBuilderAdvanced.interpretedString(userCommand);
 				// message =
 				// "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
 			}
@@ -389,17 +389,6 @@ public class LogicActual implements Logic {
 		return removedFirstWordTrimmed;
 	}
 
-	private boolean isFromDictionary(String[] dictionary, String command) {
-		boolean isFound = false;
-		for (int i = 0; i < dictionary.length; i++) {
-			if (dictionary[i].equalsIgnoreCase(command)) {
-				isFound = true;
-				break;
-			}
-		}
-		return isFound;
-	}
-
 	private CommandType getCommandType(String userCommand) {
 		if (userCommand == null || userCommand.trim().isEmpty()) {
 			return CommandType.INVALID;
@@ -411,23 +400,20 @@ public class LogicActual implements Logic {
 		String parametersTrimmed = parameters.trim();
 
 		boolean noParameters = parametersTrimmed.isEmpty();
-		boolean hashtagged = commandLowerCase.startsWith("#");
-		boolean isHashtag = hashtagged && noParameters;
 
-		if (isHashtag) {
+		if (Hashtag.isThisAction(commandLowerCase) && noParameters) {
 			return CommandType.HASHTAG;
-		} else if (isFromDictionary(DICTIONARY_DELETE, commandLowerCase)) {
+		} else if (Delete.isThisAction(commandLowerCase)) {
 			return CommandType.DELETE;
-		} else if (isFromDictionary(DICTIONARY_DONE, commandLowerCase)) {
+		} else if (Done.isThisAction(commandLowerCase)) {
 			return CommandType.DONE;
-		} else if (isFromDictionary(DICTIONARY_EDIT, commandLowerCase)) {
+		} else if (Edit.isThisAction(commandLowerCase)) {
 			return CommandType.EDIT;
-		} else if (isFromDictionary(DICTIONARY_REDO, commandLowerCase)) {
+		} else if (Redo.isThisAction(commandLowerCase) && noParameters) {
 			return CommandType.REDO;
-		} else if (isFromDictionary(DICTIONARY_SEARCH, commandLowerCase)) {
+		} else if (Search.isThisAction(commandLowerCase)) {
 			return CommandType.SEARCH;
-		} else if (isFromDictionary(DICTIONARY_UNDO, commandLowerCase)
-				&& noParameters) {
+		} else if (Undo.isThisAction(commandLowerCase) && noParameters) {
 			return CommandType.UNDO;
 		} else {
 			return CommandType.ADD;

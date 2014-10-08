@@ -65,8 +65,8 @@ public class LogicActualTest {
 	// Two or more basic adds
 	@Test
 	public void addTc4() {
-		String userCommand2 = "Meet boss at MR5 at [21 Sep 5pm to 6pm]";
 		String userCommand1 = "[25 Sep 6pm to 26 Sep 8pm] clients conference.";
+		String userCommand2 = "Meet boss at MR5 from [21 Sep 5pm to 6pm]";
 
 		Message message1 = logic.processCommand(userCommand1);
 		Message message2 = logic.processCommand(userCommand2);
@@ -75,9 +75,9 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_SUCCESS, message2.getType());
 
 		Task task1 = logic.getList().get(0);
-		// assertEquals(userCommand1, task1.getDescription());
+		assertEquals("25 Sep 6pm to 26 Sep 8pm clients conference.", task1.getDescription());
 		Task task2 = logic.getList().get(1);
-		// assertEquals(userCommand2, task2.getDescription());
+		assertEquals("Meet boss at MR5 from 21 Sep 5pm to 6pm", task2.getDescription());
 	}
 
 	// Empty string
