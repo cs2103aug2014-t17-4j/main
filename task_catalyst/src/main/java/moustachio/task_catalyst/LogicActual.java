@@ -41,12 +41,12 @@ public class LogicActual implements Logic {
 		undos = new Stack<Action>();
 		redos = new Stack<Action>();
 
-		storage = new StorageStub();
+		storage = new StorageActual();
 		listProcessor = new ListProcessorActual();
 		taskBuilder = new TaskBuilderAdvanced();
 
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
-		displayList = tasks;
+		displayList = listProcessor.searchByHashtag(tasks, DEFAULT_DISPLAY_TERM);
 	}
 
 	public void testMode() {
@@ -197,7 +197,7 @@ public class LogicActual implements Logic {
 	private Action hashtag(String userCommand) {
 		String hashtag = getFirstWord(userCommand);
 		lastDisplayType = DisplayType.HASHTAG;
-		lastDisplayTerm = hashtag;
+		lastDisplayTerm = hashtag.replaceAll("#","");
 		return new Hashtag(hashtag);
 	}
 

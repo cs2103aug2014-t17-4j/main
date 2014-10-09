@@ -170,9 +170,4 @@ public class TaskBuilderAdvancedTest {
 		assertEquals("today 5PM, tomorrow 6PM to 7PM",
 				task.getDescriptionEdit());
 	}
-	
-	@Test
-	public void tc20() {
-	    System.out.println("presentation today".replaceAll("(^|\\b)today(\\b|$)(?=[^\\]]*(\\[|$))","{09 Oct 2014 03:38 PM}"));
-	}
 }
