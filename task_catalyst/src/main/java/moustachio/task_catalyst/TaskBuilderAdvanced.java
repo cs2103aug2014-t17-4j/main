@@ -113,15 +113,18 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 				String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
 				//String matchingText = Pattern.quote(dateGroup.getText());
 
+				System.out.println("Original Matching: "+dateGroup.getText());
 				String matchingText = dateGroup.getText().replaceAll(" and ", " ").replaceAll("\\s+", " ").replaceAll(" ", "( | at | from |, | and |, and |, and on | and on )?");
-				System.out.println(interpretedInput);
-				System.out.println(parsingInput);
-				System.out.println(matchingText);
+				System.out.println("Interpreted Input: "+interpretedInput);
+				System.out.println("Parsing Input: "+parsingInput);
+				System.out.println("Matching Text: "+matchingText);
+				System.out.println("RegExp: "+"(^|\\b)"+matchingText+"(\\b|$)"+onlyOutsideBrackets);
 				interpretedInput = interpretedInput.replaceAll("(^|\\b)"+matchingText+"(\\b|$)"+onlyOutsideBrackets, dateString);
-			}
+				}
 		}
-		interpretedInput = interpretedInput.replaceAll("at \\{", "\\{");
-		interpretedInput = interpretedInput.replaceAll("on \\{", "\\{");
+		interpretedInput = interpretedInput.replaceAll("(^|\\b)at \\{", "\\{");
+		interpretedInput = interpretedInput.replaceAll("(^|\\b)on \\{", "\\{");
+		System.out.println("Complete Parsing: "+interpretedInput);
 		return interpretedInput;
 	}
 
