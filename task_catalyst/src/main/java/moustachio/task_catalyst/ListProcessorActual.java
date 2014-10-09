@@ -52,6 +52,13 @@ public class ListProcessorActual implements ListProcessor{
 					}
 				}
 				return filteredList;
+			case "#dne":
+				for(Task task:list) {
+					if(task.isDone()) {
+						filteredList.add(task);
+					}
+				}
+				return filteredList;
 			default:
 				return filteredList;
 		}
