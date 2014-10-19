@@ -15,7 +15,10 @@ import org.json.simple.parser.ParseException;
 
 public class JSONConverter {
 
-    private JSONObject jsonObject;
+    private static final String IS_DONE = "isDone";
+	private static final String DESCRIPTION = "description";
+	
+	private JSONObject jsonObject;
 
     public JSONConverter() {
 	jsonObject = new JSONObject();
@@ -23,19 +26,19 @@ public class JSONConverter {
 
     @SuppressWarnings("unchecked")
     public JSONObject encode(Task task) {
-	jsonObject.put("isDone", task.isDone());
-	jsonObject.put("description", task.getDescriptionRaw());
+	jsonObject.put(IS_DONE, task.isDone());
+	jsonObject.put(DESCRIPTION, task.getDescriptionRaw());
 
 	return jsonObject;
     }
 
     public Task decode(JSONObject obj) {
 	Task task = new TaskAdvanced("");
-	if (obj.get("description") != null) {
-	    task.setDescription((String) obj.get("description"));
+	if (obj.get(DESCRIPTION) != null) {
+	    task.setDescription((String) obj.get(DESCRIPTION));
 	}
-	if (obj.get("isDone") != null) {
-	    task.setDone(((Boolean) obj.get("isDone")));
+	if (obj.get(IS_DONE) != null) {
+	    task.setDone(((Boolean) obj.get(IS_DONE)));
 	}
 	return task;
     }
