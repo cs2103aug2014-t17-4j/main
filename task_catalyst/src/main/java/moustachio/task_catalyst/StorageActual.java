@@ -3,6 +3,14 @@ package moustachio.task_catalyst;
 import java.io.IOException;
 import java.util.List;
 
+/*
+ * This program  is implements Storage for Task Catalyst system. 
+ * 
+ * This program makes use of FileHandler to handle saving and loading tasks or setting. 
+ * 
+ * @author Lin XiuQing (A0112764J)
+ */
+
 public class StorageActual implements Storage {
 	
 	@Override

@@ -4,20 +4,29 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
+/*
+ * This program handles JSON conversion for Storage component.
+ * 
+ * This implementation uses JSONObject to encode the contents of tasks and 
+ * decode  JSONOBject to String format which is text format.
+ * 
+ * @author Lin XiuQing (A0112764J)
+ */
+
 public class JSONConverter {
 
-    private JSONObject object;
+    private JSONObject jsonObject;
 
     public JSONConverter() {
-	object = new JSONObject();
+	jsonObject = new JSONObject();
     }
 
     @SuppressWarnings("unchecked")
     public JSONObject encode(Task task) {
-	object.put("isDone", task.isDone());
-	object.put("description", task.getDescriptionRaw());
+	jsonObject.put("isDone", task.isDone());
+	jsonObject.put("description", task.getDescriptionRaw());
 
-	return object;
+	return jsonObject;
     }
 
     public Task decode(JSONObject obj) {

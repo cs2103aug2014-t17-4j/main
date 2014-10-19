@@ -9,23 +9,32 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
+
+/*
+ * This program is to manage writing and reading tasks in a specific text file. 
+ * 
+ * The description of a task is converted into JSON object before saving it in the file. 
+ * Likewise, the saved task is converted again to text for the purpose of editing or displaying. 
+ * 
+ * @author Lin XiuQing (A0112764J)
+ */
 
 public class FileHandler {
 
 	public static void writeTask(Task task, String fileName) throws IOException{
+		assert(task!=null);
 		try{
 			writeJSONFile(task, fileName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		} 
 	}
-
+	
 	private static void writeJSONFile(Task task, String fileName) throws IOException {
-		FileWriter JSONFile = new FileWriter(fileName, true);
-		BufferedWriter writer = new BufferedWriter(JSONFile);
+		FileWriter jsonFile = new FileWriter(fileName, true);
+		BufferedWriter writer = new BufferedWriter(jsonFile);
 		JSONObject object = new JSONObject();
 		JSONConverter objCodec = new JSONConverter();
 		object = objCodec.encode(task);
@@ -36,6 +45,7 @@ public class FileHandler {
 	}
 	
 	public static List<Task> readTask(String fileName){
+		assert(fileName!=null);
 		List<Task> list = new ArrayList<Task> ();
 		
 		if(isEmptyFile(fileName)){
@@ -63,16 +73,19 @@ public class FileHandler {
 			throws FileNotFoundException, IOException, ParseException {
 		String stringLine;
 		BufferedReader breader = getReader(fileName);
-		JSONConverter ObjCodec = new JSONConverter();
+		JSONConverter objCodec = new JSONConverter();
 
 		while ((stringLine = breader.readLine()) != null){
 			System.out.println(stringLine);
-			list.add(ObjCodec.decodeToString(stringLine));
+			list.add(objCodec.decodeToString(stringLine));
 		}
 		breader.close();
 	}
 	
 	public static boolean writeSetting(String name, String fileName, String value) {
+		assert(fileName!=null);
+		assert(value!=null);
+		assert(name!=null);
 		Boolean isSuccess = false;
 		try {
 			isSuccess = write(name, fileName, value);
@@ -95,6 +108,7 @@ public class FileHandler {
 	} 
 	
 	public static String readSetting(String name, String fileName){
+		assert(fileName!=null);
 		String value="";
 		try{
 			BufferedReader reader = getReader(fileName);
