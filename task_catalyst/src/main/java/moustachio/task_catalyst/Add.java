@@ -1,6 +1,5 @@
 package moustachio.task_catalyst;
 
-import java.util.List;
 
 public class Add extends Action {
 
@@ -8,12 +7,15 @@ public class Add extends Action {
 	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
 	private static final String UNDO_ERROR = "There was an error removing the task.";
 	private static final String UNDO_SUCCESS = "Task successfully removed: %s";
-	List<Task> targetList;
-	Task task;
+	
+	private TaskBuilder taskBuilder;
+	private TaskManager taskManager;
+	private Task task;
 
-	public Add(List<Task> targetList, Task task) {
-		this.targetList = targetList;
-		this.task = task;
+	public Add(String userCommand) {
+		taskBuilder = new TaskBuilderAdvanced();
+		taskManager = TaskManagerActual.getInstance();
+		task = taskBuilder.createTask(userCommand);
 	}
 
 	@Override
@@ -25,7 +27,7 @@ public class Add extends Action {
 			return new Message(type, message);
 		}
 
-		boolean addSuccess = targetList.add(task);
+		boolean addSuccess = taskManager.addTask(task);
 		int type;
 		String message;
 		if (addSuccess) {
@@ -41,7 +43,7 @@ public class Add extends Action {
 
 	@Override
 	public Message undo() {
-		boolean isSuccess = targetList.remove(task);
+		boolean isSuccess = taskManager.removeTask(task);
 		int type;
 		String message;
 		if (isSuccess) {

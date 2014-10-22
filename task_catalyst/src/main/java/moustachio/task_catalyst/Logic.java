@@ -12,4 +12,6 @@ public interface Logic {
     public Message getMessageTyping(String userCommand);
     
     public List<Task> getList();
+    
+    public void testMode();
 }

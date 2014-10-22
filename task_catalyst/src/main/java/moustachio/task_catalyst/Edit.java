@@ -1,7 +1,6 @@
 package moustachio.task_catalyst;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Edit extends Action {
 
@@ -11,14 +10,30 @@ public class Edit extends Action {
 	private static final String EXECUTE_SUCCESS = "Task successfully edited: %s";
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
-	List<Task> targetList;
-	Task targetTask;
-	Task replacementTask;
 
-	public Edit(List<Task> targetList, Task targetTask, Task replacementTask) {
-		this.targetList = targetList;
-		this.targetTask = targetTask;
-		this.replacementTask = replacementTask;
+	private TaskBuilder taskBuilder;
+	private TaskManager taskManager;
+
+	private Task targetTask;
+	private Task replacementTask;
+
+	public Edit(String userCommand) {
+		taskBuilder = new TaskBuilderAdvanced();
+		taskManager = TaskManagerActual.getInstance();
+		targetTask = taskBuilder.createTask(userCommand);
+
+		String taskNumberAndContent = TaskCatalystCommons
+				.removeFirstWord(userCommand);
+		String taskNumberString = TaskCatalystCommons
+				.getFirstWord(taskNumberAndContent);
+		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
+
+		targetTask = taskManager.getDisplayTask(taskNumber);
+
+		String userInput = TaskCatalystCommons
+				.removeFirstWord(taskNumberAndContent);
+
+		replacementTask = taskBuilder.createTask(userInput);
 	}
 
 	@Override
@@ -40,11 +55,9 @@ public class Edit extends Action {
 
 	private Message replace(Task targetTask, Task replacementTask,
 			String successFormat, String errorFormat) {
-		Action delete = new Delete(targetList, targetTask);
-		Action add = new Add(targetList, replacementTask);
 
-		boolean isDeleteSuccess = delete.execute().getType() == Message.TYPE_SUCCESS;
-		boolean isAddSuccess = add.execute().getType() == Message.TYPE_SUCCESS;
+		boolean isDeleteSuccess = taskManager.removeTask(targetTask);
+		boolean isAddSuccess = taskManager.addTask(replacementTask);
 		int type;
 		String message;
 		if (isDeleteSuccess && isAddSuccess) {

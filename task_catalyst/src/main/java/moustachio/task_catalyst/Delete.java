@@ -1,7 +1,6 @@
 package moustachio.task_catalyst;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Delete extends Action {
 
@@ -11,12 +10,16 @@ public class Delete extends Action {
 	private static final String EXECUTE_SUCCESS = "Task successfully deleted: %s";
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
-	List<Task> targetList;
-	Task task;
 
-	public Delete(List<Task> targetList, Task task) {
-		this.targetList = targetList;
-		this.task = task;
+	private TaskManager taskManager;
+	private Task task;
+
+	public Delete(String userCommand) {
+		taskManager = TaskManagerActual.getInstance();
+		String taskNumberString = TaskCatalystCommons
+				.removeFirstWord(userCommand);
+		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
+		task = taskManager.getDisplayTask(taskNumber);
 	}
 
 	@Override
@@ -28,7 +31,7 @@ public class Delete extends Action {
 			return new Message(type, message);
 		}
 
-		boolean isSuccess = targetList.remove(task);
+		boolean isSuccess = taskManager.removeTask(task);
 		int type;
 		String message;
 		if (isSuccess) {
@@ -44,7 +47,7 @@ public class Delete extends Action {
 
 	@Override
 	public Message undo() {
-		boolean isSuccess = targetList.add(task);
+		boolean isSuccess = taskManager.addTask(task);
 		int type;
 		String message;
 		if (isSuccess) {

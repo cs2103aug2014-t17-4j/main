@@ -1,7 +1,6 @@
 package moustachio.task_catalyst;
 
 import java.util.Arrays;
-import java.util.List;
 
 public class Done extends Action {
 
@@ -11,12 +10,16 @@ public class Done extends Action {
 	private static final String EXECUTE_SUCCESS = "Task successfully completed: %s";
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
-	List<Task> targetList;
-	Task task;
 
-	public Done(List<Task> targetList, Task task) {
-		this.targetList = targetList;
-		this.task = task;
+	private TaskManager taskManager;
+	private Task task;
+
+	public Done(String userCommand) {
+		taskManager = TaskManagerActual.getInstance();
+		String taskNumberString = TaskCatalystCommons
+				.removeFirstWord(userCommand);
+		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
+		task = taskManager.getDisplayTask(taskNumber);
 	}
 
 	@Override
@@ -28,8 +31,7 @@ public class Done extends Action {
 			return new Message(type, message);
 		}
 
-		task.setDone(true);
-		boolean isSuccess = task.isDone();
+		boolean isSuccess = taskManager.completeTask(task);
 		int type;
 		String message;
 		if (isSuccess) {
@@ -45,8 +47,7 @@ public class Done extends Action {
 
 	@Override
 	public Message undo() {
-		task.setDone(false);
-		boolean isSuccess = !task.isDone();
+		boolean isSuccess = taskManager.uncompleteTask(task);
 		int type;
 		String message;
 		if (isSuccess) {

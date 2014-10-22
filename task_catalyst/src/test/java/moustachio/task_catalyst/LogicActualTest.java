@@ -15,7 +15,7 @@ public class LogicActualTest {
 	@Before
 	public void setUp() throws Exception {
 		logic = new LogicActual();
-		((LogicActual)logic).testMode();
+		logic.testMode();
 	}
 
 	@After
@@ -261,7 +261,7 @@ public class LogicActualTest {
 		assertEquals("Task successfully deleted: Hello kitty!",
 				message.getMessage());
 	}
-
+	
 	// Complete invalid index.
 	@Test
 	public void doneTc1() {
@@ -293,7 +293,7 @@ public class LogicActualTest {
 	// Complete one item.
 	@Test
 	public void doneTc4() {
-		logic.processCommand("Hello kitty!");
+		Message addMessage = logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("done 1");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("Task successfully completed: Hello kitty!",

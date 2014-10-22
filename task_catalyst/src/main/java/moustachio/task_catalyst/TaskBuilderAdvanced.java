@@ -14,7 +14,7 @@ import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collecti
 
 public class TaskBuilderAdvanced implements TaskBuilder {
 
-    private static BlackBox blackBox = BlackBox.getInstance();
+    //private static BlackBox blackBox = BlackBox.getInstance();
 
     public Task createTask(String userInput) {
 
@@ -24,8 +24,8 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 
 	String interpretedString = TaskBuilderAdvanced
 		.interpretedString(userInput);
-	blackBox.info("User Input: " + userInput);
-	blackBox.info("Interpreted String: " + interpretedString);
+	//blackBox.info("User Input: " + userInput);
+	//blackBox.info("Interpreted String: " + interpretedString);
 	return new TaskAdvanced(interpretedString);
     }
 
@@ -133,12 +133,11 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 			.replaceAll(" ",
 				"( | at | from |, | and |, and |, and on | and on )?");
 
-		blackBox.fine("Original Matching: " + dateGroup.getText());
-		blackBox.fine("Interpreted Input: " + interpretedInput);
-		blackBox.fine("Parsing Input: " + parsingInput);
-		blackBox.fine("Matching Text: " + matchingText);
-		blackBox.fine("RegExp: " + "(^|\\b)" + matchingText + "(\\b|$)"
-			+ onlyOutsideBrackets);
+		//blackBox.fine("Original Matching: " + dateGroup.getText());
+		//blackBox.fine("Interpreted Input: " + interpretedInput);
+		//blackBox.fine("Parsing Input: " + parsingInput);
+		//blackBox.fine("Matching Text: " + matchingText);
+		//blackBox.fine("RegExp: " + "(^|\\b)" + matchingText + "(\\b|$)"	+ onlyOutsideBrackets);
 
 		interpretedInput = interpretedInput.replaceAll("(^|\\b)"
 			+ matchingText + "(\\b|$)" + onlyOutsideBrackets,
@@ -147,7 +146,7 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 	}
 	interpretedInput = interpretedInput.replaceAll("(^|\\b)at \\{", "\\{");
 	interpretedInput = interpretedInput.replaceAll("(^|\\b)on \\{", "\\{");
-	blackBox.fine("Complete Parsing: " + interpretedInput);
+	//blackBox.fine("Complete Parsing: " + interpretedInput);
 	return interpretedInput;
     }
 
