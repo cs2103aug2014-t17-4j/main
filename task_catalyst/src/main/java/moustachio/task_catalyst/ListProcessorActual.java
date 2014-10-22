@@ -52,6 +52,13 @@ public class ListProcessorActual implements ListProcessor{
 					}
 				}
 				return filteredList;
+			case "smd":
+				for(Task task:list) {
+					if(task.getDateStart() == null) {
+						filteredList.add(task);
+					}
+				}
+				return filteredList;
 			case "dne":
 				for(Task task:list) {
 					if(task.isDone()) {
