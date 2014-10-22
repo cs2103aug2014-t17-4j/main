@@ -60,6 +60,11 @@ public class ListProcessorActual implements ListProcessor{
 				}
 				return filteredList;
 			default:
+				for(Task task:list) {
+					if(task.hasHashtag(hashtag)) {
+						filteredList.add(task);
+					}
+				}
 				return filteredList;
 		}
 	}
