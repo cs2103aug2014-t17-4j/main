@@ -3,3 +3,5 @@
 {"description":"Testing testing!","isDone":true}
 {"description":"Hello!","isDone":false}
 {"description":"Meet #boss at [LT5]","isDone":false}
+{"description":"My #boss #sucks","isDone":false}
+{"description":"My #boss #sucks #ass","isDone":false}
