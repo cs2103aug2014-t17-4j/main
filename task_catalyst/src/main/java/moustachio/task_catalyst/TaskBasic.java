@@ -98,8 +98,8 @@ public class TaskBasic implements Task {
     public boolean hasHashtag(String hashtag) {
 	String hashtagLowerCase = hashtag.toLowerCase();
 	String descriptionLowerCase = this.description.get().toLowerCase();
-	boolean hasHashtag = descriptionLowerCase.matches(".*(^|\\b)"
-		+ hashtagLowerCase + "(\\b|$).*");
+	boolean hasHashtag = descriptionLowerCase.matches(".*(^| )(#)"
+		+ Pattern.quote(hashtagLowerCase) + "(\\b|$).*");
 	return hasHashtag;
     }
 
