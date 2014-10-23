@@ -81,6 +81,7 @@ public class LogicActualTest {
 	}
 
 	// Empty string
+	/* This is a boundary case for the ‘empty string’ partition */
 	@Test
 	public void addTc5() {
 		Message message = logic.processCommand("");
@@ -89,6 +90,7 @@ public class LogicActualTest {
 	}
 
 	// Whitespace string
+	/* This is a boundary case for the ‘empty string’ partition */
 	@Test
 	public void addTc6() {
 		Message message = logic.processCommand(" ");
@@ -105,6 +107,7 @@ public class LogicActualTest {
 	}
 
 	// Test empty string
+	/* This is a boundary case for the ‘empty string’ partition */
 	@Test
 	public void getMessageTypingTc1() {
 		Message message = logic.getMessageTyping("");
@@ -113,6 +116,7 @@ public class LogicActualTest {
 	}
 
 	// Test whitespace string
+	/* This is a boundary case for the ‘empty string’ partition */
 	@Test
 	public void getMessageTypingTc2() {
 		Message message = logic.getMessageTyping(" ");
@@ -137,6 +141,7 @@ public class LogicActualTest {
 	}
 
 	// Test multiple command partial match
+	/* This is a boundary case for the ‘no command’ partition */
 	@Test
 	public void getMessageTypingTc5() {
 		Message message = logic.getMessageTyping("d");
@@ -146,6 +151,7 @@ public class LogicActualTest {
 	}
 
 	// Test edit command match with no parameters
+	/* This is a boundary case for the ‘no parameter’ partition */
 	@Test
 	public void getMessageTypingTc6() {
 		Message message = logic.getMessageTyping("edit");
@@ -156,6 +162,7 @@ public class LogicActualTest {
 	}
 
 	// Test edit command match with space
+	/* This is a boundary case for the ‘no parameter’ partition */
 	@Test
 	public void getMessageTypingTc7() {
 		Message message = logic.getMessageTyping("edit ");
@@ -166,6 +173,7 @@ public class LogicActualTest {
 	}
 
 	// Test edit command match with parameter
+	/* This is a boundary case for the ‘has parameter’ partition */
 	@Test
 	public void getMessageTypingTc8() {
 		logic.processCommand("item 1");
@@ -177,6 +185,7 @@ public class LogicActualTest {
 	}
 
 	// Test command match with non-matching parameter and space
+	/* This is a boundary case for the ‘has parameter’ partition */
 	@Test
 	public void getMessageTypingTc9() {
 		logic.processCommand("item 1");
@@ -187,6 +196,7 @@ public class LogicActualTest {
 	}
 
 	// Test command match with matching parameter and space
+	/* This is a boundary case for the ‘has parameter’ partition */
 	@Test
 	public void getMessageTypingTc10() {
 		logic.processCommand("item 1");
@@ -196,6 +206,7 @@ public class LogicActualTest {
 	}
 
 	// Test command match with matching parameter and double-space
+	/* This is a non-boundary case for the ‘has parameter’ partition */
 	@Test
 	public void getMessageTypingTc11() {
 		logic.processCommand("item 1");
@@ -205,6 +216,7 @@ public class LogicActualTest {
 	}
 
 	// Test command match with matching parameter and double-space
+	/* This is a boundary case for the ‘has parameter has content’ partition */
 	@Test
 	public void getMessageTypingTc12() {
 		logic.processCommand("item 1");
@@ -215,6 +227,7 @@ public class LogicActualTest {
 	}
 
 	// Test command match with matching parameter and double-space
+	/* This is a boundary case for the ‘has parameter has content’ partition */
 	@Test
 	public void getMessageTypingTc13() {
 		logic.processCommand("item 1");
@@ -293,7 +306,7 @@ public class LogicActualTest {
 	// Complete one item.
 	@Test
 	public void doneTc4() {
-		Message addMessage = logic.processCommand("Hello kitty!");
+		logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("done 1");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("Task successfully completed: Hello kitty!",
