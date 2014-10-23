@@ -1,10 +1,8 @@
 package moustachio.task_catalyst;
 
-import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 public class ListProcessorActual implements ListProcessor{
@@ -12,14 +10,8 @@ public class ListProcessorActual implements ListProcessor{
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
 		List<Task> filteredList = new ArrayList<Task>();
-		SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy");
-		Calendar date = Calendar.getInstance();
-		Date today = date.getTime();
-		String todayDate = dateFormat.format(today);
-		date.setTime(today);
-		date.add(Calendar.DATE, 1);
-		Date tomorrow = date.getTime();
-		String tomorrowDate = dateFormat.format(tomorrow);
+		LocalDate today = LocalDate.now();
+		LocalDate tomorrow = today.plusDays(1);
 		switch(hashtag) {
 			case "all": 
 				for(Task task:list) {
@@ -30,31 +22,28 @@ public class ListProcessorActual implements ListProcessor{
 				return filteredList;
 			case "tdy": 
 				for(Task task:list) {
-					if(task.getDescriptionRaw().contains(todayDate) && !task.isDone()) {
+					if(task.getDateEnd() != null && task.getDateEnd().toLocalDate().isEqual(today) && !task.isDone()) {
 						filteredList.add(task);
 					}
 				}
 				return filteredList;
 			case "tmr": 
 				for(Task task:list) {
-					if(task.getDescriptionRaw().contains(tomorrowDate) && !task.isDone()) {
+					if(task.getDateEnd() != null && task.getDateEnd().toLocalDate().isEqual(tomorrow) && !task.isDone()) {
 						filteredList.add(task);
 					}
 				}
 				return filteredList;
 			case "upc": 
 				for(Task task:list) {
-					if(task.getDescriptionRaw().contains(todayDate) || task.getDescriptionRaw().contains(tomorrowDate) || task.isDone()) {
-						continue;
-					}
-					else {
+					if(task.getDateEnd() != null && task.getDateEnd().toLocalDate().isAfter(tomorrow) && !task.isDone()) {
 						filteredList.add(task);
 					}
 				}
 				return filteredList;
 			case "smd":
 				for(Task task:list) {
-					if(task.getDateStart() == null) {
+					if(task.getDateEnd() == null) {
 						filteredList.add(task);
 					}
 				}
