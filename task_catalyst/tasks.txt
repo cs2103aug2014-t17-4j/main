@@ -2,3 +2,4 @@
 {"description":"What's up man!","isDone":true}
 {"description":"Testing testing!","isDone":true}
 {"description":"Hello!","isDone":false}
+{"description":"Meet #boss at [LT5]","isDone":false}

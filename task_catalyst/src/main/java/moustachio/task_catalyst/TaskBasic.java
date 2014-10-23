@@ -96,8 +96,8 @@ public class TaskBasic implements Task {
 
 	public boolean hasHashtag(String hashtag) {
 		String hashtagLowerCase = hashtag.toLowerCase();
-		return hasKeyword(hashtagLowerCase + " ")
-				|| hasKeyword(hashtagLowerCase + "\n");
+		return hasKeyword("#"+hashtagLowerCase + " ")
+				|| hasKeyword("#"+hashtagLowerCase + "\n");
 	}
 
 	public boolean hasKeyword(String keyword) {
