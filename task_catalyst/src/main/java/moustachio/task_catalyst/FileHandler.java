@@ -23,12 +23,15 @@ import org.json.simple.parser.ParseException;
 
 public class FileHandler {
 
+	private static BlackBox blackbox = BlackBox.getInstance();
+	
 	public static void writeTask(Task task, String fileName) throws IOException{
 		assert(task!=null);
+		assert(fileName!=null);
 		try{
 			writeJSONFile(task, fileName);
 		} catch (IOException e) {
-			e.printStackTrace();
+			blackbox.info("IO fault has been enountered.");
 		} 
 	}
 	
@@ -61,11 +64,11 @@ public class FileHandler {
 		try {
 			readJSONFormat(fileName, list);
 		}catch (FileNotFoundException e){
-			e.printStackTrace();
+			blackbox.info("The file is empty.");
 		}catch (IOException e){
-			e.printStackTrace();
+			blackbox.info("IO fault has been enountered.");
 		}catch (ParseException e){
-			e.printStackTrace();
+			blackbox.info("Incorrect format has been found");
 		}
 	}
 
@@ -76,7 +79,6 @@ public class FileHandler {
 		JSONConverter objCodec = new JSONConverter();
 
 		while ((stringLine = breader.readLine()) != null){
-			System.out.println(stringLine);
 			list.add(objCodec.decodeToString(stringLine));
 		}
 		breader.close();
@@ -90,9 +92,9 @@ public class FileHandler {
 		try {
 			isSuccess = write(name, fileName, value);
 		}catch (FileNotFoundException e){
-			e.printStackTrace();
+			blackbox.info("The file is empty.");
 		}catch (IOException e) {
-			e.printStackTrace();
+			blackbox.info("IO fault has been enountered.");
 		}
 		return isSuccess;
 	}
@@ -122,17 +124,18 @@ public class FileHandler {
 			}
 			reader.close();
 		}catch (IOException e){
-			return "Error";
+			blackbox.info("IO fault has been enountered.");
 		}
 		return value;
 	}
 
-	private static BufferedReader getReader (String fileName) throws FileNotFoundException {
-		FileReader reader = new FileReader(fileName);
-		BufferedReader breader = new BufferedReader(reader);
-		return breader;
+	private static BufferedReader getReader(String fileName)
+			throws FileNotFoundException {
+		FileReader freader = new FileReader(fileName);
+		BufferedReader reader = new BufferedReader (freader);
+		return reader;
 	}
-	
+
 	private static boolean isEmptyFile(String fileName) {
 		try {
 			BufferedReader reader = getReader(fileName);
@@ -142,7 +145,7 @@ public class FileHandler {
 			}
 			reader.close();
 		} catch (IOException e) {
-			e.printStackTrace();
+			blackbox.info("IO fault has been enountered.");
 		}
 		return false;
 	}
@@ -154,7 +157,7 @@ public class FileHandler {
 			writer.print("");
 			writer.close();
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			blackbox.info("The file is empty.");
 		}
 	}
 }
