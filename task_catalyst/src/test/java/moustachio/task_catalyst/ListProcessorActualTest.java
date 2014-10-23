@@ -25,11 +25,13 @@ public class ListProcessorActualTest {
 	public void tearDown() throws Exception {
 	}
 
+	/*This is a boundary case for the case 'empty list' partition*/
 	@Test
 	public void testSearchByHashtag() {
 		assertEquals(listProcessor.searchByHashtag(tasks, "boss").size(), 0);
 	}
 	
+	/*This is a boundary case for the case 'list with task' partition*/
 	@Test
 	public void testSearchByHashtag2() {
 		tasks.add(taskBuilder.createTask("meet #boss at 5pm"));
