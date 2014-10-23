@@ -35,9 +35,9 @@ public class TaskCatalyst extends Application {
 
 	@Override
 	public void start(Stage primaryStage){
-		Parent root;
+		
 		try {
-			root = FXMLLoader.load(getClass().getResource(
+			Parent root = FXMLLoader.load(getClass().getResource(
 					"userInterface.fxml"));
 			Scene scene = new Scene(root);
 			addDragListeners(root);
