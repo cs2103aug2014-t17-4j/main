@@ -43,7 +43,7 @@ public class ListProcessorActual implements ListProcessor{
 				return filteredList;
 			case "smd":
 				for(Task task:list) {
-					if(task.getDateEnd() == null) {
+					if(task.getDateEnd() == null && !task.isDone()) {
 						filteredList.add(task);
 					}
 				}
@@ -57,7 +57,7 @@ public class ListProcessorActual implements ListProcessor{
 				return filteredList;
 			default:
 				for(Task task:list) {
-					if(task.hasHashtag(hashtag)) {
+					if(task.hasHashtag(hashtag) && !task.isDone()) {
 						filteredList.add(task);
 					}
 				}
