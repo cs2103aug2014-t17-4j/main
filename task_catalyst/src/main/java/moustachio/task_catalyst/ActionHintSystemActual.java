@@ -13,7 +13,7 @@ public class ActionHintSystemActual implements ActionHintSystem {
 	public void testMode() {
 		actionInvoker.testMode();
 	}
-	
+
 	@Override
 	public Message processCommand(String userCommand) {
 		Action action = generateAction(userCommand);
@@ -40,9 +40,9 @@ public class ActionHintSystemActual implements ActionHintSystem {
 				return new Message(Message.TYPE_HINT, "Do you mean " + message
 						+ "?");
 			} else {
-				message = TaskBuilderAdvanced
-						.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced
-								.prettyString(TaskBuilderAdvanced
+				message = TaskCatalystCommons
+						.removeCurlyBraces(TaskCatalystCommons.removeSquareBrackets(TaskCatalystCommons
+								.prettyString(TaskCatalystCommons
 										.interpretedString(userCommand))));
 				message += "\nAdd: You can include date information. Use []s to ignore processing.";
 				// message = TaskBuilderAdvanced.interpretedString(userCommand);
@@ -83,8 +83,8 @@ public class ActionHintSystemActual implements ActionHintSystem {
 							+ editTask.getDescriptionEdit();
 				} else if (hasFurtherParameters && isValidTask) {
 					type = Message.TYPE_HINT;
-					message = TaskBuilderAdvanced
-							.removeCurlyBraces(TaskBuilderAdvanced.removeSquareBrackets(TaskBuilderAdvanced.prettyString(TaskBuilderAdvanced.interpretedString(TaskCatalystCommons
+					message = TaskCatalystCommons
+							.removeCurlyBraces(TaskCatalystCommons.removeSquareBrackets(TaskCatalystCommons.prettyString(TaskCatalystCommons.interpretedString(TaskCatalystCommons
 									.removeFirstWord(TaskCatalystCommons
 											.removeFirstWord(userCommand))))));
 					message += "\nEdit: Hit enter after making your changes.";
