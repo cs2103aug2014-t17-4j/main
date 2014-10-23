@@ -40,10 +40,14 @@ public class ActionHintSystemActual implements ActionHintSystem {
 				return new Message(Message.TYPE_HINT, "Do you mean " + message
 						+ "?");
 			} else {
+				try {
 				message = TaskCatalystCommons
 						.removeCurlyBraces(TaskCatalystCommons.removeSquareBrackets(TaskCatalystCommons
-								.prettyString(TaskCatalystCommons
-										.interpretedString(userCommand))));
+								.getPrettyString(TaskCatalystCommons
+										.getInterpretedString(userCommand))));
+				} catch (UnsupportedOperationException e) {
+					message = "You cannot mix date types, and you can only specify one pair of date ranges per task.";
+				}
 				message += "\nAdd: You can include date information. Use []s to ignore processing.";
 				// message = TaskBuilderAdvanced.interpretedString(userCommand);
 				// message =
@@ -84,7 +88,7 @@ public class ActionHintSystemActual implements ActionHintSystem {
 				} else if (hasFurtherParameters && isValidTask) {
 					type = Message.TYPE_HINT;
 					message = TaskCatalystCommons
-							.removeCurlyBraces(TaskCatalystCommons.removeSquareBrackets(TaskCatalystCommons.prettyString(TaskCatalystCommons.interpretedString(TaskCatalystCommons
+							.removeCurlyBraces(TaskCatalystCommons.removeSquareBrackets(TaskCatalystCommons.getPrettyString(TaskCatalystCommons.getInterpretedString(TaskCatalystCommons
 									.removeFirstWord(TaskCatalystCommons
 											.removeFirstWord(userCommand))))));
 					message += "\nEdit: Hit enter after making your changes.";

@@ -9,7 +9,7 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 		}
 
 		String interpretedString = TaskCatalystCommons
-				.interpretedString(userInput);
+				.getInterpretedString(userInput);
 
 		return new TaskAdvanced(interpretedString);
 	}

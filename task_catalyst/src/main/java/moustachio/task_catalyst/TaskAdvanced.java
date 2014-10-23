@@ -40,7 +40,7 @@ public class TaskAdvanced implements Task {
 		String interpretedString = this.description.get();
 
 		String prettyString = TaskCatalystCommons
-				.prettyString(interpretedString);
+				.getPrettyString(interpretedString);
 
 		String noCurlyBracesString = TaskCatalystCommons
 				.removeCurlyBraces(prettyString);
@@ -56,7 +56,7 @@ public class TaskAdvanced implements Task {
 		String interpretedString = this.description.get();
 
 		String prettyString = TaskCatalystCommons
-				.prettyString(interpretedString);
+				.getPrettyString(interpretedString);
 
 		String noCurlyBracesString = TaskCatalystCommons
 				.removeCurlyBraces(prettyString);
