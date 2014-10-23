@@ -1,6 +1,7 @@
 package moustachio.task_catalyst;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import javafx.beans.property.StringProperty;
@@ -8,24 +9,26 @@ import javafx.beans.property.StringProperty;
 public interface Task extends Comparable<Task> {
 
 	public String getDescription();
-	
+
 	public String getDescriptionRaw();
-	
+
 	public String getDescriptionEdit();
 
 	public void setDescription(String description);
 
 	public StringProperty getDescriptionProperty();
 
-	public LocalDateTime getDateStart();
+	public List<Date> getAllDates();
 
-	public void setDateStart(LocalDateTime dateStart);
+	public LocalDateTime getDateStart();
 
 	public LocalDateTime getDateEnd();
 
-	public void setDateEnd(LocalDateTime dateEnd);
-
 	public List<String> getHashtags();
+
+	public boolean isRange();
+
+	public void setRange(boolean done);
 
 	public boolean isDone();
 

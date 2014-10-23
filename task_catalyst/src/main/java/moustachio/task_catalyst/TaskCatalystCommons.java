@@ -19,6 +19,8 @@ public class TaskCatalystCommons {
 
 	private static final int INVALID_INTEGER = -1;
 
+	// Command Parsing Methods
+	
 	public static int parseInt(String intString) {
 		try {
 			int value = Integer.parseInt(intString);
@@ -75,6 +77,8 @@ public class TaskCatalystCommons {
 		}
 	}
 
+	// Task Parsing Methods
+	
 	public static String interpretedString(String userInput) {
 		SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy KK:mm a");
 		String interpretedInput = userInput;
