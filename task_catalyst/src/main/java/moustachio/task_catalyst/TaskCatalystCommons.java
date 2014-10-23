@@ -96,6 +96,8 @@ public class TaskCatalystCommons {
 
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				"[a-zA-Z-_]+[0-9]+");
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				"#+");
 		/*
 		 * interpretedInput = ignoreBasedOnRegex(interpretedInput,
 		 * "[a-zA-Z-_]+[0-9]+"); // Ignore anything ending with numbers. //
