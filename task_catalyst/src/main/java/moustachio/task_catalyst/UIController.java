@@ -238,11 +238,9 @@ public class UIController {
 	}
 
 	private ObservableList<String> getHashTagFromList() {
-		List<String> DefaultHashTags = logic.getDefaultHashtags();
 		List<String> hashTags = logic.getHashtags();
 
 		hashTagToBeDisplayed.clear();
-		hashTagToBeDisplayed.addAll(DefaultHashTags);
 		hashTagToBeDisplayed.addAll(hashTags);
 
 		return hashTagToBeDisplayed;
