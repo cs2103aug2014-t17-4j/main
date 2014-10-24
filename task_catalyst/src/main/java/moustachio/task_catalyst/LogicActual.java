@@ -28,11 +28,6 @@ public class LogicActual implements Logic {
 	}
 
 	@Override
-	public List<String> getDefaultHashtags() {
-		return taskManager.getDefaultHashtags();
-	}
-
-	@Override
 	public List<String> getHashtags() {
 		return taskManager.getHashtags();
 	}
@@ -40,5 +35,15 @@ public class LogicActual implements Logic {
 	@Override
 	public List<Task> getList() {
 		return taskManager.getDisplayList();
+	}
+
+	@Override
+	public List<Highlight> getHashtagHighlight() {
+		return taskManager.getHashtagHighlight();
+	}
+
+	@Override
+	public List<Highlight> getTasksHighlight() {
+		return taskManager.getTasksHighlight();
 	}
 }

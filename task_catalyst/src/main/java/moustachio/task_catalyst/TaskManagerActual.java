@@ -19,8 +19,12 @@ public class TaskManagerActual implements TaskManager {
 	private DisplayMode displayMode;
 	private String displayKeyword;
 
-	private List<Task> tasks;
+	private List<Task> taskList;
 	private List<Task> displayList;
+	private List<String> hashtagList;
+
+	private List<Highlight> hashtagHighlights;
+	private List<Highlight> taskHighlights;
 
 	private static TaskManagerActual instance;
 
@@ -36,8 +40,9 @@ public class TaskManagerActual implements TaskManager {
 		listProcessor = new ListProcessorStub();
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
-		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
-		refreshDisplayList();
+		taskList = storage.loadTasks(DEFAULT_FILE_NAME);
+		hashtagList = new ArrayList<String>();
+		refreshLists();
 	}
 
 	public void testMode() {
@@ -45,28 +50,14 @@ public class TaskManagerActual implements TaskManager {
 		// listProcessor = new ListProcessorStub();
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
-		tasks.clear();
-		refreshDisplayList();
-	}
-
-	@Override
-	public List<String> getDefaultHashtags() {
-		List<String> defaultHashtagsList = new ArrayList<String>();
-		for (String hashtag : DEFAULT_HASHTAGS) {
-			defaultHashtagsList.add(hashtag);
-		}
-		return defaultHashtagsList;
+		hashtagList = new ArrayList<String>();
+		clearLists();
+		refreshLists();
 	}
 
 	@Override
 	public List<String> getHashtags() {
-		SortedSet<String> allHashtagsSet = new TreeSet<String>();
-		for (Task task : tasks) {
-			List<String> taskHashtags = task.getHashtags();
-			allHashtagsSet.addAll(taskHashtags);
-		}
-		List<String> allHashtagsList = new ArrayList<String>(allHashtagsSet);
-		return allHashtagsList;
+		return hashtagList;
 	}
 
 	@Override
@@ -76,27 +67,32 @@ public class TaskManagerActual implements TaskManager {
 
 	@Override
 	public List<Task> getList() {
-		return tasks;
+		return taskList;
 	}
 
 	@Override
 	public boolean addTask(Task task) {
-		boolean isAdded = tasks.add(task);
+		boolean isAdded = taskList.add(task);
 		boolean isSaved = false;
 		if (isAdded) {
-			isSaved = save();
+			isSaved = saveTasks();
 		}
 		boolean isSuccess = isAdded && isSaved;
 		if (isSuccess) {
-			refreshDisplayList();
+			refreshLists();
 		}
+		displayAutoswitchToTask(task);
+		addTaskHighlight(Highlight.TYPE_TASK_LAST_ADDED, task);
+		return isSuccess;
+	}
+
+	private void displayAutoswitchToTask(Task task) {
 		boolean isTaskDisplayed = displayList.contains(task);
 		if (!isTaskDisplayed) {
 			setDisplayMode(DEFAULT_DISPLAY_MODE);
 			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);
-			refreshDisplayList();
+			refreshLists();
 		}
-		return isSuccess;
 	}
 
 	@Override
@@ -108,33 +104,34 @@ public class TaskManagerActual implements TaskManager {
 		}
 		boolean isSuccess = isRemoved && isAdded;
 		if (isSuccess) {
-			refreshDisplayList();
+			refreshLists();
 		}
 		return isSuccess;
 	}
 
 	@Override
 	public boolean removeTask(Task task) {
-		boolean isRemoved = tasks.remove(task);
+		boolean isRemoved = taskList.remove(task);
 		boolean isSaved = false;
 		if (isRemoved) {
-			isSaved = save();
+			isSaved = saveTasks();
 		}
 		boolean isSuccess = isRemoved && isSaved;
 		if (isSuccess) {
-			refreshDisplayList();
+			refreshLists();
 		}
+		displayAutoswitchToTask(task);
 		return isSuccess;
 	}
 
 	@Override
 	public boolean completeTask(Task task) {
 		task.setDone(true);
-		boolean isSaved = save();
+		boolean isSaved = saveTasks();
 		boolean isDone = task.isDone();
 		boolean isSuccess = isDone && isSaved;
 		if (isSuccess) {
-			refreshDisplayList();
+			refreshLists();
 		}
 		return isSuccess;
 	}
@@ -142,11 +139,11 @@ public class TaskManagerActual implements TaskManager {
 	@Override
 	public boolean uncompleteTask(Task task) {
 		task.setDone(false);
-		boolean isSaved = save();
+		boolean isSaved = saveTasks();
 		boolean isUndone = !task.isDone();
 		boolean isSuccess = isUndone && isSaved;
 		if (isSuccess) {
-			refreshDisplayList();
+			refreshLists();
 		}
 		return isSuccess;
 	}
@@ -161,7 +158,7 @@ public class TaskManagerActual implements TaskManager {
 		isRemoved = removeTask(task);
 		boolean isSuccess = isRemoved && isFound;
 		if (isSuccess) {
-			refreshDisplayList();
+			refreshLists();
 		}
 		return task;
 	}
@@ -185,36 +182,145 @@ public class TaskManagerActual implements TaskManager {
 	@Override
 	public void setDisplayKeyword(String keyword) {
 		displayKeyword = keyword;
+		refreshLists();
+	}
+
+	@Override
+	public List<Highlight> getHashtagHighlight() {
+		return hashtagHighlights;
+	}
+
+	@Override
+	public List<Highlight> getTasksHighlight() {
+		return taskHighlights;
+	}
+
+	@Override
+	public boolean addHashtagHighlight(int type, String hashtag) {
+		int hashtagIndex = hashtagList.indexOf("#" + hashtag);
+		boolean success;
+		boolean isFound = hashtagIndex >= 0;
+		if (isFound) {
+			Highlight highlight = new Highlight(type, hashtagIndex);
+			hashtagHighlights.add(highlight);
+			success = true;
+		} else {
+			success = false;
+		}
+		return success;
+	}
+
+	@Override
+	public boolean addTaskHighlight(int type, Task task) {
+		int taskIndex = taskList.indexOf(task);
+		boolean success;
+		boolean isFound = taskIndex >= 0;
+		if (isFound) {
+			Highlight highlight = new Highlight(type, taskIndex);
+			taskHighlights.add(highlight);
+			success = true;
+		} else {
+			success = false;
+		}
+		return success;
+	}
+
+	@Override
+	public void clearHashtagHighlights() {
+		hashtagHighlights.clear();
+	}
+
+	@Override
+	public void clearTaskHighlights() {
+		taskHighlights.clear();
+	}
+
+	private void clearLists() {
+		hashtagList.clear();
+		taskList.clear();
+	}
+
+	private void refreshLists() {
 		refreshDisplayList();
-	}
-
-	@Override
-	public Highlight getHashtagHighlight() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Highlight getTasksHighlight() {
-		// TODO Auto-generated method stub
-		return null;
+		refreshHashtagList();
 	}
 
 	private void refreshDisplayList() {
 		switch (displayMode) {
 		case HASHTAG:
-			displayList = listProcessor.searchByHashtag(tasks, displayKeyword);
+			displayList = listProcessor.searchByHashtag(taskList,
+					displayKeyword);
 			break;
 		case SEARCH:
-			displayList = listProcessor.searchByKeyword(tasks, displayKeyword);
+			displayList = listProcessor.searchByKeyword(taskList,
+					displayKeyword);
 			break;
 		}
 		displayList = listProcessor.sortByDate(displayList);
+	
+		clearTaskHighlights();
+
+		// Highlight all priority tasks.
+		for (Task task : displayList) {
+			if (task.isPriority()) {
+				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY, task);
+			}
+		}
+		
+		// Add absolute overlap code here?
 	}
 
-	private boolean save() {
+	private void refreshHashtagList() {
+
+		List<String> defaultHashtags = generateDefaultHashtags();
+		List<String> customHashtags = generateCustomHashtags();
+
+		hashtagList.clear();
+		hashtagList.addAll(defaultHashtags);
+		hashtagList.addAll(customHashtags);
+
+		clearHashtagHighlights();
+
+		if (displayMode == DisplayMode.HASHTAG) {
+			String hashtagTerm = "#" + displayKeyword;
+			boolean isValidHashtag = hashtagList.contains(hashtagTerm);
+			if (!isValidHashtag) {
+				hashtagList.add(hashtagTerm);
+				addHashtagHighlight(Highlight.TYPE_HASHTAG_INVALID, hashtagTerm);
+			}
+		} else if (displayMode == DisplayMode.SEARCH) {
+			String searchTerm = "search " + displayKeyword;
+			hashtagList.add(0, searchTerm);
+			addHashtagHighlight(Highlight.TYPE_SEARCH, searchTerm);
+		}
+
+		// Highlight all default hashtags.
+		for (String defaultHashtag : defaultHashtags) {
+			addHashtagHighlight(Highlight.TYPE_HASHTAG_DEFAULT, defaultHashtag);
+		}
+	}
+
+	private List<String> generateDefaultHashtags() {
+		List<String> defaultHashtags = new ArrayList<String>();
+		for (String hashtag : DEFAULT_HASHTAGS) {
+			defaultHashtags.add(hashtag);
+		}
+		return defaultHashtags;
+	}
+
+	private List<String> generateCustomHashtags() {
+		SortedSet<String> allHashtagsSet = new TreeSet<String>();
+		for (Task task : taskList) {
+			List<String> taskHashtags = task.getHashtags();
+			allHashtagsSet.addAll(taskHashtags);
+		}
+		List<String> customHashtags = new ArrayList<String>(allHashtagsSet);
+		return customHashtags;
+	}
+
+	private boolean saveTasks() {
 		boolean success;
-		success = storage.saveTasks(tasks, DEFAULT_FILE_NAME);
+		success = storage.saveTasks(taskList, DEFAULT_FILE_NAME);
 		return success;
 	}
 }
