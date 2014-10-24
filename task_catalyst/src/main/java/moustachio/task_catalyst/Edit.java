@@ -4,6 +4,8 @@ import java.util.Arrays;
 
 public class Edit extends Action {
 
+	private static final String FORMAT_AUTOCOMPLETE = "edit %d %s";
+
 	private static final String HINT_VALID_TASK = "\nEdit: Hit enter after making your changes.";
 
 	private static final String HINT_INVALID_TASK = "Edit: Invalid task number specified.";
@@ -61,7 +63,7 @@ public class Edit extends Action {
 	public static Message getHint(String userCommand) {
 		int type;
 		String message;
-		
+
 		type = Message.TYPE_HINT;
 		message = HINT_MESSAGE;
 
@@ -70,37 +72,42 @@ public class Edit extends Action {
 		taskNumberString = TaskCatalystCommons.getFirstWord(taskNumberString);
 		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
 
+		Task editTask = taskManager.getDisplayTask(taskNumber);
+
+		String furtherParameters;
+		furtherParameters = TaskCatalystCommons.removeFirstWord(userCommand);
+		furtherParameters = TaskCatalystCommons
+				.removeFirstWord(furtherParameters);
+		furtherParameters = furtherParameters.trim();
+
+		boolean hasFurtherParameters = !furtherParameters.isEmpty();
+		boolean endsWithSpace = userCommand.endsWith(" ");
+		boolean isValidTask = editTask != null;
 		boolean isPositiveTaskNumber = taskNumber > 0;
 
-		if (isPositiveTaskNumber) {
+		boolean isInvalidTask = !isValidTask && isPositiveTaskNumber
+				&& (endsWithSpace || hasFurtherParameters);
+		boolean isAutocomplete = isValidTask && endsWithSpace
+				&& !hasFurtherParameters;
+		boolean isBeingEdited = isValidTask && hasFurtherParameters;
 
-			Task editTask = taskManager.getDisplayTask(taskNumber);
+		if (isInvalidTask) {
+			message = HINT_INVALID_TASK;
+		} else if (isAutocomplete) {
+			String taskDescription = editTask.getDescriptionEdit();
 
-			String furtherParameters;
-			furtherParameters = TaskCatalystCommons
-					.removeFirstWord(userCommand);
-			furtherParameters = TaskCatalystCommons
-					.removeFirstWord(furtherParameters);
-			furtherParameters = furtherParameters.trim();
+			type = Message.TYPE_AUTOCOMPLETE;
+			message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
+					taskDescription);
+		} else if (isBeingEdited) {
+			String friendlyString = TaskCatalystCommons
+					.getFriendlyString(furtherParameters);
 
-			boolean hasFurtherParameters = !furtherParameters.isEmpty();
-			boolean endsWithSpace = userCommand.endsWith(" ");
-			boolean isValidTask = editTask != null;
-
-			if (!isValidTask && (endsWithSpace || hasFurtherParameters)) {
-				message = HINT_INVALID_TASK;
-			} else if (isValidTask && endsWithSpace && !hasFurtherParameters) {
-				type = Message.TYPE_AUTOCOMPLETE;
-				message = userCommand.trim() + " "
-						+ editTask.getDescriptionEdit();
-			} else if (isValidTask && hasFurtherParameters) {
-				type = Message.TYPE_HINT;
-				String friendlyString = TaskCatalystCommons
-						.getFriendlyString(furtherParameters);
-				message = friendlyString;
-				message += HINT_VALID_TASK;
-			}
+			type = Message.TYPE_HINT;
+			message = friendlyString;
+			message += HINT_VALID_TASK;
 		}
+
 		return new Message(type, message);
 	}
 
@@ -109,16 +116,19 @@ public class Edit extends Action {
 
 		boolean isDeleteSuccess = taskManager.removeTask(targetTask);
 		boolean isAddSuccess = taskManager.addTask(replacementTask);
+
 		int type;
 		String message;
+
 		if (isDeleteSuccess && isAddSuccess) {
 			type = Message.TYPE_SUCCESS;
-			message = String.format(successFormat,
-					replacementTask.getDescription());
+			String taskDescription = replacementTask.getDescription();
+			message = String.format(successFormat, taskDescription);
 		} else {
 			type = Message.TYPE_ERROR;
 			message = String.format(errorFormat);
 		}
+
 		return new Message(type, message);
 	}
 

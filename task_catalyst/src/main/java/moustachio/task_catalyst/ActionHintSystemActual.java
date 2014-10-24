@@ -37,16 +37,7 @@ public class ActionHintSystemActual implements ActionHintSystem {
 
 		switch (COMMAND_TYPE) {
 		case ADD:
-			String matchingCommandsString = getMatchingCommandsString(userCommand);
-
-			boolean isPartialCommand = !matchingCommandsString.isEmpty();
-
-			if (isPartialCommand) {
-				message = getHintSuggestion(matchingCommandsString);
-			} else {
-				message = Add.getHint(userCommand);
-			}
-
+			message = getHintPartialOrAdd(userCommand);
 			break;
 		case DELETE:
 			message = Delete.getHint(userCommand);
@@ -72,6 +63,61 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		default:
 			message = getHintDefault();
 			break;
+		}
+		return message;
+	}
+
+	private Action generateAction(String userCommand) {
+		CommandType COMMAND_TYPE = TaskCatalystCommons
+				.getCommandType(userCommand);
+
+		Action action = null;
+
+		switch (COMMAND_TYPE) {
+		case ADD:
+			action = new Add(userCommand);
+			break;
+		case DELETE:
+			action = new Delete(userCommand);
+			break;
+		case DONE:
+			action = new Done(userCommand);
+			break;
+		case EDIT:
+			action = new Edit(userCommand);
+			break;
+		case HASHTAG:
+			action = new Hashtag(userCommand);
+			break;
+		case REDO:
+			action = new Redo(userCommand);
+			break;
+		case SEARCH:
+			action = new Search(userCommand);
+			break;
+		case UNDO:
+			action = new Undo(userCommand);
+			break;
+		default:
+			action = null;
+			break;
+		}
+
+		return action;
+	}
+
+	// Low-Level Methods
+
+	private Message getHintPartialOrAdd(String userCommand) {
+		Message message;
+		String matchingCommandsString = getMatchingCommandsString(userCommand);
+
+		boolean isPartialCommand = !matchingCommandsString.isEmpty();
+
+		if (isPartialCommand) {
+			message = getHintSuggestion(matchingCommandsString);
+		} else {
+			message = Add.getHint(userCommand);
 		}
 		return message;
 	}
@@ -122,44 +168,5 @@ public class ActionHintSystemActual implements ActionHintSystem {
 			}
 		}
 		return matchingCommands;
-	}
-
-	private Action generateAction(String userCommand) {
-		CommandType COMMAND_TYPE = TaskCatalystCommons
-				.getCommandType(userCommand);
-
-		Action action = null;
-
-		switch (COMMAND_TYPE) {
-		case ADD:
-			action = new Add(userCommand);
-			break;
-		case DELETE:
-			action = new Delete(userCommand);
-			break;
-		case DONE:
-			action = new Done(userCommand);
-			break;
-		case EDIT:
-			action = new Edit(userCommand);
-			break;
-		case HASHTAG:
-			action = new Hashtag(userCommand);
-			break;
-		case REDO:
-			action = new Redo(userCommand);
-			break;
-		case SEARCH:
-			action = new Search(userCommand);
-			break;
-		case UNDO:
-			action = new Undo(userCommand);
-			break;
-		default:
-			action = null;
-			break;
-		}
-
-		return action;
 	}
 }
