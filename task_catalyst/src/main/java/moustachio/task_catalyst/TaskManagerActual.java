@@ -33,16 +33,16 @@ public class TaskManagerActual implements TaskManager {
 
 	private TaskManagerActual() {
 		storage = new StorageActual();
-		listProcessor = new ListProcessorActual();
+		listProcessor = new ListProcessorStub();
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
 		tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 		refreshDisplayList();
 	}
-	
+
 	public void testMode() {
 		storage = new StorageStub();
-		//listProcessor = new ListProcessorStub();
+		// listProcessor = new ListProcessorStub();
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
 		tasks.clear();
@@ -88,6 +88,12 @@ public class TaskManagerActual implements TaskManager {
 		}
 		boolean isSuccess = isAdded && isSaved;
 		if (isSuccess) {
+			refreshDisplayList();
+		}
+		boolean isTaskDisplayed = displayList.contains(task);
+		if (!isTaskDisplayed) {
+			setDisplayMode(DEFAULT_DISPLAY_MODE);
+			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);
 			refreshDisplayList();
 		}
 		return isSuccess;
@@ -180,6 +186,18 @@ public class TaskManagerActual implements TaskManager {
 	public void setDisplayKeyword(String keyword) {
 		displayKeyword = keyword;
 		refreshDisplayList();
+	}
+
+	@Override
+	public Highlight getHashtagHighlight() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Highlight getTasksHighlight() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private void refreshDisplayList() {

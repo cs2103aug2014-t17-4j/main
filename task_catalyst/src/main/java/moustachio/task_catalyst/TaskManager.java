@@ -11,9 +11,9 @@ public interface TaskManager {
 	public List<Task> getDisplayList();
 
 	public List<Task> getList();
-	
+
 	public boolean completeTask(Task task);
-	
+
 	public boolean uncompleteTask(Task task);
 
 	public boolean addTask(Task task);
@@ -23,12 +23,16 @@ public interface TaskManager {
 	public boolean removeTask(Task task);
 
 	public Task removeDisplayTask(int taskNumber);
-	
+
 	public Task getDisplayTask(int taskNumber);
 
 	public void setDisplayMode(DisplayMode TYPE);
-	
+
 	public void setDisplayKeyword(String keyword);
-	
+
+	public Highlight getHashtagHighlight();
+
+	public Highlight getTasksHighlight();
+
 	public void testMode();
 }

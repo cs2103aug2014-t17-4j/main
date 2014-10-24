@@ -44,7 +44,7 @@ public class LogicActualTest {
 
 		Task task = logic.getList().get(0);
 		// assertEquals(userCommand, task.getDescription());
-		assertEquals("2014-09-21T17:00", task.getDateStart().toString());
+		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart().toString());
 	}
 
 	// Basic Add with End Date
@@ -58,8 +58,8 @@ public class LogicActualTest {
 
 		Task task = logic.getList().get(0);
 		// assertEquals(userCommand, task.getDescription());
-		assertEquals("2014-09-21T17:00", task.getDateStart().toString());
-		assertEquals("2014-09-21T18:00", task.getDateEnd().toString());
+		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart().toString());
+		assertEquals("Sun Sep 21 18:00:00 SGT 2014", task.getDateEnd().toString());
 	}
 
 	// Two or more basic adds
@@ -635,5 +635,27 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("(Redo) Task successfully edited: after",
 				message.getMessage());
+	}
+	
+	// Test that display is automatically switched to added task if not in display.
+	@Test
+	public void autoswitchTc1() {
+		logic.processCommand("Hello boss1");
+		logic.processCommand("Hello boss2");
+		logic.processCommand("search boss1");
+		assertEquals(logic.getList().size(), 1);
+		logic.processCommand("Hello boss3");
+		assertEquals(logic.getList().size(), 3);
+	}
+	
+	// Test autoswitching functionality for edit as well.
+	@Test
+	public void autoswitchTc2() {
+		logic.processCommand("Hello boss1");
+		logic.processCommand("Hello boss2");
+		logic.processCommand("search boss1");
+		assertEquals(logic.getList().size(), 1);
+		logic.processCommand("edit 1 boss3");
+		assertEquals(logic.getList().size(), 2);
 	}
 }
