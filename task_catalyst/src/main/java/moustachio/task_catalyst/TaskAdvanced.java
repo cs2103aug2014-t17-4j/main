@@ -1,8 +1,5 @@
 package moustachio.task_catalyst;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -88,28 +85,25 @@ public class TaskAdvanced implements Task {
 	}
 
 	@Override
-	public LocalDateTime getDateStart() {
+	public Date getDateStart() {
 		List<Date> allDates = getAllDates();
-		LocalDateTime localDateTime = null;
+		Date dateStart = null;
 		if (!allDates.isEmpty()) {
-			Instant firstDateInstant = allDates.get(0).toInstant();
-			localDateTime = LocalDateTime.ofInstant(firstDateInstant,
-					ZoneId.systemDefault());
+			int firstIndex = 0;
+			dateStart = allDates.get(firstIndex);
 		}
-		return localDateTime;
+		return dateStart;
 	}
 
 	@Override
-	public LocalDateTime getDateEnd() {
+	public Date getDateEnd() {
 		List<Date> allDates = getAllDates();
-		LocalDateTime localDateTime = null;
+		Date dateEnd = null;
 		if (!allDates.isEmpty()) {
-			Instant lastDateInstant = allDates.get(allDates.size() - 1)
-					.toInstant();
-			localDateTime = LocalDateTime.ofInstant(lastDateInstant,
-					ZoneId.systemDefault());
+			int lastIndex = allDates.size() - 1;
+			dateEnd = allDates.get(lastIndex);
 		}
-		return localDateTime;
+		return dateEnd;
 	}
 
 	// Comparison Methods
@@ -146,8 +140,8 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public int compareTo(Task o) {
-		LocalDateTime thisDateTime = this.getDateStart();
-		LocalDateTime otherDateTime = o.getDateStart();
+		Date thisDateTime = this.getDateStart();
+		Date otherDateTime = o.getDateStart();
 		if (thisDateTime == null && otherDateTime == null) {
 			return 0;
 		} else if (thisDateTime == null) {

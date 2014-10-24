@@ -1,6 +1,5 @@
 package moustachio.task_catalyst;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -16,9 +15,9 @@ public interface Task extends Comparable<Task> {
 
 	public List<Date> getAllDates();
 
-	public LocalDateTime getDateStart();
+	public Date getDateStart();
 
-	public LocalDateTime getDateEnd();
+	public Date getDateEnd();
 
 	public List<String> getHashtags();
 
