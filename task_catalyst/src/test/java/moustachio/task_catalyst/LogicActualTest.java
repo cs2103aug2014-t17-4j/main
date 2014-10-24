@@ -10,7 +10,9 @@ import org.junit.Test;
 
 public class LogicActualTest {
 
+	private static final int NUM_OF_DEFAULT_HASHTAGS = 7;
 	Logic logic;
+	TaskManager taskManager;
 
 	@Before
 	public void setUp() throws Exception {
@@ -44,7 +46,8 @@ public class LogicActualTest {
 
 		Task task = logic.getList().get(0);
 		// assertEquals(userCommand, task.getDescription());
-		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart().toString());
+		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart()
+				.toString());
 	}
 
 	// Basic Add with End Date
@@ -58,8 +61,10 @@ public class LogicActualTest {
 
 		Task task = logic.getList().get(0);
 		// assertEquals(userCommand, task.getDescription());
-		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart().toString());
-		assertEquals("Sun Sep 21 18:00:00 SGT 2014", task.getDateEnd().toString());
+		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart()
+				.toString());
+		assertEquals("Sun Sep 21 18:00:00 SGT 2014", task.getDateEnd()
+				.toString());
 	}
 
 	// Two or more basic adds
@@ -75,9 +80,11 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_SUCCESS, message2.getType());
 
 		Task task1 = logic.getList().get(0);
-		assertEquals("25 Sep 6pm to 26 Sep 8pm clients conference.", task1.getDescription());
+		assertEquals("25 Sep 6pm to 26 Sep 8pm clients conference.",
+				task1.getDescription());
 		Task task2 = logic.getList().get(1);
-		assertEquals("Meet boss at MR5 from 21 Sep 5pm to 6pm", task2.getDescription());
+		assertEquals("Meet boss at MR5 from 21 Sep 5pm to 6pm",
+				task2.getDescription());
 	}
 
 	// Empty string
@@ -274,7 +281,7 @@ public class LogicActualTest {
 		assertEquals("Task successfully deleted: Hello kitty!",
 				message.getMessage());
 	}
-	
+
 	// Complete invalid index.
 	@Test
 	public void doneTc1() {
@@ -354,7 +361,7 @@ public class LogicActualTest {
 	// Get default hashtags
 	@Test
 	public void getDefaultHashtagsTc1() {
-		List<String> defaultHashtags = logic.getDefaultHashtags();
+		List<String> defaultHashtags = logic.getHashtags();
 		assertEquals("#all", defaultHashtags.get(0));
 		assertEquals("#pri", defaultHashtags.get(1));
 		assertEquals("#tdy", defaultHashtags.get(2));
@@ -368,7 +375,7 @@ public class LogicActualTest {
 	@Test
 	public void getHashtagsTc1() {
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(0, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS+0, userHashtags.size());
 	}
 
 	// Get hashtags on a list with no hashtags.
@@ -376,7 +383,7 @@ public class LogicActualTest {
 	public void getHashtagsTc2() {
 		logic.processCommand("hello");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(0, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS+0, userHashtags.size());
 	}
 
 	// Single hashtagged item in a list.
@@ -384,7 +391,7 @@ public class LogicActualTest {
 	public void getHashtagsTc3() {
 		logic.processCommand("Need to meet #boss for #client meeting.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(2, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS+2, userHashtags.size());
 	}
 
 	// Two hashtagged item, no overlaps.
@@ -393,7 +400,7 @@ public class LogicActualTest {
 		logic.processCommand("Need to meet #boss for #client meeting.");
 		logic.processCommand("Go do some #fishing for #charity.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(4, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS+4, userHashtags.size());
 	}
 
 	// Two hashtagged item, with overlaps.
@@ -402,7 +409,7 @@ public class LogicActualTest {
 		logic.processCommand("Need to meet #boss for #client meeting.");
 		logic.processCommand("Go do some #fishing for #client.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(3, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS+3, userHashtags.size());
 	}
 
 	// Numbered hashtags , with overlaps.
@@ -411,7 +418,7 @@ public class LogicActualTest {
 		logic.processCommand("Need to meet #boss1 for #boss2 meeting.");
 		logic.processCommand("Go do some #boss2 for #boss3.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(3, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS+3, userHashtags.size());
 	}
 
 	// Search for non-existent item
@@ -636,26 +643,27 @@ public class LogicActualTest {
 		assertEquals("(Redo) Task successfully edited: after",
 				message.getMessage());
 	}
-	
-	// Test that display is automatically switched to added task if not in display.
+
+	// Test that display is automatically switched to added task if not in
+	// display.
 	@Test
 	public void autoswitchTc1() {
 		logic.processCommand("Hello boss1");
 		logic.processCommand("Hello boss2");
 		logic.processCommand("search boss1");
-		assertEquals(logic.getList().size(), 1);
+		assertEquals(1, logic.getList().size());
 		logic.processCommand("Hello boss3");
-		assertEquals(logic.getList().size(), 3);
+		assertEquals(3, logic.getList().size());
 	}
-	
+
 	// Test autoswitching functionality for edit as well.
 	@Test
 	public void autoswitchTc2() {
 		logic.processCommand("Hello boss1");
 		logic.processCommand("Hello boss2");
 		logic.processCommand("search boss1");
-		assertEquals(logic.getList().size(), 1);
+		assertEquals(1, logic.getList().size());
 		logic.processCommand("edit 1 boss3");
-		assertEquals(logic.getList().size(), 2);
+		assertEquals(2, logic.getList().size());
 	}
 }
