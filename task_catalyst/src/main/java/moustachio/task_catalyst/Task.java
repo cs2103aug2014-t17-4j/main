@@ -4,8 +4,6 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-import javafx.beans.property.StringProperty;
-
 public interface Task extends Comparable<Task> {
 
 	public String getDescription();
@@ -16,8 +14,6 @@ public interface Task extends Comparable<Task> {
 
 	public void setDescription(String description);
 
-	public StringProperty getDescriptionProperty();
-
 	public List<Date> getAllDates();
 
 	public LocalDateTime getDateStart();
@@ -27,8 +23,6 @@ public interface Task extends Comparable<Task> {
 	public List<String> getHashtags();
 
 	public boolean isRange();
-
-	public void setRange(boolean done);
 
 	public boolean isDone();
 

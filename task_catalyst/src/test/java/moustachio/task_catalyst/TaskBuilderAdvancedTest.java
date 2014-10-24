@@ -1,6 +1,8 @@
 package moustachio.task_catalyst;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -127,8 +129,8 @@ public class TaskBuilderAdvancedTest {
 	// Grammar correction at-to-on (my fail on a Friday)
 	@Test
 	public void tc14() {
-		Task task = taskBuilder.createTask("Meet boss at sat 1pm");
-		assertEquals("Meet boss on Sat 1PM", task.getDescriptionEdit());
+		Task task = taskBuilder.createTask("Meet boss at 21 oct 2003 1pm");
+		assertEquals("Meet boss on 21 Oct 2003 1PM", task.getDescriptionEdit());
 	}
 
 	// Ignore partial matches.
@@ -171,4 +173,26 @@ public class TaskBuilderAdvancedTest {
 		} catch (UnsupportedOperationException e) {
 		}
 	}
+
+	// Test Range Recognition - No Range
+	@Test
+	public void tc20() {
+		Task task = taskBuilder.createTask("Meet boss at 5PM");
+		assertFalse(task.isRange());
+	}
+
+	// Test Range Recognition - Range
+	@Test
+	public void tc21() {
+		Task task = taskBuilder.createTask("Meet boss from 5PM to 6PM");
+		assertTrue(task.isRange());
+	}
+
+	// Repeated Date Correction
+	@Test
+	public void tc22() {
+		Task task = taskBuilder.createTask("Meet boss from 5PM to 5PM");
+		assertEquals("Meet boss from today 5PM", task.getDescription());
+	}
+
 }

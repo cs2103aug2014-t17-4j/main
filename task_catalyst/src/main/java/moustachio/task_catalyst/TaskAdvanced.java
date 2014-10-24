@@ -8,18 +8,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-
 public class TaskAdvanced implements Task {
 
 	boolean isDone;
-	boolean isRange;
-	protected StringProperty description;
+	String description;
 
 	public TaskAdvanced(String description) {
-		this.description = new SimpleStringProperty();
-		this.description.set(description);
+		this.description = description;
 		isDone = false;
 	}
 
@@ -27,17 +22,12 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public void setDescription(String description) {
-		this.description.set(description);
-	}
-
-	@Override
-	public StringProperty getDescriptionProperty() {
-		return this.description;
+		this.description = description;
 	}
 
 	@Override
 	public String getDescription() {
-		String interpretedString = this.description.get();
+		String interpretedString = this.description;
 
 		String prettyString = TaskCatalystCommons
 				.getPrettyString(interpretedString);
@@ -53,7 +43,7 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public String getDescriptionEdit() {
-		String interpretedString = this.description.get();
+		String interpretedString = this.description;
 
 		String prettyString = TaskCatalystCommons
 				.getPrettyString(interpretedString);
@@ -66,19 +56,14 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public String getDescriptionRaw() {
-		return this.description.get();
+		return this.description;
 	}
 
 	// Administrative Mutators
 
 	@Override
 	public boolean isRange() {
-		return isRange;
-	}
-
-	@Override
-	public void setRange(boolean isRange) {
-		this.isRange = isRange;
+		return description.contains(" to {");
 	}
 
 	@Override
@@ -132,7 +117,7 @@ public class TaskAdvanced implements Task {
 	@Override
 	public List<String> getHashtags() {
 		List<String> hashtagList = new ArrayList<String>();
-		String[] descriptionTokenized = this.description.get().split(" ");
+		String[] descriptionTokenized = this.description.split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#") || token.startsWith("[#")) {
 				String tokenLowerAlphabets = "#"
@@ -146,7 +131,7 @@ public class TaskAdvanced implements Task {
 	@Override
 	public boolean hasHashtag(String hashtag) {
 		String hashtagLowerCase = hashtag.toLowerCase();
-		String descriptionLowerCase = this.description.get().toLowerCase();
+		String descriptionLowerCase = this.description.toLowerCase();
 		boolean hasHashtag = descriptionLowerCase.matches(".*(^| )(#)"
 				+ Pattern.quote(hashtagLowerCase) + "(\\b|$).*");
 		return hasHashtag;
@@ -154,7 +139,7 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean hasKeyword(String keyword) {
-		String descriptionLowerCase = this.description.get().toLowerCase();
+		String descriptionLowerCase = this.description.toLowerCase();
 		String keywordLowerCase = keyword.toLowerCase();
 		return descriptionLowerCase.contains(keywordLowerCase);
 	}
