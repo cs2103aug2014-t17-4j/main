@@ -73,6 +73,11 @@ public class TaskAdvanced implements Task {
 		this.isDone = isDone;
 	}
 
+	@Override
+	public boolean isPriority() {
+		return hasHashtag("#pri");
+	}
+
 	// Date Methods
 
 	@Override
