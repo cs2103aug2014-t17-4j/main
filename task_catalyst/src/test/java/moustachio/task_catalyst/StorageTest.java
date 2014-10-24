@@ -1,7 +1,6 @@
 package moustachio.task_catalyst;
 
 import static org.junit.Assert.*;
-
 import java.util.ArrayList;
 import java.util.List;
 import org.junit.After;
@@ -10,7 +9,7 @@ import org.junit.Test;
 
 public class StorageTest {
 	
-	Storage data = new StorageStub();
+	Storage data = new StorageActual();
 	
 	String fileName;
 	Task task1 = new TaskAdvanced("meet boss at 5pm tmr");
@@ -26,6 +25,8 @@ public class StorageTest {
 	}
 	
 	/*** Load task ***/
+	
+	/* This is a boundary case for 'load empty File' partition */
 	@Test
 	public void testLoadEmptyFile(){
 		List<Task> list = new ArrayList<Task> ();
@@ -34,6 +35,7 @@ public class StorageTest {
 		assertEquals(list.isEmpty(),true);
 	}
 	
+	/* This is a boundary case for 'load one task to file' partition */
 	@Test
 	public void testLoadOneTask() {
 		List<Task> list = new ArrayList<Task> ();
@@ -42,11 +44,10 @@ public class StorageTest {
 		
 		List<Task> elist = new ArrayList<Task> ();
 		elist = data.loadTasks(fileName);
-		//System.out.println(list.get(0));
-		//System.out.println(task1.getDescription());
 		assertEquals(list.get(0).getDescription().equals(elist.get(0).getDescription()), true);
 	}
 	
+	/* This is a boundary case for 'load one more tasks to file' partition */
 	@Test
 	public void testLoadTasks(){
 		List<Task> list = new ArrayList<Task> ();
@@ -62,6 +63,8 @@ public class StorageTest {
 	}
 	
 	/*** Save task ***/ 
+	
+	/* This is a boundary case for 'Save task to Empty File' partition */
 	@Test
 	public void testSaveTaskstoEmptyFile() {
 		List<Task> list = new ArrayList<Task> ();
@@ -70,6 +73,7 @@ public class StorageTest {
 		assertEquals(data.saveTasks(list, fileName), true);
 	}
 	
+	/* This is a boundary case for 'testOverwrite saving' partition */
 	@Test
 	public void testOverwriteSave(){
 		List<Task> list = new ArrayList<Task> ();
@@ -82,16 +86,6 @@ public class StorageTest {
 		assertEquals(data.saveTasks(list, fileName),true);
 		assertEquals(list.get(0).getDescription().equals(elist.get(0).getDescription()), true);
 	}
-
-
-	@Test
-	public void testSaveSetting() {
-		//fail("Not yet implemented");
-	}
-
-	@Test
-	public void testLoadSetting() {
-		//fail("Not yet implemented");
-	}
-
+	
+	
 }
