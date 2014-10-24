@@ -354,7 +354,7 @@ public class TaskCatalystCommons {
 	}
 
 	// Add ignore brackets ([]) around anything in input matching the regex.
-	public static String ignoreBasedOnRegex(String input, String regex) {
+	private static String ignoreBasedOnRegex(String input, String regex) {
 		String ignoredString = input;
 		Pattern pattern = Pattern.compile(regex);
 		Matcher matcher = pattern.matcher(input);
@@ -488,7 +488,7 @@ public class TaskCatalystCommons {
 
 	// Date Time Libraries
 
-	private static boolean isSameTime(Date date, Date date2) {
+	public static boolean isSameTime(Date date, Date date2) {
 		if (date == null || date2 == null) {
 			return false;
 		}
@@ -500,7 +500,7 @@ public class TaskCatalystCommons {
 				&& cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE);
 	}
 
-	private static boolean isSameDate(Date date, Date date2) {
+	public static boolean isSameDate(Date date, Date date2) {
 		if (date == null || date2 == null) {
 			return false;
 		}
@@ -511,25 +511,25 @@ public class TaskCatalystCommons {
 		return cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE);
 	}
 
-	private static boolean hasMinutes(Date date) {
+	public static boolean hasMinutes(Date date) {
 		return getMinutes(date) != 0;
 	}
 
-	private static int getMinutes(Date date) {
+	public static int getMinutes(Date date) {
 		Calendar cal1 = Calendar.getInstance();
 		cal1.setTime(date);
 		return cal1.get(Calendar.MINUTE);
 	}
 
-	private static boolean isToday(Date date) {
+	public static boolean isToday(Date date) {
 		return daysFromToday(date) == 0;
 	}
 
-	private static boolean isTomorrow(Date date) {
+	public static boolean isTomorrow(Date date) {
 		return daysFromToday(date) == 1;
 	}
 
-	private static boolean isThisWeek(Date date) {
+	public static boolean isThisWeek(Date date) {
 		return daysFromToday(date) <= 6 && daysFromToday(date) > 0;
 	}
 
@@ -548,7 +548,7 @@ public class TaskCatalystCommons {
 		return daysFromToday(output);
 	}
 
-	private static boolean isThisYear(Date date) {
+	public static boolean isThisYear(Date date) {
 		Calendar cal1 = Calendar.getInstance();
 		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(date);
