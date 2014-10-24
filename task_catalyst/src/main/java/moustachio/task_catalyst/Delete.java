@@ -10,6 +10,8 @@ public class Delete extends Action {
 	private static final String EXECUTE_SUCCESS = "Task successfully deleted: %s";
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
+	
+	private static final String HINT_MESSAGE = "Delete: Enter the task number to delete. Eqv. commands: delete, rm, del";
 
 	private TaskManager taskManager;
 	private Task task;
@@ -59,6 +61,12 @@ public class Delete extends Action {
 			message = String.format(UNDO_ERROR);
 		}
 		return new Message(type, message);
+	}
+	
+	public static Message getHint(String userCommand) {
+		int type = Message.TYPE_HINT;
+		Message returnMessage = new Message(type, HINT_MESSAGE);
+		return returnMessage;
 	}
 
 	public static boolean isThisAction(String command) {

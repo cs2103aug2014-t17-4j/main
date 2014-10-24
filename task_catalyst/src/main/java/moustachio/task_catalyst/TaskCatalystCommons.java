@@ -455,6 +455,20 @@ public class TaskCatalystCommons {
 		return userInput.replaceAll("\\{|\\}", "");
 	}
 
+	// Friendly String Methods
+
+	public static String getFriendlyString(String userCommand)
+			throws UnsupportedOperationException {
+		String interpretedString = TaskCatalystCommons
+				.getInterpretedString(userCommand);
+		String prettyString = TaskCatalystCommons
+				.getPrettyString(interpretedString);
+		String friendlyString = TaskCatalystCommons
+				.removeSquareBrackets(prettyString);
+		friendlyString = TaskCatalystCommons.removeCurlyBraces(friendlyString);
+		return friendlyString;
+	}
+
 	// Date Time Libraries
 
 	private static boolean isSameTime(Date date, Date date2) {

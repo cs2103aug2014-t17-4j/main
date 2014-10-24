@@ -8,6 +8,8 @@ public class Undo extends Action {
 
 	private static final String EXECUTE_ERROR = "There is nothing to undo.";
 
+	private static final String HINT_MESSAGE = "Undo: Press enter to undo task.";
+
 	ActionInvoker actionInvoker;
 
 	public Undo(String userCommand) {
@@ -29,6 +31,12 @@ public class Undo extends Action {
 	@Override
 	public Message undo() {
 		return execute();
+	}
+
+	public static Message getHint(String userCommand) {
+		int type = Message.TYPE_HINT;
+		Message returnMessage = new Message(type, HINT_MESSAGE);
+		return returnMessage;
 	}
 
 	public static boolean isThisAction(String command) {

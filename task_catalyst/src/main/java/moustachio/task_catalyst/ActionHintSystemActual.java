@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 public class ActionHintSystemActual implements ActionHintSystem {
 
+	private static final String FORMAT_PARTIAL_SUGGESTIONS = "Do you mean %s?";
+	private static final String HINT_MESSAGE_DEFAULT = "Type something to begin.";
 	ActionInvoker actionInvoker;
 
 	public ActionHintSystemActual() {
@@ -23,103 +25,77 @@ public class ActionHintSystemActual implements ActionHintSystem {
 
 	@Override
 	public Message getMessageTyping(String userCommand) {
+
 		if (userCommand == null || userCommand.trim().isEmpty()) {
-			return new Message(Message.TYPE_HINT, "Type something to begin.");
+			return new Message(Message.TYPE_HINT, HINT_MESSAGE_DEFAULT);
 		}
 
 		CommandType COMMAND_TYPE = TaskCatalystCommons
 				.getCommandType(userCommand);
-		int type = Message.TYPE_HINT;
-		String message;
+
+		Message message;
 
 		switch (COMMAND_TYPE) {
 		case ADD:
-			message = getMatchingCommands(userCommand);
+			String matchingCommandsString = getMatchingCommandsString(userCommand);
 
-			if (!message.isEmpty()) {
-				return new Message(Message.TYPE_HINT, "Do you mean " + message
-						+ "?");
+			boolean isPartialCommand = !matchingCommandsString.isEmpty();
+
+			if (isPartialCommand) {
+				message = getHintSuggestion(matchingCommandsString);
 			} else {
-				try {
-				message = TaskCatalystCommons
-						.removeCurlyBraces(TaskCatalystCommons.removeSquareBrackets(TaskCatalystCommons
-								.getPrettyString(TaskCatalystCommons
-										.getInterpretedString(userCommand))));
-				} catch (UnsupportedOperationException e) {
-					message = "You cannot mix date types, and you can only specify one pair of date ranges per task.";
-				}
-				message += "\nAdd: You can include date information. Use []s to ignore processing.";
-				// message = TaskBuilderAdvanced.interpretedString(userCommand);
-				// message =
-				// "Adding: Use square brackets e.g. [from today to tomorrow] to include date/time information.";
+				message = Add.getHint(userCommand);
 			}
+
 			break;
 		case DELETE:
-			message = "Delete: Enter the task number to delete. Eqv. commands: delete, rm, del";
+			message = Delete.getHint(userCommand);
 			break;
 		case DONE:
-			message = "Complete: Enter the task number to complete. Eqv. commands: done, complete";
+			message = Done.getHint(userCommand);
 			break;
 		case EDIT:
-			message = "Edit: Press space or enter after entering a valid task number to continue.";
-			String taskNumberString = TaskCatalystCommons
-					.getFirstWord(TaskCatalystCommons
-							.removeFirstWord(userCommand));
-			boolean endsWithSpace = userCommand.endsWith(" ");
-			int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
-			if (taskNumber > 0) {
-				Task editTask;
-				try {
-					editTask = TaskManagerActual.getInstance().getDisplayList()
-							.get(taskNumber - 1);
-				} catch (Exception e) {
-					editTask = null;
-				}
-				boolean isValidTask = editTask != null;
-				boolean hasFurtherParameters = !userCommand
-						.replaceFirst("edit " + taskNumberString, "").trim()
-						.isEmpty();
-				if (!isValidTask && (endsWithSpace || hasFurtherParameters)) {
-					message = "Edit: Invalid task number specified.";
-				} else if (!hasFurtherParameters && endsWithSpace) {
-					type = Message.TYPE_AUTOCOMPLETE;
-					message = userCommand.trim() + " "
-							+ editTask.getDescriptionEdit();
-				} else if (hasFurtherParameters && isValidTask) {
-					type = Message.TYPE_HINT;
-					message = TaskCatalystCommons
-							.removeCurlyBraces(TaskCatalystCommons.removeSquareBrackets(TaskCatalystCommons.getPrettyString(TaskCatalystCommons.getInterpretedString(TaskCatalystCommons
-									.removeFirstWord(TaskCatalystCommons
-											.removeFirstWord(userCommand))))));
-					message += "\nEdit: Hit enter after making your changes.";
-				}
-			}
+			message = Edit.getHint(userCommand);
 			break;
 		case HASHTAG:
-			message = "Hashtag: Enter a hashtag category to continue.";
+			message = Hashtag.getHint(userCommand);
 			break;
 		case REDO:
-			message = "Redo: Press enter to redo task.";
+			message = Redo.getHint(userCommand);
 			break;
 		case SEARCH:
-			message = "Search: Enter a keyword to search for (case-insensitive).";
+			message = Search.getHint(userCommand);
 			break;
 		case UNDO:
-			message = "Undo: Press enter to undo task.";
+			message = Undo.getHint(userCommand);
 			break;
 		default:
-			message = "Type something to begin.";
+			message = getHintDefault();
 			break;
 		}
-		Message returnMessage = new Message(type, message);
-		return returnMessage;
+		return message;
 	}
 
-	private String getMatchingCommands(String firstWord) {
+	private Message getHintDefault() {
+		int type = Message.TYPE_HINT;
+		Message defaultHint = new Message(type, HINT_MESSAGE_DEFAULT);
+		return defaultHint;
+	}
+
+	private Message getHintSuggestion(String matchingCommandsString) {
+		int type = Message.TYPE_HINT;
+		String commandSuggestions = String.format(FORMAT_PARTIAL_SUGGESTIONS,
+				matchingCommandsString);
+		Message suggestionHint = new Message(type, commandSuggestions);
+		return suggestionHint;
+	}
+
+	private String getMatchingCommandsString(String firstWord) {
+
 		if (firstWord.trim().isEmpty()) {
 			return "";
 		}
-		String matchingCommands = "";
+
 		ArrayList<String[]> dictionaries = new ArrayList<String[]>();
 		dictionaries.add(Delete.getDictionary());
 		dictionaries.add(Done.getDictionary());
@@ -127,15 +103,25 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		dictionaries.add(Redo.getDictionary());
 		dictionaries.add(Search.getDictionary());
 		dictionaries.add(Undo.getDictionary());
+
+		String matchingCommands = getPartialString(firstWord, dictionaries);
+		matchingCommands = matchingCommands.replaceAll(", $", "");
+
+		return matchingCommands;
+	}
+
+	private String getPartialString(String partialCommand,
+			ArrayList<String[]> dictionaries) {
+		String matchingCommands = "";
 		for (String[] dictionary : dictionaries) {
 			for (String keyword : dictionary) {
-				if (!keyword.equalsIgnoreCase(firstWord)
-						&& keyword.startsWith(firstWord.toLowerCase())) {
+				if (!keyword.equalsIgnoreCase(partialCommand)
+						&& keyword.startsWith(partialCommand.toLowerCase())) {
 					matchingCommands += "\"" + keyword + "\", ";
 				}
 			}
 		}
-		return matchingCommands.replaceAll(", $", "");
+		return matchingCommands;
 	}
 
 	private Action generateAction(String userCommand) {

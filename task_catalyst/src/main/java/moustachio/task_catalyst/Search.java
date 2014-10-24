@@ -8,6 +8,8 @@ public class Search extends Action {
 
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
 
+	private static final String HINT_MESSAGE = "Search: Enter a keyword to search for (case-insensitive).";
+	
 	TaskManager taskManager;
 	String keyword;
 
@@ -29,6 +31,12 @@ public class Search extends Action {
 	@Override
 	public Message undo() {
 		return execute();
+	}
+	
+	public static Message getHint(String userCommand) {
+		int type = Message.TYPE_HINT;
+		Message returnMessage = new Message(type, HINT_MESSAGE);
+		return returnMessage;
 	}
 
 	public static boolean isThisAction(String command) {

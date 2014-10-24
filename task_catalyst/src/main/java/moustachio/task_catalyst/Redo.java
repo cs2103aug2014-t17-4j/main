@@ -7,6 +7,8 @@ public class Redo extends Action {
 	private static final String[] DICTIONARY = { "redo" };
 
 	private static final String EXECUTE_ERROR = "There is nothing to redo.";
+	
+	private static final String HINT_MESSAGE = "Redo: Press enter to redo task.";
 
 	ActionInvoker actionInvoker;
 
@@ -29,6 +31,12 @@ public class Redo extends Action {
 	@Override
 	public Message undo() {
 		return execute();
+	}
+	
+	public static Message getHint(String userCommand) {
+		int type = Message.TYPE_HINT;
+		Message returnMessage = new Message(type, HINT_MESSAGE);
+		return returnMessage;
 	}
 
 	public static boolean isThisAction(String command) {

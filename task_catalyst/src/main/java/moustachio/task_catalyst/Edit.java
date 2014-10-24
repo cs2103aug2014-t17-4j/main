@@ -4,6 +4,12 @@ import java.util.Arrays;
 
 public class Edit extends Action {
 
+	private static final String HINT_VALID_TASK = "\nEdit: Hit enter after making your changes.";
+
+	private static final String HINT_INVALID_TASK = "Edit: Invalid task number specified.";
+
+	private static final String HINT_MESSAGE = "Edit: Press space or enter after entering a valid task number to continue.";
+
 	private static final String[] DICTIONARY = { "edit" };
 
 	private static final String EXECUTE_ERROR = "There was an error editing the task.";
@@ -12,14 +18,13 @@ public class Edit extends Action {
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
 
 	private TaskBuilder taskBuilder;
-	private TaskManager taskManager;
+	private static TaskManager taskManager = TaskManagerActual.getInstance();
 
 	private Task targetTask;
 	private Task replacementTask;
 
 	public Edit(String userCommand) {
 		taskBuilder = new TaskBuilderAdvanced();
-		taskManager = TaskManagerActual.getInstance();
 		targetTask = taskBuilder.createTask(userCommand);
 
 		String taskNumberAndContent = TaskCatalystCommons
@@ -51,6 +56,52 @@ public class Edit extends Action {
 	@Override
 	public Message undo() {
 		return replace(replacementTask, targetTask, UNDO_SUCCESS, UNDO_ERROR);
+	}
+
+	public static Message getHint(String userCommand) {
+		int type;
+		String message;
+		
+		type = Message.TYPE_HINT;
+		message = HINT_MESSAGE;
+
+		String taskNumberString;
+		taskNumberString = TaskCatalystCommons.removeFirstWord(userCommand);
+		taskNumberString = TaskCatalystCommons.getFirstWord(taskNumberString);
+		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
+
+		boolean isPositiveTaskNumber = taskNumber > 0;
+
+		if (isPositiveTaskNumber) {
+
+			Task editTask = taskManager.getDisplayTask(taskNumber);
+
+			String furtherParameters;
+			furtherParameters = TaskCatalystCommons
+					.removeFirstWord(userCommand);
+			furtherParameters = TaskCatalystCommons
+					.removeFirstWord(furtherParameters);
+			furtherParameters = furtherParameters.trim();
+
+			boolean hasFurtherParameters = !furtherParameters.isEmpty();
+			boolean endsWithSpace = userCommand.endsWith(" ");
+			boolean isValidTask = editTask != null;
+
+			if (!isValidTask && (endsWithSpace || hasFurtherParameters)) {
+				message = HINT_INVALID_TASK;
+			} else if (isValidTask && endsWithSpace && !hasFurtherParameters) {
+				type = Message.TYPE_AUTOCOMPLETE;
+				message = userCommand.trim() + " "
+						+ editTask.getDescriptionEdit();
+			} else if (isValidTask && hasFurtherParameters) {
+				type = Message.TYPE_HINT;
+				String friendlyString = TaskCatalystCommons
+						.getFriendlyString(furtherParameters);
+				message = friendlyString;
+				message += HINT_VALID_TASK;
+			}
+		}
+		return new Message(type, message);
 	}
 
 	private Message replace(Task targetTask, Task replacementTask,

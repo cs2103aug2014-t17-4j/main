@@ -1,13 +1,12 @@
 package moustachio.task_catalyst;
 
-
 public class Add extends Action {
 
 	private static final String EXECUTE_ERROR = "There was an error adding the task.";
 	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
 	private static final String UNDO_ERROR = "There was an error removing the task.";
 	private static final String UNDO_SUCCESS = "Task successfully removed: %s";
-	
+
 	private TaskBuilder taskBuilder;
 	private TaskManager taskManager;
 	private Task task;
@@ -56,11 +55,30 @@ public class Add extends Action {
 		}
 		return new Message(type, message);
 	}
-	
+
+	public static Message getHint(String userCommand) {
+		
+		String messageString;
+		int messageType;
+		
+		try {
+			messageString = TaskCatalystCommons.getFriendlyString(userCommand);
+			messageType = Message.TYPE_HINT;
+		} catch (UnsupportedOperationException e) {
+			messageString = "You cannot mix date types, and you can only specify one pair of date ranges per task.";
+			messageType = Message.TYPE_ERROR;
+		}
+		messageString += "\nAdd: You can include date information. Use []s to ignore processing.";
+		
+		Message returnMessage = new Message(messageType, messageString);
+		
+		return returnMessage;
+	}
+
 	public static boolean isThisAction(String command) {
 		return true;
 	}
-	
+
 	@Override
 	public boolean isUndoable() {
 		return true;
