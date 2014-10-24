@@ -4,7 +4,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
 
-/*
+/**
  * This program handles JSON conversion for Storage component.
  * 
  * This implementation uses JSONObject to encode the contents of tasks and 

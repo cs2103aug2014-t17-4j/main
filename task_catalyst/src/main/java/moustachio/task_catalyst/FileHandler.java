@@ -12,7 +12,7 @@ import java.util.List;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
-/*
+/**
  * This program is to manage writing and reading tasks in a specific text file. 
  * 
  * The description of a task is converted into JSON object before saving it in the file. 

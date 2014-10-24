@@ -3,7 +3,7 @@ package moustachio.task_catalyst;
 import java.io.IOException;
 import java.util.List;
 
-/*
+/**
  * This program  is implements Storage for Task Catalyst system. 
  * 
  * This program makes use of FileHandler to handle saving and loading tasks or setting. 
@@ -12,6 +12,8 @@ import java.util.List;
  */
 
 public class StorageActual implements Storage {
+
+	private static BlackBox blackbox = BlackBox.getInstance();
 	
 	@Override
 	public boolean saveTasks(List<Task> list, String fileName) {
@@ -41,7 +43,7 @@ public class StorageActual implements Storage {
 			}
 			return true;
 		}catch (IOException e) {
-			e.printStackTrace();
+			blackbox.info("IO fault has been enountered.");
 		}
 		return false;
 	}

@@ -17,6 +17,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
@@ -40,6 +44,7 @@ public class TaskCatalyst extends Application {
 			Parent root = FXMLLoader.load(getClass().getResource(
 					"userInterface.fxml"));
 			Scene scene = new Scene(root);
+			executeMinMax(primaryStage,scene);
 			addDragListeners(root);
 			// set stylesheet
 			scene.getStylesheets().add(
@@ -52,6 +57,25 @@ public class TaskCatalyst extends Application {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
+	}
+	
+	/**
+	 * This function does minimize when "ctrl+m" is pressed and maximize for toggling case.
+	 * 
+	 * @author Lin XiuQing (A0112764)
+	 */
+	
+	private void executeMinMax(Stage stage, Scene scene){
+		final KeyCombination keyComb = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
+		scene.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>(){
+			
+		@Override
+			public void handle(KeyEvent event){
+				if(keyComb.match(event)){
+					stage.setIconified(!stage.isIconified());
+				}
+			}	
+		});
 	}
 
 	private void addDragListeners(final Node mainUI) {
