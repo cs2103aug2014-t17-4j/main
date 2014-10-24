@@ -8,4 +8,8 @@ public interface ListProcessor {
     public List<Task> searchByKeyword(List<Task> list, String keyword);
 
     public List<Task> sortByDate(List<Task> list);
+
+    public List<Task> getOverlapping(List<Task> list);
+    
+    public List<Task> getOverlapping(Task task, List<Task> list);
 }

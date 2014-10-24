@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class ListProcessorActual implements ListProcessor{
+public class ListProcessorActual implements ListProcessor {
 	
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
@@ -81,6 +81,18 @@ public class ListProcessorActual implements ListProcessor{
 		List<Task> sortList = new ArrayList<Task>(list);
 		Collections.sort(sortList);
 		return sortList;
+	}
+
+	@Override
+	public List<Task> getOverlapping(List<Task> list) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<Task> getOverlapping(Task task, List<Task> list) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
