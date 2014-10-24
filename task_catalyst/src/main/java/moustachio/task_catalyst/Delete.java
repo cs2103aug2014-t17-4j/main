@@ -23,21 +23,24 @@ public class Delete extends Action {
 	private List<Task> tasks;
 
 	public Delete(String userCommand) {
+
 		taskManager = TaskManagerActual.getInstance();
+
 		String taskNumberString = TaskCatalystCommons
 				.removeFirstWord(userCommand);
+
 		if (taskNumberString.equalsIgnoreCase("all")) {
+
 			tasks = new ArrayList<Task>(taskManager.getList());
+
 		} else {
+
 			List<Integer> taskNumbers = TaskCatalystCommons
 					.parsePositiveIntList(taskNumberString);
+
 			tasks = new ArrayList<Task>();
-			for (int taskNumber : taskNumbers) {
-				Task displayTask = taskManager.getDisplayTask(taskNumber);
-				if (displayTask != null) {
-					tasks.add(displayTask);
-				}
-			}
+
+			getTasks(taskNumbers);
 		}
 	}
 
@@ -121,6 +124,15 @@ public class Delete extends Action {
 		}
 
 		return message;
+	}
+
+	private void getTasks(List<Integer> taskNumbers) {
+		for (int taskNumber : taskNumbers) {
+			Task displayTask = taskManager.getDisplayTask(taskNumber);
+			if (displayTask != null) {
+				tasks.add(displayTask);
+			}
+		}
 	}
 
 	public static Message getHint(String userCommand) {

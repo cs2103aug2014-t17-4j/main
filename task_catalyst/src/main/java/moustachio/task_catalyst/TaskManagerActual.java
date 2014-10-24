@@ -105,6 +105,8 @@ public class TaskManagerActual implements TaskManager {
 		boolean isSaved = false;
 		if (isAdded) {
 			isSaved = saveTasks();
+		} else {
+			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 		}
 
 		boolean isSuccess = isAdded && isSaved;
@@ -150,6 +152,8 @@ public class TaskManagerActual implements TaskManager {
 		boolean isSaved = false;
 		if (isRemoved) {
 			isSaved = saveTasks();
+		} else {
+			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
 		}
 
 		boolean isSuccess = isRemoved && isSaved;
@@ -312,12 +316,7 @@ public class TaskManagerActual implements TaskManager {
 
 		clearTaskHighlights();
 
-		// Highlight all priority tasks.
-		for (Task task : displayList) {
-			if (task.isPriority()) {
-				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY, task);
-			}
-		}
+		highlightAllPriority();
 
 		// Add absolute overlap code here?
 	}
@@ -346,10 +345,7 @@ public class TaskManagerActual implements TaskManager {
 			addHashtagHighlight(Highlight.TYPE_SEARCH, searchTerm);
 		}
 
-		// Highlight all default hashtags.
-		for (String defaultHashtag : defaultHashtags) {
-			addHashtagHighlight(Highlight.TYPE_HASHTAG_DEFAULT, defaultHashtag);
-		}
+		highlightAllDefaultHashtags();
 	}
 
 	private List<String> generateDefaultHashtags() {
@@ -378,6 +374,21 @@ public class TaskManagerActual implements TaskManager {
 			setDisplayMode(DEFAULT_DISPLAY_MODE);
 			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);
 			refreshLists();
+		}
+	}
+
+	private void highlightAllPriority() {
+		for (Task task : displayList) {
+			if (task.isPriority()) {
+				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY, task);
+			}
+		}
+	}
+
+	private void highlightAllDefaultHashtags() {
+		for (String defaultHashtag : DEFAULT_HASHTAGS) {
+			addHashtagHighlight(Highlight.TYPE_HASHTAG_DEFAULT, "#"
+					+ defaultHashtag);
 		}
 	}
 
