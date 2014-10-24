@@ -7,9 +7,10 @@ public class Search extends Action {
 	private static final String[] DICTIONARY = { "search" };
 
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
+	private static final String EXECUTE_ERROR = "Please enter a valid search term.";
 
 	private static final String HINT_MESSAGE = "Search: Enter a keyword to search for (case-insensitive).";
-	
+
 	TaskManager taskManager;
 	String keyword;
 
@@ -20,11 +21,17 @@ public class Search extends Action {
 
 	@Override
 	public Message execute() {
-		taskManager.setDisplayMode(DisplayMode.SEARCH);
-		taskManager.setDisplayKeyword(keyword);
-
-		int type = Message.TYPE_SUCCESS;
-		String message = String.format(EXECUTE_SUCCESS, keyword);
+		int type;
+		String message;
+		if (keyword.isEmpty()) {
+			type = Message.TYPE_ERROR;
+			message = String.format(EXECUTE_ERROR);
+		} else {
+			taskManager.setDisplayMode(DisplayMode.SEARCH);
+			taskManager.setDisplayKeyword(keyword);
+			type = Message.TYPE_SUCCESS;
+			message = String.format(EXECUTE_SUCCESS, keyword);
+		}
 		return new Message(type, message);
 	}
 
@@ -32,7 +39,7 @@ public class Search extends Action {
 	public Message undo() {
 		return execute();
 	}
-	
+
 	public static Message getHint(String userCommand) {
 		int type = Message.TYPE_HINT;
 		Message returnMessage = new Message(type, HINT_MESSAGE);
