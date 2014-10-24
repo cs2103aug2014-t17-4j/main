@@ -33,7 +33,7 @@ public class Edit extends Action {
 				.removeFirstWord(userCommand);
 		String taskNumberString = TaskCatalystCommons
 				.getFirstWord(taskNumberAndContent);
-		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
+		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
 
 		targetTask = taskManager.getDisplayTask(taskNumber);
 
@@ -70,7 +70,7 @@ public class Edit extends Action {
 		String taskNumberString;
 		taskNumberString = TaskCatalystCommons.removeFirstWord(userCommand);
 		taskNumberString = TaskCatalystCommons.getFirstWord(taskNumberString);
-		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
+		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
 
 		Task editTask = taskManager.getDisplayTask(taskNumber);
 

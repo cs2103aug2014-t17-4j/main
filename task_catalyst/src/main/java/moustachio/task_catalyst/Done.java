@@ -20,7 +20,7 @@ public class Done extends Action {
 		taskManager = TaskManagerActual.getInstance();
 		String taskNumberString = TaskCatalystCommons
 				.removeFirstWord(userCommand);
-		int taskNumber = TaskCatalystCommons.parseInt(taskNumberString);
+		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
 		task = taskManager.getDisplayTask(taskNumber);
 	}
 

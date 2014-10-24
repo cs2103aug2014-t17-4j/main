@@ -22,17 +22,34 @@ public class TaskCatalystCommons {
 
 	// Command Parsing Methods
 
-	public static int parseInt(String intString) {
+	public static int parsePositiveInt(String intString) {
 
 		int value;
 
 		try {
 			value = Integer.parseInt(intString);
+			if (value <= 0) {
+				throw new NumberFormatException();
+			}
 		} catch (Exception e) {
 			value = INVALID_INTEGER;
 		}
 
 		return value;
+	}
+
+	public static List<Integer> parsePositiveIntList(String intListString) {
+		String intListStringProcessed = intListString;
+		intListStringProcessed = intListStringProcessed.replaceAll(",", "");
+		String[] splitIntStrings = intListStringProcessed.split("\\s+");
+		List<Integer> parsedIntegers = new ArrayList<Integer>();
+		for (String intString : splitIntStrings) {
+			int parsedPositiveInt = parsePositiveInt(intString);
+			if (parsedPositiveInt > 0) {
+				parsedIntegers.add(parsedPositiveInt);
+			}
+		}
+		return parsedIntegers;
 	}
 
 	public static String getFirstWord(String userCommand) {

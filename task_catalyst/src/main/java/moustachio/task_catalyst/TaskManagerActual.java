@@ -42,6 +42,8 @@ public class TaskManagerActual implements TaskManager {
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
 		taskList = storage.loadTasks(DEFAULT_FILE_NAME);
 		hashtagList = new ArrayList<String>();
+		hashtagHighlights = new ArrayList<Highlight>();
+		taskHighlights = new ArrayList<Highlight>();
 		refreshLists();
 	}
 
@@ -80,19 +82,41 @@ public class TaskManagerActual implements TaskManager {
 		boolean isSuccess = isAdded && isSaved;
 		if (isSuccess) {
 			refreshLists();
+			displayAutoswitchToTask(task);
 		}
-		displayAutoswitchToTask(task);
 		addTaskHighlight(Highlight.TYPE_TASK_LAST_ADDED, task);
 		return isSuccess;
 	}
 
-	private void displayAutoswitchToTask(Task task) {
-		boolean isTaskDisplayed = displayList.contains(task);
-		if (!isTaskDisplayed) {
-			setDisplayMode(DEFAULT_DISPLAY_MODE);
-			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);
-			refreshLists();
+	@Override
+	public int addTasks(List<Task> tasks) {
+
+		int numberAdded = 0;
+
+		boolean isAdded = false;
+		for (Task task : tasks) {
+			isAdded = taskList.add(task);
+			if (!isAdded) {
+				break;
+			}
+			numberAdded++;
 		}
+
+		boolean isSaved = false;
+		if (isAdded) {
+			isSaved = saveTasks();
+		}
+
+		boolean isSuccess = isAdded && isSaved;
+		if (isSuccess) {
+			refreshLists();
+			for (Task task : tasks) {
+				displayAutoswitchToTask(task);
+				addTaskHighlight(Highlight.TYPE_TASK_LAST_ADDED, task);
+			}
+		}
+
+		return numberAdded;
 	}
 
 	@Override
@@ -107,6 +131,34 @@ public class TaskManagerActual implements TaskManager {
 			refreshLists();
 		}
 		return isSuccess;
+	}
+
+	@Override
+	public int removeTasks(List<Task> tasks) {
+
+		int numberRemoved = 0;
+
+		boolean isRemoved = false;
+		for (Task task : tasks) {
+			isRemoved = taskList.remove(task);
+			if (!isRemoved) {
+				break;
+			}
+			numberRemoved++;
+		}
+
+		boolean isSaved = false;
+		if (isRemoved) {
+			isSaved = saveTasks();
+		}
+
+		boolean isSuccess = isRemoved && isSaved;
+		if (isSuccess) {
+			refreshLists();
+			displayAutoswitchToTask(null);
+		}
+
+		return numberRemoved;
 	}
 
 	@Override
@@ -257,7 +309,7 @@ public class TaskManagerActual implements TaskManager {
 			break;
 		}
 		displayList = listProcessor.sortByDate(displayList);
-	
+
 		clearTaskHighlights();
 
 		// Highlight all priority tasks.
@@ -266,7 +318,7 @@ public class TaskManagerActual implements TaskManager {
 				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY, task);
 			}
 		}
-		
+
 		// Add absolute overlap code here?
 	}
 
@@ -316,6 +368,17 @@ public class TaskManagerActual implements TaskManager {
 		}
 		List<String> customHashtags = new ArrayList<String>(allHashtagsSet);
 		return customHashtags;
+	}
+
+	private void displayAutoswitchToTask(Task task) {
+		boolean isTaskDisplayed = displayList.contains(task);
+		boolean isListEmpty = displayList.isEmpty();
+		boolean isNeedAutoswitch = !isTaskDisplayed || isListEmpty;
+		if (isNeedAutoswitch) {
+			setDisplayMode(DEFAULT_DISPLAY_MODE);
+			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);
+			refreshLists();
+		}
 	}
 
 	private boolean saveTasks() {
