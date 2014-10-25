@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 public class Hashtag extends Action {
 
-	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: %s.";
+	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: #%s.";
 
 	private static final String HINT_MESSAGE = "Hashtag: Enter a hashtag category to continue.";
 
