@@ -29,8 +29,7 @@ public class ListProcessorActual implements ListProcessor {
 			case "tdy": 
 				for(Task task:list) {
 					if(!task.isDone() 
-						&& task.isRange() 
-						&& !task.getAllDates().isEmpty() 
+						&& task.isRange()
 						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 0)) {
 						filteredList.add(task);
 					}
@@ -46,7 +45,6 @@ public class ListProcessorActual implements ListProcessor {
 			case "tmr": 
 				for(Task task:list) {
 					if(!task.isDone() 
-						&& !task.getAllDates().isEmpty() 
 						&& task.isRange() 
 						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 1)) {
 						filteredList.add(task);
@@ -63,7 +61,6 @@ public class ListProcessorActual implements ListProcessor {
 			case "upc": 
 				for(Task task:list) {
 					if(!task.isDone() 
-						&& !task.getAllDates().isEmpty() 
 						&& task.isRange() 
 						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) >= 2)) {
 						filteredList.add(task);
