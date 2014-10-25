@@ -1,6 +1,8 @@
 package moustachio.task_catalyst;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.List;
 
@@ -375,7 +377,7 @@ public class LogicActualTest {
 	@Test
 	public void getHashtagsTc1() {
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(NUM_OF_DEFAULT_HASHTAGS+0, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 0, userHashtags.size());
 	}
 
 	// Get hashtags on a list with no hashtags.
@@ -383,7 +385,7 @@ public class LogicActualTest {
 	public void getHashtagsTc2() {
 		logic.processCommand("hello");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(NUM_OF_DEFAULT_HASHTAGS+0, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 0, userHashtags.size());
 	}
 
 	// Single hashtagged item in a list.
@@ -391,7 +393,7 @@ public class LogicActualTest {
 	public void getHashtagsTc3() {
 		logic.processCommand("Need to meet #boss for #client meeting.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(NUM_OF_DEFAULT_HASHTAGS+2, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 2, userHashtags.size());
 	}
 
 	// Two hashtagged item, no overlaps.
@@ -400,7 +402,7 @@ public class LogicActualTest {
 		logic.processCommand("Need to meet #boss for #client meeting.");
 		logic.processCommand("Go do some #fishing for #charity.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(NUM_OF_DEFAULT_HASHTAGS+4, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 4, userHashtags.size());
 	}
 
 	// Two hashtagged item, with overlaps.
@@ -409,7 +411,7 @@ public class LogicActualTest {
 		logic.processCommand("Need to meet #boss for #client meeting.");
 		logic.processCommand("Go do some #fishing for #client.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(NUM_OF_DEFAULT_HASHTAGS+3, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 3, userHashtags.size());
 	}
 
 	// Numbered hashtags , with overlaps.
@@ -418,7 +420,55 @@ public class LogicActualTest {
 		logic.processCommand("Need to meet #boss1 for #boss2 meeting.");
 		logic.processCommand("Go do some #boss2 for #boss3.");
 		List<String> userHashtags = logic.getHashtags();
-		assertEquals(NUM_OF_DEFAULT_HASHTAGS+3, userHashtags.size());
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 3, userHashtags.size());
+	}
+
+	// Non-existent hashtags.
+	@Test
+	public void hasHashtagTc1() {
+		logic.processCommand("Not hashtagged");
+		assertFalse(logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Hashtag in front.
+	@Test
+	public void hasHashtagTc2() {
+		logic.processCommand("#hashtag in front");
+		assertTrue(logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Hashtag behind.
+	@Test
+	public void hasHashtagTc3() {
+		logic.processCommand("behind #hashtag");
+		assertTrue(logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Hashtagged, but search for non-existent.
+	@Test
+	public void hasHashtagTc4() {
+		logic.processCommand("#hashtag in front");
+		assertFalse(logic.getList().get(0).hasHashtag("hashtag2"));
+	}
+
+	// Priority Recognition - Not Priority.
+	@Test
+	public void priorityTc1() {
+		logic.processCommand("task 1");
+
+		List<Task> tasks = logic.getList();
+
+		assertEquals(false, tasks.get(0).isPriority());
+	}
+
+	// Priority Recognition - Priority.
+	@Test
+	public void priorityTc2() {
+		logic.processCommand("task 1 #pri");
+
+		List<Task> tasks = logic.getList();
+
+		assertEquals(true, tasks.get(0).isPriority());
 	}
 
 	// Search for non-existent item
@@ -468,8 +518,7 @@ public class LogicActualTest {
 
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals(
-				"Undo: Task successfully removed: this is the first item",
+		assertEquals("Undo: Task successfully removed: this is the first item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 
@@ -496,8 +545,7 @@ public class LogicActualTest {
 
 		message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals(
-				"Undo: Task successfully removed: this is the first item",
+		assertEquals("Undo: Task successfully removed: this is the first item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 
@@ -539,8 +587,7 @@ public class LogicActualTest {
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals(
-				"Redo: Task successfully deleted: this is the first item",
+		assertEquals("Redo: Task successfully deleted: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
@@ -665,5 +712,166 @@ public class LogicActualTest {
 		assertEquals(1, logic.getList().size());
 		logic.processCommand("edit 1 boss3");
 		assertEquals(2, logic.getList().size());
+	}
+
+	// Highlight for no task.
+	@Test
+	public void taskHighlightingTc1() {
+		assertTrue(logic.getTasksHighlight().isEmpty());
+	}
+
+	// Highlight for one task.
+	@Test
+	public void taskHighlightingTc2() {
+		logic.processCommand("task 1");
+
+		List<Highlight> taskHighlights = logic.getTasksHighlight();
+		assertEquals(1, taskHighlights.size());
+
+		Highlight highlight = taskHighlights.get(0);
+		assertEquals(Highlight.TYPE_TASK_LAST_ADDED,
+				highlight.getHighlightType());
+		assertEquals(0, highlight.getIndex());
+	}
+
+	// Highlight for second task.
+	@Test
+	public void taskHighlightingTc3() {
+		logic.processCommand("task 1");
+		logic.processCommand("task 2");
+
+		List<Highlight> taskHighlights = logic.getTasksHighlight();
+		assertEquals(1, taskHighlights.size());
+
+		Highlight highlight = taskHighlights.get(0);
+		assertEquals(Highlight.TYPE_TASK_LAST_ADDED,
+				highlight.getHighlightType());
+		assertEquals(1, highlight.getIndex());
+	}
+
+	// Highlight clearing after deletion.
+	@Test
+	public void taskHighlightingTc4() {
+		logic.processCommand("task 1");
+		logic.processCommand("task 2");
+		logic.processCommand("rm 1");
+
+		List<Highlight> taskHighlights = logic.getTasksHighlight();
+		assertEquals(0, taskHighlights.size());
+	}
+
+	// Highlight for one priority task.
+	@Test
+	public void taskHighlightingTc5() {
+		logic.processCommand("task 1 #pri");
+
+		List<Highlight> taskHighlights = logic.getTasksHighlight();
+		assertEquals(2, taskHighlights.size());
+
+		Highlight highlight = taskHighlights.get(0);
+		assertEquals(Highlight.TYPE_TASK_PRIORITY, highlight.getHighlightType());
+		assertEquals(0, highlight.getIndex());
+	}
+
+	// Highlight for two priority tasks.
+	@Test
+	public void taskHighlightingTc6() {
+		logic.processCommand("task 1 #pri");
+		logic.processCommand("task 2 #pri");
+
+		List<Highlight> taskHighlights = logic.getTasksHighlight();
+		assertEquals(3, taskHighlights.size());
+
+		Highlight highlight = taskHighlights.get(0);
+
+		assertEquals(Highlight.TYPE_TASK_PRIORITY, highlight.getHighlightType());
+		assertEquals(0, highlight.getIndex());
+
+		highlight = taskHighlights.get(2);
+
+		assertEquals(Highlight.TYPE_TASK_LAST_ADDED,
+				highlight.getHighlightType());
+		assertEquals(1, highlight.getIndex());
+	}
+
+	// Highlight for two priority tasks.
+	@Test
+	public void taskHighlightingTc7() {
+		logic.processCommand("task 1");
+		logic.processCommand("task 2 #pri");
+
+		List<Highlight> taskHighlights = logic.getTasksHighlight();
+		assertEquals(2, taskHighlights.size());
+
+		Highlight highlight = taskHighlights.get(0);
+
+		assertEquals(Highlight.TYPE_TASK_PRIORITY, highlight.getHighlightType());
+		assertEquals(1, highlight.getIndex());
+
+		highlight = taskHighlights.get(1);
+
+		assertEquals(Highlight.TYPE_TASK_LAST_ADDED,
+				highlight.getHighlightType());
+		assertEquals(1, highlight.getIndex());
+	}
+
+	// Highlight for no custom hashtags.
+	@Test
+	public void hashtagHighlightingTc1() {
+		List<Highlight> highlights = logic.getHashtagHighlight();
+		assertEquals(8, highlights.size());
+		for (int i = 0; i < 7; i++) {
+			Highlight highlight = highlights.get(i);
+			assertEquals(Highlight.TYPE_HASHTAG_DEFAULT,
+					highlight.getHighlightType());
+			assertEquals(i, highlight.getIndex());
+		}
+		Highlight highlight = highlights.get(7);
+		assertEquals(Highlight.TYPE_HASHTAG_SELECTED,
+				highlight.getHighlightType());
+		assertEquals(0, highlight.getIndex());
+	}
+
+	// Highlight for custom hashtag but not selected.
+	@Test
+	public void hashtagHighlightingTc2() {
+		logic.processCommand("This is a custom #hashtag");
+		List<Highlight> highlights = logic.getHashtagHighlight();
+		assertEquals(8, highlights.size());
+		assertEquals(Highlight.TYPE_HASHTAG_SELECTED, highlights.get(7)
+				.getHighlightType());
+		assertEquals(0, highlights.get(7).getIndex());
+	}
+
+	// Highlight for custom hashtag selected.
+	@Test
+	public void hashtagHighlightingTc3() {
+		logic.processCommand("This is a custom #hashtag");
+		logic.processCommand("#hashtag");
+		List<Highlight> highlights = logic.getHashtagHighlight();
+		assertEquals(Highlight.TYPE_HASHTAG_SELECTED, highlights.get(7)
+				.getHighlightType());
+		assertEquals(7, highlights.get(7).getIndex());
+	}
+
+	// Highlight for invalid hashtag category.
+	@Test
+	public void hashtagHighlightingTc4() {
+		logic.processCommand("This is a custom #hashtag");
+		logic.processCommand("#hashtag2");
+		List<Highlight> highlights = logic.getHashtagHighlight();
+		assertEquals(Highlight.TYPE_HASHTAG_INVALID, highlights.get(7)
+				.getHighlightType());
+		assertEquals(8, highlights.get(7).getIndex());
+	}
+
+	// Highlight for search.
+	@Test
+	public void hashtagHighlightingTc5() {
+		logic.processCommand("search apple");
+		List<Highlight> highlights = logic.getHashtagHighlight();
+		assertEquals(Highlight.TYPE_SEARCH, highlights.get(7)
+				.getHighlightType());
+		assertEquals(0, highlights.get(7).getIndex());
 	}
 }

@@ -75,7 +75,7 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isPriority() {
-		return hasHashtag("#pri");
+		return hasHashtag("pri");
 	}
 
 	// Date Methods
@@ -129,11 +129,8 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean hasHashtag(String hashtag) {
-		String hashtagLowerCase = hashtag.toLowerCase();
-		String descriptionLowerCase = this.description.toLowerCase();
-		boolean hasHashtag = descriptionLowerCase.matches(".*(^| )(#)"
-				+ Pattern.quote(hashtagLowerCase) + "(\\b|$).*");
-		return hasHashtag;
+		String hashtagLowerCase = "#" + hashtag.toLowerCase();
+		return getHashtags().contains(hashtagLowerCase);
 	}
 
 	@Override

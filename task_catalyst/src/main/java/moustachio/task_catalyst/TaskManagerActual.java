@@ -253,7 +253,7 @@ public class TaskManagerActual implements TaskManager {
 
 	@Override
 	public boolean addHashtagHighlight(int type, String hashtag) {
-		int hashtagIndex = hashtagList.indexOf("#" + hashtag);
+		int hashtagIndex = hashtagList.indexOf(hashtag);
 		boolean success;
 		boolean isFound = hashtagIndex >= 0;
 		if (isFound) {
@@ -331,6 +331,7 @@ public class TaskManagerActual implements TaskManager {
 		hashtagList.addAll(customHashtags);
 
 		clearHashtagHighlights();
+		highlightAllDefaultHashtags();
 
 		if (displayMode == DisplayMode.HASHTAG) {
 			String hashtagTerm = "#" + displayKeyword;
@@ -338,14 +339,15 @@ public class TaskManagerActual implements TaskManager {
 			if (!isValidHashtag) {
 				hashtagList.add(hashtagTerm);
 				addHashtagHighlight(Highlight.TYPE_HASHTAG_INVALID, hashtagTerm);
+			} else {
+				addHashtagHighlight(Highlight.TYPE_HASHTAG_SELECTED,
+						hashtagTerm);
 			}
 		} else if (displayMode == DisplayMode.SEARCH) {
 			String searchTerm = "search " + displayKeyword;
 			hashtagList.add(0, searchTerm);
 			addHashtagHighlight(Highlight.TYPE_SEARCH, searchTerm);
 		}
-
-		highlightAllDefaultHashtags();
 	}
 
 	private List<String> generateDefaultHashtags() {
@@ -387,8 +389,7 @@ public class TaskManagerActual implements TaskManager {
 
 	private void highlightAllDefaultHashtags() {
 		for (String defaultHashtag : DEFAULT_HASHTAGS) {
-			addHashtagHighlight(Highlight.TYPE_HASHTAG_DEFAULT, "#"
-					+ defaultHashtag);
+			addHashtagHighlight(Highlight.TYPE_HASHTAG_DEFAULT, defaultHashtag);
 		}
 	}
 

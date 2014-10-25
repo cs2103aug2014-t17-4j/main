@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 public class Highlight {
 	public static final int TYPE_HASHTAG_DEFAULT = 0;
-	public static final int TYPE_HASHTAG_CUSTOM = 1;
+	public static final int TYPE_HASHTAG_SELECTED = 1;
 	public static final int TYPE_HASHTAG_INVALID = 2;
 	public static final int TYPE_SEARCH = 3;
 	public static final int TYPE_TASK_LAST_ADDED = 4;
