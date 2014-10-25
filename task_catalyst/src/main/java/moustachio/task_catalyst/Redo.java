@@ -6,8 +6,9 @@ public class Redo extends Action {
 
 	private static final String[] DICTIONARY = { "redo" };
 
+	private static final String EXECUTE_SUCCESS = "Redo: %s";
 	private static final String EXECUTE_ERROR = "There is nothing to redo.";
-	
+
 	private static final String HINT_MESSAGE = "Redo: Press enter to redo task.";
 
 	ActionInvoker actionInvoker;
@@ -20,7 +21,9 @@ public class Redo extends Action {
 	public Message execute() {
 		Message message = actionInvoker.redoLastAction();
 		if (message != null) {
-			message.setMessage("(Redo) " + message.getMessage());
+			String appendedMessage = String.format(EXECUTE_SUCCESS,
+					message.getMessage());
+			message.setMessage(appendedMessage);
 		} else {
 			int type = Message.TYPE_ERROR;
 			message = new Message(type, EXECUTE_ERROR);
@@ -32,7 +35,7 @@ public class Redo extends Action {
 	public Message undo() {
 		return execute();
 	}
-	
+
 	public static Message getHint(String userCommand) {
 		int type = Message.TYPE_HINT;
 		Message returnMessage = new Message(type, HINT_MESSAGE);
