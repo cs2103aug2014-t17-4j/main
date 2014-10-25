@@ -37,7 +37,7 @@ public class TaskManagerActual implements TaskManager {
 
 	private TaskManagerActual() {
 		storage = new StorageActual();
-		listProcessor = new ListProcessorStub();
+		listProcessor = new ListProcessorActual();
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
 		taskList = storage.loadTasks(DEFAULT_FILE_NAME);

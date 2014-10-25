@@ -7,10 +7,10 @@ import java.util.LinkedHashSet;
 import java.util.List;
 
 public class ListProcessorActual implements ListProcessor {
-	List<Task> filteredList = new ArrayList<Task>();
 	
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
+		List<Task> filteredList = new ArrayList<Task>();
 		switch(hashtag) {
 			case "all": 
 				for(Task task:list) {
@@ -93,18 +93,20 @@ public class ListProcessorActual implements ListProcessor {
 
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
+		List<Task> searchList = new ArrayList<Task>();
 		for(Task task:list) {
 			if(task.hasKeyword(keyword)) {
-				filteredList.add(task);
+				searchList.add(task);
 			}
 		}
-		return filteredList;
+		return searchList;
 	}
 
 	@Override
 	public List<Task> sortByDate(List<Task> list) {
-		Collections.sort(filteredList);
-		return filteredList;
+		List<Task> sortList = new ArrayList<Task>(list);
+		Collections.sort(sortList);
+		return sortList;
 	}
 
 	@Override
