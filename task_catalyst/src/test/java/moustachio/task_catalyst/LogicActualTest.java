@@ -284,6 +284,61 @@ public class LogicActualTest {
 				message.getMessage());
 	}
 
+	// Delete all items.
+	@Test
+	public void deleteTc5() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm all");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items with space .
+	@Test
+	public void deleteTc6() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm all    ");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items space separated.
+	@Test
+	public void deleteTc7() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm 1 2");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items comma and space separated.
+	@Test
+	public void deleteTc8() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm 1, 2");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items comma and space separated.
+	@Test
+	public void deleteTc9() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm 1,2");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
 	// Complete invalid index.
 	@Test
 	public void doneTc1() {
@@ -691,6 +746,26 @@ public class LogicActualTest {
 				message.getMessage());
 	}
 
+	// Undo for delete multiple / all.
+	@Test
+	public void undoTc9() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		logic.processCommand("Task 3!");
+		Message message = logic.processCommand("rm 1, 3");
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		List<Task> tasks = logic.getList();
+		assertEquals(1, tasks.size());
+		assertEquals("Task 2!", tasks.get(0).getDescription());
+		logic.processCommand("undo");
+		tasks = logic.getList();
+		assertEquals(3, tasks.size());
+		assertEquals("Task 2!", tasks.get(0).getDescription());
+		assertEquals("Task 1!", tasks.get(1).getDescription());
+		assertEquals("Task 3!", tasks.get(2).getDescription());
+	}
+
 	// Test that display is automatically switched to added task if not in
 	// display.
 	@Test
@@ -813,6 +888,29 @@ public class LogicActualTest {
 		assertEquals(Highlight.TYPE_TASK_LAST_ADDED,
 				highlight.getHighlightType());
 		assertEquals(1, highlight.getIndex());
+	}
+
+	// Highlight for two priority tasks.
+	@Test
+	public void taskHighlightingTc8() {
+		logic.processCommand("task 1");
+		logic.processCommand("task 2");
+		logic.processCommand("task 3");
+		logic.processCommand("rm 2, 3");
+		logic.processCommand("undo");
+
+		List<Highlight> taskHighlights = logic.getTasksHighlight();
+		assertEquals(2, taskHighlights.size());
+
+		Highlight highlight = taskHighlights.get(0);
+		assertEquals(Highlight.TYPE_TASK_LAST_ADDED,
+				highlight.getHighlightType());
+		assertEquals(1, highlight.getIndex());
+
+		highlight = taskHighlights.get(1);
+		assertEquals(Highlight.TYPE_TASK_LAST_ADDED,
+				highlight.getHighlightType());
+		assertEquals(2, highlight.getIndex());
 	}
 
 	// Highlight for no custom hashtags.

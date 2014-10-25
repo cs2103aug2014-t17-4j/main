@@ -40,7 +40,7 @@ public class TaskCatalystCommons {
 
 	public static List<Integer> parsePositiveIntList(String intListString) {
 		String intListStringProcessed = intListString;
-		intListStringProcessed = intListStringProcessed.replaceAll(",", "");
+		intListStringProcessed = intListStringProcessed.replaceAll(",", " ");
 		String[] splitIntStrings = intListStringProcessed.split("\\s+");
 		List<Integer> parsedIntegers = new ArrayList<Integer>();
 		for (String intString : splitIntStrings) {
