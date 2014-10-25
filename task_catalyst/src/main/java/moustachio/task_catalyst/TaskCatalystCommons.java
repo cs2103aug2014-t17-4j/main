@@ -231,7 +231,15 @@ public class TaskCatalystCommons {
 	private static void removeRepeatedDates(List<Date> dates) {
 		int j = 0;
 		while (j < dates.size() - 1) {
-			if (dates.get(j).equals(dates.get(j + 1))) {
+			
+			// This is necessary because PrettyTime may return varying
+			// milliseconds.
+			boolean isSameDate = TaskCatalystCommons.isSameDate(dates.get(j),
+					dates.get(j + 1));
+			boolean isSameTime = TaskCatalystCommons.isSameTime(dates.get(j),
+					dates.get(j + 1));
+			
+			if (isSameDate && isSameTime) {
 				dates.remove(j);
 			} else {
 				j++;
@@ -436,7 +444,7 @@ public class TaskCatalystCommons {
 				formatString = formatString + " yyyy";
 			}
 		}
-		if (!isSameTime(currentDate, nextDate)) {
+		if (!isSameTime(currentDate, nextDate) || formatString.isEmpty()) {
 			if (!formatString.isEmpty()) {
 				formatString = formatString + " ";
 			}

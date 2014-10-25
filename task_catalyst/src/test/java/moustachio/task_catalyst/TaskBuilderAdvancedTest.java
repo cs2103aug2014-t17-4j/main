@@ -195,4 +195,20 @@ public class TaskBuilderAdvancedTest {
 		assertEquals("Meet boss from today 5PM", task.getDescription());
 	}
 
+	// Displaying dates when previous day == current day, and next time ==
+	// current time.
+	@Test
+	public void tc23() {
+		Task task = taskBuilder
+				.createTask("Meet boss today 1pm, 5pm and tomorrow");
+		assertEquals("Meet boss today 1PM, 5PM and tomorrow 5PM",
+				task.getDescription());
+	}
+
+	// Repeated Date alternate.
+	@Test
+	public void tc24() {
+		Task task = taskBuilder.createTask("Meet boss 5PM and today.");
+		assertEquals("Meet boss today 5PM.", task.getDescription());
+	}
 }

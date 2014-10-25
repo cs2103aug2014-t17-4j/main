@@ -469,13 +469,13 @@ public class LogicActualTest {
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Undo) Task successfully removed: this is the first item",
+				"Undo: Task successfully removed: this is the first item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Redo) Task successfully added: this is the first item",
+		assertEquals("Redo: Task successfully added: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 	}
@@ -490,26 +490,26 @@ public class LogicActualTest {
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Undo) Task successfully removed: this is the second item",
+				"Undo: Task successfully removed: this is the second item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Undo) Task successfully removed: this is the first item",
+				"Undo: Task successfully removed: this is the first item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Redo) Task successfully added: this is the first item",
+		assertEquals("Redo: Task successfully added: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Redo) Task successfully added: this is the second item",
+		assertEquals("Redo: Task successfully added: this is the second item",
 				message.getMessage());
 		assertEquals(2, logic.getList().size());
 	}
@@ -526,28 +526,28 @@ public class LogicActualTest {
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Undo) Task successfully restored: this is the second item",
+				"Undo: Task successfully restored: this is the second item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Undo) Task successfully restored: this is the first item",
+				"Undo: Task successfully restored: this is the first item",
 				message.getMessage());
 		assertEquals(2, logic.getList().size());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Redo) Task successfully deleted: this is the first item",
+				"Redo: Task successfully deleted: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Redo) Task successfully deleted: this is the second item",
+				"Redo: Task successfully deleted: this is the second item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -564,28 +564,28 @@ public class LogicActualTest {
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Undo) Task successfully restored: this is the second item",
+				"Undo: Task successfully restored: this is the second item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Undo) Task successfully restored: this is the first item",
+				"Undo: Task successfully restored: this is the first item",
 				message.getMessage());
 		assertEquals(2, logic.getList().size());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Redo) Task successfully completed: this is the first item",
+				"Redo: Task successfully completed: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals(
-				"(Redo) Task successfully completed: this is the second item",
+				"Redo: Task successfully completed: this is the second item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -598,12 +598,12 @@ public class LogicActualTest {
 
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Undo) Task successfully restored: before",
+		assertEquals("Undo: Task successfully restored: before",
 				message.getMessage());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Redo) Task successfully edited: after",
+		assertEquals("Redo: Task successfully edited: after",
 				message.getMessage());
 	}
 
@@ -615,7 +615,7 @@ public class LogicActualTest {
 
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Undo) Task successfully restored: before",
+		assertEquals("Undo: Task successfully restored: before",
 				message.getMessage());
 
 		logic.processCommand("something else");
@@ -635,12 +635,12 @@ public class LogicActualTest {
 
 		Message message = logic.processCommand("undo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Undo) Task successfully restored: before",
+		assertEquals("Undo: Task successfully restored: before",
 				message.getMessage());
 
 		message = logic.processCommand("redo");
 		assertEquals(Message.TYPE_SUCCESS, message.getType());
-		assertEquals("(Redo) Task successfully edited: after",
+		assertEquals("Redo: Task successfully edited: after",
 				message.getMessage());
 	}
 
