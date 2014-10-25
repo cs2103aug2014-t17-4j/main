@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import com.sun.glass.ui.Robot;
+
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ObservableValue;
@@ -66,6 +68,8 @@ public class UIController {
 			.observableArrayList();
 	private static ObservableList<String> hashTagToBeDisplayed = FXCollections
 			.observableArrayList();
+	
+	private TaskCatalyst tc;
 
 	/**
 	 * Initializes the controller class. This method is automatically called
@@ -162,6 +166,40 @@ public class UIController {
 			statusMessage.setText(message.getMessage());
 			break;
 		}
+	}
+	
+	/**
+	 * 
+	 * @author A0112764J
+	 */
+	
+	public void connectWithMainTaskCatalyst(TaskCatalyst tc) {
+		this.tc = tc;
+	}
+	
+	/**
+	 * 
+	 * @author A0112764
+	 */
+	public void handleHotKeys(final String associatedText) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Message message = logic.processCommand(associatedText);
+				switch (message.getType()) {
+				case Message.TYPE_SUCCESS:
+					statusMessage.setText(message.getMessage());
+
+					displayHashTags();
+					displayTask();
+					break;
+				case Message.TYPE_ERROR:
+					statusMessage.setText(message.getMessage());
+					break;
+				}
+			}
+			
+		});
 	}
 
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {

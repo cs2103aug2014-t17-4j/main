@@ -10,7 +10,6 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
@@ -25,12 +24,13 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import javax.swing.JOptionPane;
 
 public class TaskCatalyst extends Application {
 	private double initialY;
-	private double initialX;
+	private double initialX; 
+	
+	private UIController controller;
 
 	public static void main(String[] args) {
 		loadSystemTray();
@@ -41,10 +41,14 @@ public class TaskCatalyst extends Application {
 	public void start(Stage primaryStage){
 		
 		try {
-			Parent root = FXMLLoader.load(getClass().getResource(
-					"userInterface.fxml"));
+			/*Parent root = FXMLLoader.load(getClass().getResource(
+					"userInterface.fxml"));*/
+			FXMLLoader loader = new FXMLLoader(TaskCatalyst.class.getResource("userInterface.fxml"));
+			Parent root = loader.load();
 			Scene scene = new Scene(root);
-			executeMinMax(primaryStage,scene);
+			controller = loader.getController();
+			controller.connectWithMainTaskCatalyst(this);
+			addHotKeysListeners(primaryStage,scene);
 			addDragListeners(root);
 			// set stylesheet
 			scene.getStylesheets().add(
@@ -62,22 +66,30 @@ public class TaskCatalyst extends Application {
 	/**
 	 * This function does minimize when "ctrl+m" is pressed and maximize for toggling case.
 	 * 
-	 * @author Lin XiuQing (A0112764)
+	 * @author Lin XiuQing (A0112764J)
 	 */
 	
-	private void executeMinMax(Stage stage, Scene scene){
-		final KeyCombination keyComb = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
+	private void addHotKeysListeners(Stage stage, Scene scene){
+		final KeyCombination minHotKey = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
+		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.R, KeyCodeCombination.CONTROL_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>(){
 			
 		@Override
 			public void handle(KeyEvent event){
-				if(keyComb.match(event)){
+				if(minHotKey.match(event)){
 					stage.setIconified(!stage.isIconified());
+				}
+				else if(undoHotKey.match(event))  {
+					controller.handleHotKeys("undo");
+				}
+				else if (redoHotKey.match(event)) {
+					controller.handleHotKeys("redo");
 				}
 			}	
 		});
 	}
-
+	
 	private void addDragListeners(final Node mainUI) {
 
 		mainUI.setOnMousePressed(new EventHandler<MouseEvent>() {
