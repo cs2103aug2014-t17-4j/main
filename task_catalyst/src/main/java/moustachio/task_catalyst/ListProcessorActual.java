@@ -19,14 +19,22 @@ public class ListProcessorActual implements ListProcessor {
 					}
 				}
 				return filteredList;
-			case "tdy": 
+			case "pri":
 				for(Task task:list) {
-					if(!task.getAllDates().isEmpty() && task.isRange() 
-						&& (TaskCatalystCommons.daysFromToday(task.getDateEnd()) == 0)
-						&& !task.isDone()) {
+					if(!task.isDone() && task.isPriority()) {
 						filteredList.add(task);
 					}
-					else if(!task.getAllDates().isEmpty() && !task.isRange() && !task.isDone()) {
+				}
+				return filteredList;
+			case "tdy": 
+				for(Task task:list) {
+					if(!task.isDone() 
+						&& task.isRange() 
+						&& !task.getAllDates().isEmpty() 
+						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 0)) {
+						filteredList.add(task);
+					}
+					else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
 						for(Date date:task.getAllDates()) {
 							if(TaskCatalystCommons.isToday(date)) {
 								filteredList.add(task);
@@ -37,12 +45,13 @@ public class ListProcessorActual implements ListProcessor {
 				return filteredList;
 			case "tmr": 
 				for(Task task:list) {
-					if(!task.getAllDates().isEmpty() && task.isRange() 
-						&& (TaskCatalystCommons.daysFromToday(task.getDateEnd()) == 1)
-						&& !task.isDone()) {
+					if(!task.isDone() 
+						&& !task.getAllDates().isEmpty() 
+						&& task.isRange() 
+						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 1)) {
 						filteredList.add(task);
 					}
-					else if(!task.getAllDates().isEmpty() && !task.isRange() && !task.isDone()) {
+					else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
 						for(Date date:task.getAllDates()) {
 							if(TaskCatalystCommons.isTomorrow(date)) {
 								filteredList.add(task);
@@ -53,12 +62,13 @@ public class ListProcessorActual implements ListProcessor {
 				return filteredList;
 			case "upc": 
 				for(Task task:list) {
-					if(!task.getAllDates().isEmpty() && task.isRange() 
-						&& (TaskCatalystCommons.daysFromToday(task.getDateEnd()) >= 2)
-						&& !task.isDone()) {
+					if(!task.isDone() 
+						&& !task.getAllDates().isEmpty() 
+						&& task.isRange() 
+						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) >= 2)) {
 						filteredList.add(task);
 					}
-					else if(!task.getAllDates().isEmpty() && !task.isRange() && !task.isDone()) {
+					else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
 						for(Date date:task.getAllDates()) {
 							if(TaskCatalystCommons.daysFromToday(date) >= 2) {
 								filteredList.add(task);
@@ -69,7 +79,7 @@ public class ListProcessorActual implements ListProcessor {
 				return filteredList;
 			case "smd":
 				for(Task task:list) {
-					if(task.getDateEnd() == null && !task.isDone()) {
+					if(!task.isDone() && task.getAllDates().isEmpty()) {
 						filteredList.add(task);
 					}
 				}
@@ -83,7 +93,7 @@ public class ListProcessorActual implements ListProcessor {
 				return filteredList;
 			default:
 				for(Task task:list) {
-					if(task.hasHashtag(hashtag) && !task.isDone()) {
+					if(!task.isDone() && task.hasHashtag(hashtag)) {
 						filteredList.add(task);
 					}
 				}
@@ -136,7 +146,7 @@ public class ListProcessorActual implements ListProcessor {
 	private boolean isOverlap(Task task1, Task task2) {
 		List<Date> list1 = new ArrayList<Date>(task1.getAllDates());
 		List<Date> list2 = new ArrayList<Date>(task2.getAllDates());
-		if(list1.isEmpty()|| list2.isEmpty() || task1.equals(task2) || task1.isDone() || task2.isDone()) {
+		if(task1.isDone() || task2.isDone() || list1.isEmpty()|| list2.isEmpty() || task1.equals(task2)) {
 			return false;
 		}
 		if(task1.isRange() && task2.isRange()) {
