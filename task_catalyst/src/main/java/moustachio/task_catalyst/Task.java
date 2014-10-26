@@ -33,8 +33,6 @@ public interface Task extends Comparable<Task> {
 
 	public HighlightType getHighlightType();
 
-	// Other Methods
-
 	public boolean hasHashtag(String hashtag);
 
 	public boolean hasKeyword(String keyword);

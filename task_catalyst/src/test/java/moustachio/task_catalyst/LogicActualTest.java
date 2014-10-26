@@ -838,9 +838,9 @@ public class LogicActualTest {
 	// Check if a priority task is marked.
 	@Test
 	public void highlightTaskTc3() {
-		logic.processCommand("item 1 1PM to 2PM #pri");
-		logic.processCommand("item 2 1PM to 2PM");
-		logic.processCommand("item 3 1PM to 2PM");
+		logic.processCommand("item 1PM to 2PM #pri");
+		logic.processCommand("item 1PM to 2PM");
+		logic.processCommand("item 1PM to 2PM");
 		List<Task> tasks = logic.getList();
 		Task task1 = tasks.get(0);
 		Task task2 = tasks.get(1);
