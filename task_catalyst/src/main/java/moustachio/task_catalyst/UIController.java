@@ -149,6 +149,7 @@ public class UIController {
 				}
 			}
 			setFocusForHashTable(logic.getHashtagSelected());
+			setFocusForTaskTable(logic.getTaskSelected());
 			displayHashTags();
 			displayTask();
 			clearForm();

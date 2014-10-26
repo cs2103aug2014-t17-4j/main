@@ -12,6 +12,8 @@ public interface Logic {
 	public List<Task> getList();
 
 	public int getHashtagSelected();
+	
+	public int getTaskSelected();
 
 	public void testMode();
 }

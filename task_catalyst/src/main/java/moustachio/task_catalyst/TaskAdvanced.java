@@ -148,6 +148,11 @@ public class TaskAdvanced implements Task {
 	public int compareTo(Task o) {
 		Date thisDateTime = this.getDateStart();
 		Date otherDateTime = o.getDateStart();
+		if (this.isPriority() && !o.isPriority()) {
+			return -1;
+		} else if (!this.isPriority() && o.isPriority()) {
+			return 1;
+		}
 		if (thisDateTime == null && otherDateTime == null) {
 			return 0;
 		} else if (thisDateTime == null) {

@@ -91,39 +91,29 @@
     -fx-border-width: 0px;
 }
 .isTaskLastAdded { 
-	-fx-background-color: mediumturquoise;
-	-fx-border-color: black;
+	-fx-background-color: #DFEFF0;
 }
 .isOverlapStatic { 
-	-fx-background-color: orangered;
-	-fx-border-color: black;
+	-fx-background-color: #EB77A6;
 }
 .isOverlapDynamic { 
-	-fx-background-color: orangered;
-	-fx-border-color: black;
+	-fx-background-color: #EB77A6;
 }
 .isPriority { 
-	-fx-background-color: gold;
-	-fx-border-color: black;
+	-fx-background-color: #BDD8DA;
 }
 .isPriorityOverlapStatic { 
-	-fx-background-color: red;
-	-fx-border-color: black;
+	-fx-background-color: #EB77A6;
 }
 .isPriorityOverlapDynamic { 
-	-fx-background-color: red;
-	-fx-border-color: black;
+	-fx-background-color: #EB77A6;
 }
 .isDefaultHashtag { 
 	-fx-background-color: skyblue;
-	-fx-border-color: black;
 }
 .isSelectedHashtag { 
 	-fx-background-color: white ;
-	-fx-border-color: black;
 }
 .isInvalidHashtag { 
 	-fx-background-color: red;
-	-fx-border-color: black;
 }
-

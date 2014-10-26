@@ -18,6 +18,7 @@ public class TaskManagerActual implements TaskManager {
 
 	private DisplayMode displayMode;
 	private String displayKeyword;
+	private int taskSelected;
 
 	private List<Task> taskList;
 	private List<Task> displayList;
@@ -77,6 +78,11 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
+	public int getTaskSelected() {
+		return taskSelected;
+	}
+
+	@Override
 	public boolean addTask(Task task) {
 		boolean isAdded = taskList.add(task);
 		boolean isSaved = false;
@@ -88,7 +94,7 @@ public class TaskManagerActual implements TaskManager {
 			refreshLists();
 			displayAutoswitchToTask(task);
 		}
-		task.setHighlightType(HighlightType.LAST_ADDED);
+		taskSelected = displayList.indexOf(task);
 		return isSuccess;
 	}
 
@@ -267,6 +273,7 @@ public class TaskManagerActual implements TaskManager {
 			break;
 		}
 		displayList = listProcessor.sortByDate(displayList);
+		taskSelected = -1;
 		clearHighlights(displayList);
 		highlightAllPriority(displayList);
 		highlightAllOverlap(displayList);
@@ -288,9 +295,7 @@ public class TaskManagerActual implements TaskManager {
 
 	private void highlightAllOverlap(List<Task> tasks) {
 		List<Task> overlapList = listProcessor.getOverlapping(tasks);
-		System.out.println("overlap list"+overlapList.size());
 		for (Task task : overlapList) {
-			//System.out.println(task.getDescription());
 			if (task.isPriority()) {
 				task.setHighlightType(HighlightType.PRIORITY_OVERLAP);
 			} else {

@@ -820,7 +820,7 @@ public class LogicActualTest {
 		Task task1 = tasks.get(0);
 		Task task2 = tasks.get(1);
 		assertEquals(HighlightType.NORMAL, task1.getHighlightType());
-		assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
+		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
 	}
 
 	// Check if a priority task is marked.
@@ -832,7 +832,8 @@ public class LogicActualTest {
 		Task task1 = tasks.get(0);
 		Task task2 = tasks.get(1);
 		assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
-		assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
+		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
+		assertEquals(1,logic.getTaskSelected());
 	}
 
 	// Check if a priority task is marked.
@@ -847,7 +848,7 @@ public class LogicActualTest {
 		Task task3 = tasks.get(2);
 		assertEquals(HighlightType.PRIORITY_OVERLAP, task1.getHighlightType());
 		assertEquals(HighlightType.OVERLAP, task2.getHighlightType());
-		assertEquals(HighlightType.LAST_ADDED, task3.getHighlightType());
+		assertEquals(HighlightType.OVERLAP, task3.getHighlightType());
 	}
 	
 	// Check multi-last added highlighting.

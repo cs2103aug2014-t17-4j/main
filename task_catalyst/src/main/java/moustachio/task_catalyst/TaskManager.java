@@ -33,6 +33,8 @@ public interface TaskManager {
 	public void setDisplayKeyword(String keyword);
 
 	public int getHashtagSelected();
+	
+	public int getTaskSelected();
 
 	public void testMode();
 }
