@@ -822,31 +822,48 @@ public class LogicActualTest {
 		assertEquals(HighlightType.NORMAL, task1.getHighlightType());
 		assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
 	}
-	
+
 	// Check if a priority task is marked.
-		@Test
-		public void highlightTaskTc2() {
-			logic.processCommand("item 1 #pri");
-			logic.processCommand("item 2");
-			List<Task> tasks = logic.getList();
-			Task task1 = tasks.get(0);
-			Task task2 = tasks.get(1);
-			assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
-			assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
-		}
-		
-		// Check if a priority task is marked.
-		@Test
-		public void highlightTaskTc3() {
-			logic.processCommand("item 1 1PM to 2PM #pri");
-			logic.processCommand("item 2 1PM to 2PM");
-			logic.processCommand("item 3 1PM to 2PM");
-			List<Task> tasks = logic.getList();
-			Task task1 = tasks.get(0);
-			Task task2 = tasks.get(1);
-			Task task3 = tasks.get(2);
-			assertEquals(HighlightType.PRIORITY_OVERLAP, task1.getHighlightType());
-			assertEquals(HighlightType.OVERLAP, task2.getHighlightType());
-			assertEquals(HighlightType.LAST_ADDED, task3.getHighlightType());
-		}
+	@Test
+	public void highlightTaskTc2() {
+		logic.processCommand("item 1 #pri");
+		logic.processCommand("item 2");
+		List<Task> tasks = logic.getList();
+		Task task1 = tasks.get(0);
+		Task task2 = tasks.get(1);
+		assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
+		assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
+	}
+
+	// Check if a priority task is marked.
+	@Test
+	public void highlightTaskTc3() {
+		logic.processCommand("item 1 1PM to 2PM #pri");
+		logic.processCommand("item 2 1PM to 2PM");
+		logic.processCommand("item 3 1PM to 2PM");
+		List<Task> tasks = logic.getList();
+		Task task1 = tasks.get(0);
+		Task task2 = tasks.get(1);
+		Task task3 = tasks.get(2);
+		assertEquals(HighlightType.PRIORITY_OVERLAP, task1.getHighlightType());
+		assertEquals(HighlightType.OVERLAP, task2.getHighlightType());
+		assertEquals(HighlightType.LAST_ADDED, task3.getHighlightType());
+	}
+	
+	// Check multi-last added highlighting.
+	@Test
+	public void highlightTaskTc4() {
+		logic.processCommand("item 1");
+		logic.processCommand("item 2");
+		logic.processCommand("item 3");
+		logic.processCommand("rm all");
+		logic.processCommand("undo");
+		List<Task> tasks = logic.getList();
+		Task task1 = tasks.get(0);
+		Task task2 = tasks.get(1);
+		Task task3 = tasks.get(2);
+		assertEquals(HighlightType.LAST_ADDED, task1.getHighlightType());
+		assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
+		assertEquals(HighlightType.LAST_ADDED, task3.getHighlightType());
+	}
 }
