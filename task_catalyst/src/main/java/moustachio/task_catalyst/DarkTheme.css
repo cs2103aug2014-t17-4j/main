@@ -90,3 +90,40 @@
 .table-row-cell:empty .table-cell {
     -fx-border-width: 0px;
 }
+.isTaskLastAdded { 
+	-fx-background-color: mediumturquoise;
+	-fx-border-color: black;
+}
+.isOverlapStatic { 
+	-fx-background-color: orangered;
+	-fx-border-color: black;
+}
+.isOverlapDynamic { 
+	-fx-background-color: orangered;
+	-fx-border-color: black;
+}
+.isPriority { 
+	-fx-background-color: gold;
+	-fx-border-color: black;
+}
+.isPriorityOverlapStatic { 
+	-fx-background-color: red;
+	-fx-border-color: black;
+}
+.isPriorityOverlapDynamic { 
+	-fx-background-color: red;
+	-fx-border-color: black;
+}
+.isDefaultHashtag { 
+	-fx-background-color: skyblue;
+	-fx-border-color: black;
+}
+.isSelectedHashtag { 
+	-fx-background-color: white ;
+	-fx-border-color: black;
+}
+.isInvalidHashtag { 
+	-fx-background-color: red;
+	-fx-border-color: black;
+}
+
