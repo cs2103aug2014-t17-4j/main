@@ -59,6 +59,7 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		try {
 			/*Parent root = FXMLLoader.load(getClass().getResource(
 					"userInterface.fxml"));*/
+			primaryStage.setAlwaysOnTop(true);
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
 			FXMLLoader loader = new FXMLLoader(TaskCatalyst.class.getResource("userInterface.fxml"));
