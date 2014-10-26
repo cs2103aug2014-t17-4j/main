@@ -177,9 +177,9 @@ public class ListProcessorActual implements ListProcessor {
 	private boolean isOverlappingOneRanged(Task task1, Task task2) {
 		List<Date> list = new ArrayList<Date>(task2.getAllDates());
 		for(Date date:list) {
-			if((date.before(task1.getDateEnd()) && date.after(task1.getDateStart())) 
-				|| date.equals(task1.getDateStart()) 
-				|| date.equals(task1.getDateEnd())) {
+			if((date.before(task1.getDateEnd()) 
+				&& date.after(task1.getDateStart())) 
+				|| date.equals(task1.getDateStart())) {
 				return true;
 			}
 		}
