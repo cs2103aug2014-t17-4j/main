@@ -72,10 +72,9 @@ public class UIController {
 		testInterface();
 		initializeForms();
 	}
-
+	
 	@FXML
 	public void exitButtonAction() {
-		//Platform.exit();
 		Platform.runLater(new Runnable() {
 			@Override 
 			public void run() {
@@ -176,7 +175,7 @@ public class UIController {
 	}
 
 	/**
-	 * 
+	 * This function handles hotKey to execute a desired action that is done by user. 
 	 * @author A0112764J
 	 */
 	public void handleHotKeys(final String associatedText) {
@@ -203,10 +202,6 @@ public class UIController {
 			}
 
 		});
-	}
-	
-	public boolean isCompletedCommand(KeyEvent event){
-		return event.getCode().equals(KeyCode.ENTER);
 	}
 
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {

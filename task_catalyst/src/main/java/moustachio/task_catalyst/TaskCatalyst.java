@@ -28,13 +28,21 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.swing.JOptionPane;
+import javax.swing.KeyStroke;
 
-public class TaskCatalyst extends Application {
+import com.tulskiy.keymaster.common.HotKey;
+import com.tulskiy.keymaster.common.HotKeyListener;
+import com.tulskiy.keymaster.common.Provider;
+
+public class TaskCatalyst extends Application implements HotKeyListener{
 	private double initialY;
 	private double initialX; 
 	
 	private UIController controller;
 	private Stage primaryStage;
+	
+	private static Provider hotKeys = null;
+	private String toggleLaunchHK = "control M";
 
 	public static void main(String[] args) {
 		launch(args);
@@ -52,6 +60,7 @@ public class TaskCatalyst extends Application {
 			/*Parent root = FXMLLoader.load(getClass().getResource(
 					"userInterface.fxml"));*/
 			loadSystemTray(this.primaryStage);
+			startHotKeys();
 			FXMLLoader loader = new FXMLLoader(TaskCatalyst.class.getResource("userInterface.fxml"));
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
@@ -74,13 +83,46 @@ public class TaskCatalyst extends Application {
 	}
 	
 	/**
-	 * 
+	 * This function registers the global hotkey (ctrl+m). 
+	 * @author A0112764J
+	 */
+	private void startHotKeys() {
+		TaskCatalyst tc = this;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (hotKeys == null) {
+					hotKeys = Provider.getCurrentProvider(false);
+				}
+				hotKeys.reset();
+				hotKeys.register(KeyStroke.getKeyStroke(toggleLaunchHK), tc);
+			}
+		}).start();
+	}
+	
+	/**
+	 * This function disables the global hotkey (ctrl+m).
+	 * @author A0112764J
+	 */
+	private static void stopHotKeys() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (hotKeys != null) {
+					hotKeys.reset();
+					hotKeys.stop();
+				}
+			}
+		}).start();
+	}
+	
+	/**
+	 * This function creates hotkey for the actions that are undo,redo and exit. 
 	 * 
 	 * @author Lin XiuQing (A0112764J)
 	 */
 	
 	private void addHotKeysListeners(Stage stage, Scene scene){
-		final KeyCombination minHotKey = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
 		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y, KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.CONTROL_DOWN);
@@ -88,17 +130,14 @@ public class TaskCatalyst extends Application {
 			
 		@Override
 			public void handle(KeyEvent event){
-				if(minHotKey.match(event)){
-					stage.hide();
-				}
-				else if(undoHotKey.match(event))  {	
+				if(undoHotKey.match(event))  {	
 					controller.handleHotKeys("undo");
 				}
 				else if (redoHotKey.match(event)) {
 					controller.handleHotKeys("redo");
 				}
 				else if(exitHotKey.match(event)){
-					controller.handleHotKeys("exit");
+					System.exit(0);
 				}
 			}	
 		});
@@ -148,6 +187,11 @@ public class TaskCatalyst extends Application {
 		// popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();
 		
+		/**
+		 * 
+		 * @author A0112764J
+		 */
+		
 		// 1st menuitem for popupmenu
 		MenuItem launch = new MenuItem("Launch");
 		launch.addActionListener(new ActionListener() {
@@ -180,6 +224,7 @@ public class TaskCatalyst extends Application {
 		close.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				stopHotKeys();
 				System.exit(0);
 			}
 		});
@@ -195,5 +240,38 @@ public class TaskCatalyst extends Application {
 		} catch (AWTException awtException) {
 			awtException.printStackTrace();
 		}
+	}
+	/**
+	 * This function is to execute global hot key ctrl+m that minimizes application while it is running, 
+	 * and to relaunch application while it is minimize at system tray.
+	 * 
+	 * @author A0112764J
+	 * 
+	 * @param hotKey
+	 */
+	@Override
+	public void onHotKey(HotKey hotKey) {
+		switch (hotKey.keyStroke.getKeyCode()) {
+		case java.awt.event.KeyEvent.VK_M :
+			if (primaryStage.isShowing()) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						primaryStage.hide();
+					}
+				});
+			}
+			else {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						primaryStage.show();
+						primaryStage.toFront();
+					}
+				});
+			}
+			break;
+		}
+		
 	}
 }
