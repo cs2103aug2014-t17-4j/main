@@ -10,8 +10,10 @@ public class TaskAdvanced implements Task {
 
 	boolean isDone;
 	String description;
+	HighlightType highlightType;
 
 	public TaskAdvanced(String description) {
+		highlightType = HighlightType.NORMAL;
 		this.description = description;
 		isDone = false;
 	}
@@ -155,5 +157,15 @@ public class TaskAdvanced implements Task {
 		} else {
 			return thisDateTime.compareTo(otherDateTime);
 		}
+	}
+
+	@Override
+	public HighlightType getHighlightType() {
+		return highlightType;
+	}
+
+	@Override
+	public void setHighlightType(HighlightType highlightType) {
+		this.highlightType = highlightType;
 	}
 }

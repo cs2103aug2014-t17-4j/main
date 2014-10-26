@@ -24,10 +24,14 @@ public interface Task extends Comparable<Task> {
 	public boolean isRange();
 
 	public boolean isDone();
-	
+
 	public boolean isPriority();
 
 	public void setDone(boolean done);
+
+	public void setHighlightType(HighlightType highlightType);
+
+	public HighlightType getHighlightType();
 
 	// Other Methods
 

@@ -38,12 +38,7 @@ public class LogicActual implements Logic {
 	}
 
 	@Override
-	public List<Highlight> getHashtagHighlight() {
-		return taskManager.getHashtagHighlight();
-	}
-
-	@Override
-	public List<Highlight> getTasksHighlight() {
-		return taskManager.getTasksHighlight();
+	public int getHashtagSelected() {
+		return taskManager.getHashtagSelected();
 	}
 }

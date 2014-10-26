@@ -11,9 +11,7 @@ public interface Logic {
 
 	public List<Task> getList();
 
-	public List<Highlight> getHashtagHighlight();
-
-	public List<Highlight> getTasksHighlight();
+	public int getHashtagSelected();
 
 	public void testMode();
 }

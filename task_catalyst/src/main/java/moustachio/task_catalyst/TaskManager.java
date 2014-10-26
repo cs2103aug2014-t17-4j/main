@@ -32,17 +32,7 @@ public interface TaskManager {
 
 	public void setDisplayKeyword(String keyword);
 
-	public List<Highlight> getHashtagHighlight();
-
-	public List<Highlight> getTasksHighlight();
-
-	public boolean addHashtagHighlight(int type, String hashtag);
-
-	public void clearHashtagHighlights();
-
-	public boolean addTaskHighlight(int type, Task task);
-
-	public void clearTaskHighlights();
+	public int getHashtagSelected();
 
 	public void testMode();
 }

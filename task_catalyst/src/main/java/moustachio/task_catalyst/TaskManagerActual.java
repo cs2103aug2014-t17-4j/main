@@ -23,9 +23,6 @@ public class TaskManagerActual implements TaskManager {
 	private List<Task> displayList;
 	private List<String> hashtagList;
 
-	private List<Highlight> hashtagHighlights;
-	private List<Highlight> taskHighlights;
-
 	private static TaskManagerActual instance;
 
 	public static TaskManagerActual getInstance() {
@@ -42,8 +39,6 @@ public class TaskManagerActual implements TaskManager {
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
 		taskList = storage.loadTasks(DEFAULT_FILE_NAME);
 		hashtagList = new ArrayList<String>();
-		hashtagHighlights = new ArrayList<Highlight>();
-		taskHighlights = new ArrayList<Highlight>();
 		refreshLists();
 	}
 
@@ -73,6 +68,15 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
+	public int getHashtagSelected() {
+		if (displayMode == DisplayMode.HASHTAG) {
+			return getHashtags().indexOf("#" + displayKeyword);
+		} else {
+			return getHashtags().indexOf("search " + displayKeyword);
+		}
+	}
+
+	@Override
 	public boolean addTask(Task task) {
 		boolean isAdded = taskList.add(task);
 		boolean isSaved = false;
@@ -84,7 +88,6 @@ public class TaskManagerActual implements TaskManager {
 			refreshLists();
 			displayAutoswitchToTask(task);
 		}
-		addTaskHighlight(Highlight.TYPE_TASK_LAST_ADDED, task);
 		return isSuccess;
 	}
 
@@ -114,7 +117,6 @@ public class TaskManagerActual implements TaskManager {
 			refreshLists();
 			for (Task task : tasks) {
 				displayAutoswitchToTask(task);
-				addTaskHighlight(Highlight.TYPE_TASK_LAST_ADDED, task);
 			}
 		}
 
@@ -241,56 +243,6 @@ public class TaskManagerActual implements TaskManager {
 		refreshLists();
 	}
 
-	@Override
-	public List<Highlight> getHashtagHighlight() {
-		return hashtagHighlights;
-	}
-
-	@Override
-	public List<Highlight> getTasksHighlight() {
-		return taskHighlights;
-	}
-
-	@Override
-	public boolean addHashtagHighlight(int type, String hashtag) {
-		int hashtagIndex = hashtagList.indexOf(hashtag);
-		boolean success;
-		boolean isFound = hashtagIndex >= 0;
-		if (isFound) {
-			Highlight highlight = new Highlight(type, hashtagIndex);
-			hashtagHighlights.add(highlight);
-			success = true;
-		} else {
-			success = false;
-		}
-		return success;
-	}
-
-	@Override
-	public boolean addTaskHighlight(int type, Task task) {
-		int taskIndex = taskList.indexOf(task);
-		boolean success;
-		boolean isFound = taskIndex >= 0;
-		if (isFound) {
-			Highlight highlight = new Highlight(type, taskIndex);
-			taskHighlights.add(highlight);
-			success = true;
-		} else {
-			success = false;
-		}
-		return success;
-	}
-
-	@Override
-	public void clearHashtagHighlights() {
-		hashtagHighlights.clear();
-	}
-
-	@Override
-	public void clearTaskHighlights() {
-		taskHighlights.clear();
-	}
-
 	private void clearLists() {
 		hashtagList.clear();
 		taskList.clear();
@@ -313,12 +265,6 @@ public class TaskManagerActual implements TaskManager {
 			break;
 		}
 		displayList = listProcessor.sortByDate(displayList);
-
-		clearTaskHighlights();
-
-		highlightAllPriority();
-
-		highlightAllOverlapping();
 	}
 
 	private void refreshHashtagList() {
@@ -327,30 +273,16 @@ public class TaskManagerActual implements TaskManager {
 		List<String> customHashtags = generateCustomHashtags();
 
 		hashtagList.clear();
+
+		if (displayMode == DisplayMode.SEARCH) {
+			hashtagList.add("search " + displayKeyword);
+		}
+
 		hashtagList.addAll(defaultHashtags);
 		for (String hashtag : customHashtags) {
 			if (!defaultHashtags.contains(hashtag)) {
 				hashtagList.add(hashtag);
 			}
-		}
-
-		clearHashtagHighlights();
-		highlightAllDefaultHashtags();
-
-		if (displayMode == DisplayMode.HASHTAG) {
-			String hashtagTerm = "#" + displayKeyword;
-			boolean isValidHashtag = hashtagList.contains(hashtagTerm);
-			if (!isValidHashtag) {
-				hashtagList.add(hashtagTerm);
-				addHashtagHighlight(Highlight.TYPE_HASHTAG_INVALID, hashtagTerm);
-			} else {
-				addHashtagHighlight(Highlight.TYPE_HASHTAG_SELECTED,
-						hashtagTerm);
-			}
-		} else if (displayMode == DisplayMode.SEARCH) {
-			String searchTerm = "search " + displayKeyword;
-			hashtagList.add(0, searchTerm);
-			addHashtagHighlight(Highlight.TYPE_SEARCH, searchTerm);
 		}
 	}
 
@@ -380,32 +312,6 @@ public class TaskManagerActual implements TaskManager {
 			setDisplayMode(DEFAULT_DISPLAY_MODE);
 			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);
 			refreshLists();
-		}
-	}
-
-	private void highlightAllPriority() {
-		for (Task task : displayList) {
-			if (task.isPriority()) {
-				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY, task);
-			}
-		}
-	}
-
-	private void highlightAllOverlapping() {
-		List<Task> overlappingList = listProcessor.getOverlapping(displayList);
-		for (Task task : overlappingList) {
-			if (task.isPriority()) {
-				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY_OVERLAP_STATIC,
-						task);
-			} else {
-				addTaskHighlight(Highlight.TYPE_TASK_OVERLAP_STATIC, task);
-			}
-		}
-	}
-
-	private void highlightAllDefaultHashtags() {
-		for (String defaultHashtag : DEFAULT_HASHTAGS) {
-			addHashtagHighlight(Highlight.TYPE_HASHTAG_DEFAULT, defaultHashtag);
 		}
 	}
 
