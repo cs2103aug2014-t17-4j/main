@@ -88,6 +88,7 @@ public class TaskManagerActual implements TaskManager {
 			refreshLists();
 			displayAutoswitchToTask(task);
 		}
+		task.setHighlightType(HighlightType.LAST_ADDED);
 		return isSuccess;
 	}
 
@@ -116,6 +117,7 @@ public class TaskManagerActual implements TaskManager {
 		if (isSuccess) {
 			refreshLists();
 			for (Task task : tasks) {
+				task.setHighlightType(HighlightType.LAST_ADDED);
 				displayAutoswitchToTask(task);
 			}
 		}
@@ -265,6 +267,34 @@ public class TaskManagerActual implements TaskManager {
 			break;
 		}
 		displayList = listProcessor.sortByDate(displayList);
+		clearHighlights(displayList);
+		highlightAllPriority(displayList);
+		highlightAllOverlap(displayList);
+	}
+
+	private void clearHighlights(List<Task> tasks) {
+		for (Task task : tasks) {
+			task.setHighlightType(HighlightType.NORMAL);
+		}
+	}
+
+	private void highlightAllPriority(List<Task> tasks) {
+		for (Task task : tasks) {
+			if (task.isPriority()) {
+				task.setHighlightType(HighlightType.PRIORITY);
+			}
+		}
+	}
+
+	private void highlightAllOverlap(List<Task> tasks) {
+		List<Task> overlapList = listProcessor.getOverlapping(tasks);
+		for (Task task : overlapList) {
+			if (task.isPriority()) {
+				task.setHighlightType(HighlightType.PRIORITY_OVERLAP);
+			} else {
+				task.setHighlightType(HighlightType.PRIORITY);
+			}
+		}
 	}
 
 	private void refreshHashtagList() {

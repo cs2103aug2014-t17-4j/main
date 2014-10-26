@@ -57,10 +57,10 @@ public class Add extends Action {
 	}
 
 	public static Message getHint(String userCommand) {
-		
+
 		String messageString;
 		int messageType;
-		
+
 		try {
 			messageString = TaskCatalystCommons.getFriendlyString(userCommand);
 			messageType = Message.TYPE_HINT;
@@ -69,9 +69,9 @@ public class Add extends Action {
 			messageType = Message.TYPE_ERROR;
 		}
 		messageString += "\nAdd: You can include date information. Use []s to ignore processing.";
-		
+
 		Message returnMessage = new Message(messageType, messageString);
-		
+
 		return returnMessage;
 	}
 

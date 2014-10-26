@@ -103,7 +103,6 @@ public class TaskCatalystCommons {
 		} else if (Undo.isThisAction(commandLowerCase) && noParameters) {
 			return CommandType.UNDO;
 		} else {
-			System.out.println("add");
 			return CommandType.ADD;
 		}
 	}
