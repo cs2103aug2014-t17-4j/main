@@ -88,6 +88,8 @@ public class ListProcessorActual implements ListProcessor {
 					}
 				}
 				return filteredList;
+			case "olp":
+				return getOverlapping(list);
 			default:
 				for(Task task:list) {
 					if(!task.isDone() && task.hasHashtag(hashtag)) {
@@ -133,57 +135,62 @@ public class ListProcessorActual implements ListProcessor {
 	public List<Task> getOverlapping(Task task, List<Task> list) {
 		List<Task> overlapList = new ArrayList<Task>();
 		for(Task task2:list) {
-			if(isOverlap(task, task2)) {
+			if(isOverlapping(task, task2)) {
 				overlapList.add(task2);
 			}
 		}
 		return overlapList;
 	}
 	
-	private boolean isOverlap(Task task1, Task task2) {
-		List<Date> list1 = new ArrayList<Date>(task1.getAllDates());
-		List<Date> list2 = new ArrayList<Date>(task2.getAllDates());
-		if(task1.isDone() || task2.isDone() || list1.isEmpty()|| list2.isEmpty() || task1.equals(task2)) {
+	private boolean isOverlapping(Task task1, Task task2) {
+		if(task1.isDone() || task2.isDone() || task1.getAllDates().isEmpty()|| task2.getAllDates().isEmpty() || task1.equals(task2)) {
 			return false;
 		}
 		if(task1.isRange() && task2.isRange()) {
-			if(task1.getDateEnd().before(task2.getDateStart()) || task2.getDateEnd().before(task1.getDateStart())) {
-				return false;
-			}
-			else {
-				return true;
-			}
+			return isOverlappingTwoRanged(task1, task2);
 		}
 		else if(task1.isRange() && !task2.isRange()) {
-			for(Date date:list2) {
-				if((date.before(task1.getDateEnd()) && date.after(task1.getDateStart())) 
-					|| date.equals(task1.getDateStart()) 
-					|| date.equals(task1.getDateEnd())) {
-					return true;
-				}
-			}
-			return false;
+			return isOverlappingOneRanged(task1, task2);
 		}
 		else if(!task1.isRange() && task2.isRange()) {
-			for(Date date:list1) {
-				if((date.before(task2.getDateEnd()) && date.after(task2.getDateStart()))
-					|| date.equals(task2.getDateStart()) 
-					|| date.equals(task2.getDateEnd())){
-					return true;
-				}
-			}
+			return isOverlappingOneRanged(task2, task1);
+		}
+		else {
+			return isOverlappingNonRanged(task1, task2);
+		}
+	}
+	
+	private boolean isOverlappingTwoRanged(Task task1, Task task2) {
+		if(task1.getDateEnd().before(task2.getDateStart()) || task2.getDateEnd().before(task1.getDateStart())) {
 			return false;
 		}
 		else {
-			for(Date date1:list1) {
-				for(Date date2:list2) {
-					if(TaskCatalystCommons.isSameDate(date1, date2) && TaskCatalystCommons.isSameTime(date1, date2)) {
-						return true;
-					}
-				}
-			}
-			return false;
+			return true;
 		}
 	}
 
+	private boolean isOverlappingOneRanged(Task task1, Task task2) {
+		List<Date> list = new ArrayList<Date>(task2.getAllDates());
+		for(Date date:list) {
+			if((date.before(task1.getDateEnd()) && date.after(task1.getDateStart())) 
+				|| date.equals(task1.getDateStart()) 
+				|| date.equals(task1.getDateEnd())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private boolean isOverlappingNonRanged(Task task1, Task task2) {
+		List<Date> list1 = new ArrayList<Date>(task1.getAllDates());
+		List<Date> list2 = new ArrayList<Date>(task2.getAllDates());
+		for(Date date1:list1) {
+			for(Date date2:list2) {
+				if(TaskCatalystCommons.isSameDate(date1, date2) && TaskCatalystCommons.isSameTime(date1, date2)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 }
