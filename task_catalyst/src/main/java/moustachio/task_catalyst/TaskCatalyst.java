@@ -59,7 +59,7 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		try {
 			/*Parent root = FXMLLoader.load(getClass().getResource(
 					"userInterface.fxml"));*/
-			primaryStage.setAlwaysOnTop(true);
+		
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
 			FXMLLoader loader = new FXMLLoader(TaskCatalyst.class.getResource("userInterface.fxml"));
@@ -77,7 +77,9 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			Platform.setImplicitExit(false);
 			this.primaryStage.setScene(scene);
 			this.primaryStage.initStyle(StageStyle.UNDECORATED);
+			primaryStage.setAlwaysOnTop(true);
 			this.primaryStage.show();
+			
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
@@ -171,6 +173,16 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 				}
 			}
 		});
+	}
+	
+	@Override
+	public void stop(){
+		BlackBox.getInstance().close();
+		try {
+			super.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	private static void loadSystemTray(Stage stage) {
