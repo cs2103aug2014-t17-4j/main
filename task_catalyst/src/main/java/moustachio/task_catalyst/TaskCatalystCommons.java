@@ -111,13 +111,16 @@ public class TaskCatalystCommons {
 
 	// High-Level Interpreted String Parsing Methods
 
-	public static String getInterpretedString(String userInput) {
+	public static String getInterpretedString(String userInput)
+			throws UnsupportedOperationException {
 		String interpretedString = userInput;
 		String interpretedStringNextPass = getInterpretedStringSinglePass(interpretedString);
 		if (!interpretedStringNextPass.equals(interpretedString)) {
 			return getInterpretedString(interpretedStringNextPass);
 		} else {
-			return interpretedString;
+			String attemptReparseWithoutBraces = removeCurlyBraces(interpretedString);
+			interpretedStringNextPass = getInterpretedStringSinglePass(attemptReparseWithoutBraces);
+			return interpretedStringNextPass;
 		}
 	}
 
@@ -146,6 +149,7 @@ public class TaskCatalystCommons {
 
 		String interpretedInput = userInput;
 		interpretedInput = interpretedInput.replaceAll("tmr", "tomorrow");
+		interpretedInput = interpretedInput.replaceAll("\\} \\{", "\\}, \\{");
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				wordsContainingEst);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
@@ -284,6 +288,8 @@ public class TaskCatalystCommons {
 	// Generates a single Date String for a DateGroup.
 	// Example Date String: {date}, {date} and {date}
 	private static String getDateString(List<Date> dates, String finalConnector) {
+
+		System.out.println(dates.size());
 
 		SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy KK:mm a");
 		int dateCount = dates.size();

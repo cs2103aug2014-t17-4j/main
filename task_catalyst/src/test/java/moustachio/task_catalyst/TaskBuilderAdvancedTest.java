@@ -239,11 +239,18 @@ public class TaskBuilderAdvancedTest {
 		Task task = taskBuilder.createTask("Meet boss from 5 Oct 1pm to 2pm test");
 		assertEquals("Meet boss from 5 Oct 1PM to 2PM test", task.getDescription());
 	}
-	
+
 	// Handle words like "rated" after a date range
 	@Test
 	public void tc29() {
 		Task task = taskBuilder.createTask("Get movie rated 1pm");
 		assertEquals("Get movie rated today 1PM", task.getDescription());
+	}
+
+	// Display Comma Separated Items Properly
+	@Test
+	public void tc30() {
+		Task task = taskBuilder.createTask("Meet boss 5pm 6pm 7pm");
+		assertEquals("Meet boss today 5PM, 6PM and 7PM.", task.getDescription());
 	}
 }
