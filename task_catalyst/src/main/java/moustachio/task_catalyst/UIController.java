@@ -2,9 +2,6 @@ package moustachio.task_catalyst;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.StringTokenizer;
-
-import com.sun.glass.ui.Robot;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
@@ -12,12 +9,10 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -25,15 +20,11 @@ import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableColumn.CellDataFeatures;
 import javafx.scene.control.TableView;
-import javafx.scene.control.TableView.TableViewFocusModel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCodeCombination;
-import javafx.scene.input.KeyCombination;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
@@ -70,7 +61,7 @@ public class UIController {
 			.observableArrayList();
 
 	private TaskCatalyst tc;
-
+	
 	/**
 	 * Initializes the controller class. This method is automatically called
 	 * after the fxml file has been loaded.
@@ -148,23 +139,23 @@ public class UIController {
 	public void handleTextFieldOnAction(ActionEvent event) {
 		Message message = logic.processCommand(commandBar.getText());
 		switch (message.getType()) {
-			case Message.TYPE_SUCCESS:
-				statusMessage.setText(message.getMessage());
-	
-				if (commandBar.getText().toLowerCase().startsWith("edit")) {
-					String[] getIndexForFocus = commandBar.getText().split("\\s");
-					if (getIndexForFocus.length >= 1) {
-						setFocusForTaskTable(Integer.valueOf(getIndexForFocus[1]));
-					}
+		case Message.TYPE_SUCCESS:
+			statusMessage.setText(message.getMessage());
+
+			if (commandBar.getText().toLowerCase().startsWith("edit")) {
+				String[] getIndexForFocus = commandBar.getText().split("\\s");
+				if (getIndexForFocus.length >= 1) {
+					setFocusForTaskTable(Integer.valueOf(getIndexForFocus[1]));
 				}
-	
-				displayHashTags();
-				displayTask();
-				clearForm();
-				break;
-			case Message.TYPE_ERROR:
-				statusMessage.setText(message.getMessage());
-				break;
+			}
+			setFocusForHashTable(logic.getHashtagSelected());
+			displayHashTags();
+			displayTask();
+			clearForm();
+			break;
+		case Message.TYPE_ERROR:
+			statusMessage.setText(message.getMessage());
+			break;
 		}
 	}
 
@@ -208,12 +199,12 @@ public class UIController {
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {
 		if (!event.getCode().equals(KeyCode.ENTER)) {
 			Message message = logic.getMessageTyping(commandBar.getText());
-			
+
 			if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
 				commandBar.setText(message.getMessage());
 				commandBar.positionCaret(commandBar.getText().length());
 				handleTextFieldWhileUserTyping(event);
-			}else {
+			} else {
 				statusMessage.setText(message.getMessage());
 			}
 		}
@@ -227,6 +218,10 @@ public class UIController {
 		commandBar.clear();
 	}
 
+	/**
+	 * 
+	 * @author A0111921W
+	 */
 	private void displayTask() {
 		if (logic.getList() != null) {
 			idColumn.setCellValueFactory(new Callback<CellDataFeatures<Task, Integer>, ObservableValue<Integer>>() {
@@ -263,16 +258,33 @@ public class UIController {
 
 										setGraphic(text);
 									}
-									/*
-									 * Editing in process if (item != null) {
-									 * this.getTableRow().getStyleClass().add(
-									 * "isOverlap"); }
-									 */
+									if (item != null){
+										String cssSelector = null;
+										Task task = logic.getList().get(this.getIndex());
+										
+										switch(task.getHighlightType()){
+										case LAST_ADDED:
+											cssSelector = "isTaskLastAdded";
+											break;
+										case PRIORITY:
+											cssSelector = "isPriority";
+											break;
+										case OVERLAP:
+											cssSelector = "isOverlapStatic";
+											break;
+										case PRIORITY_OVERLAP:
+											cssSelector = "isPriorityOverlapStatic";
+											break;
+										default:
+											cssSelector = null;
+											break;
+										}
+										this.getTableRow().getStyleClass().add(cssSelector);
+									}
 								}
 							};
 						}
 					});
-
 			idColumn.setSortable(false);
 			taskColumn.setSortable(false);
 			taskTable.setItems(getTaskFromList());
