@@ -72,7 +72,7 @@ public class TaskCatalyst extends Application {
 	private void addHotKeysListeners(Stage stage, Scene scene){
 		final KeyCombination minHotKey = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
 		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN);
-		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.R, KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y, KeyCodeCombination.CONTROL_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>(){
 			
 		@Override
