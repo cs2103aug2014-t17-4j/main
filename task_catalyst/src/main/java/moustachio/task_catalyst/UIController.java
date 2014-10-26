@@ -68,7 +68,7 @@ public class UIController {
 			.observableArrayList();
 	private static ObservableList<String> hashTagToBeDisplayed = FXCollections
 			.observableArrayList();
-	
+
 	private TaskCatalyst tc;
 
 	/**
@@ -95,12 +95,12 @@ public class UIController {
 			Stage stage = new Stage();
 			stage.setScene(new Scene(myPane));
 			stage.show();
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void initializeForms() {
 		initializeTable();
 		statusMessage.setWrapText(true);
@@ -148,35 +148,35 @@ public class UIController {
 	public void handleTextFieldOnAction(ActionEvent event) {
 		Message message = logic.processCommand(commandBar.getText());
 		switch (message.getType()) {
-		case Message.TYPE_SUCCESS:
-			statusMessage.setText(message.getMessage());
-
-			if (commandBar.getText().contains("edit")) {
-				String[] getIndexForFocus = commandBar.getText().split("\\s");
-				if (getIndexForFocus.length >= 1) {
-					setFocusForTaskTable(Integer.valueOf(getIndexForFocus[1]));
+			case Message.TYPE_SUCCESS:
+				statusMessage.setText(message.getMessage());
+	
+				if (commandBar.getText().toLowerCase().startsWith("edit")) {
+					String[] getIndexForFocus = commandBar.getText().split("\\s");
+					if (getIndexForFocus.length >= 1) {
+						setFocusForTaskTable(Integer.valueOf(getIndexForFocus[1]));
+					}
 				}
-			}
-
-			displayHashTags();
-			displayTask();
-			clearForm();
-			break;
-		case Message.TYPE_ERROR:
-			statusMessage.setText(message.getMessage());
-			break;
+	
+				displayHashTags();
+				displayTask();
+				clearForm();
+				break;
+			case Message.TYPE_ERROR:
+				statusMessage.setText(message.getMessage());
+				break;
 		}
 	}
-	
+
 	/**
 	 * 
 	 * @author A0112764J
 	 */
-	
+
 	public void connectWithMainTaskCatalyst(TaskCatalyst tc) {
 		this.tc = tc;
 	}
-	
+
 	/**
 	 * 
 	 * @author A0112764
@@ -196,21 +196,24 @@ public class UIController {
 				case Message.TYPE_ERROR:
 					statusMessage.setText(message.getMessage());
 					break;
+				case Message.TYPE_AUTOCOMPLETE:
+					statusMessage.setText(message.getMessage());
+					break;
 				}
 			}
-			
+
 		});
 	}
 
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {
 		if (!event.getCode().equals(KeyCode.ENTER)) {
 			Message message = logic.getMessageTyping(commandBar.getText());
-
+			
 			if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
 				commandBar.setText(message.getMessage());
 				commandBar.positionCaret(commandBar.getText().length());
 				handleTextFieldWhileUserTyping(event);
-			} else {
+			}else {
 				statusMessage.setText(message.getMessage());
 			}
 		}
@@ -260,6 +263,11 @@ public class UIController {
 
 										setGraphic(text);
 									}
+									/*
+									 * Editing in process if (item != null) {
+									 * this.getTableRow().getStyleClass().add(
+									 * "isOverlap"); }
+									 */
 								}
 							};
 						}
