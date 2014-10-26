@@ -120,7 +120,17 @@ public class TaskCatalystCommons {
 		} else {
 			String attemptReparseWithoutBraces = removeCurlyBraces(interpretedString);
 			interpretedStringNextPass = getInterpretedStringSinglePass(attemptReparseWithoutBraces);
+			exceptionIfInvalidRange(interpretedStringNextPass);
 			return interpretedStringNextPass;
+		}
+	}
+
+	private static void exceptionIfInvalidRange(String interpretedStringNextPass) throws UnsupportedOperationException {
+		boolean isRange = interpretedStringNextPass.contains("} to {");
+		boolean isMoreThanTwoDates = getAllDates(interpretedStringNextPass)
+				.size() > 2;
+		if (isRange && isMoreThanTwoDates) {
+			throw new UnsupportedOperationException();
 		}
 	}
 
@@ -188,8 +198,6 @@ public class TaskCatalystCommons {
 			boolean wholeMatch = isWholeMatch(parsingInput, dateGroup);
 			boolean longMatch = isLongMatch(dateGroup);
 			boolean isValidDateGroup = longMatch && wholeMatch;
-			boolean isAtLeastOneGroupBefore = false;
-			boolean isDateRange = false;
 
 			if (isValidDateGroup) {
 
@@ -197,43 +205,19 @@ public class TaskCatalystCommons {
 				sortDates(dates);
 				removeRepeatedDates(dates);
 
-				int dateCount = dates.size();
 				String matchingText = dateGroup.getText();
 
 				String connector = getConnector(matchingText);
-
-				if (matchingText.contains(" to ") && !isDateRange) {
-					isDateRange = true;
-				}
-
-				boolean isMultipleDate = dateCount > 2;
-
-				exceptionIfInvalidTaskDate(isDateRange, isMultipleDate,
-						isAtLeastOneGroupBefore);
 
 				String dateString = getDateString(dates, connector);
 
 				interpretedInput = replaceDateString(interpretedInput,
 						matchingText, dateString);
 
-				isAtLeastOneGroupBefore = true;
 			}
 		}
 
 		return interpretedInput;
-	}
-
-	private static void exceptionIfInvalidTaskDate(boolean isDateRange,
-			boolean isMultipleDate, boolean isAtLeastOneGroupBefore)
-			throws UnsupportedOperationException {
-
-		boolean isRangeHasMultipleDates = isDateRange && isMultipleDate;
-		boolean isMixedDateTypes = isDateRange && isAtLeastOneGroupBefore;
-		boolean isInvalidTaskDate = isRangeHasMultipleDates || isMixedDateTypes;
-
-		if (isInvalidTaskDate) {
-			throw new UnsupportedOperationException();
-		}
 	}
 
 	private static String getConnector(String matchingText) {
@@ -383,9 +367,9 @@ public class TaskCatalystCommons {
 	}
 
 	private static String replaceSpacesWithWildcard(String matchingExpression) {
-		return matchingExpression.replaceAll(" ", "(.+)?");
-		// return matchingExpression.replaceAll(" ",
-		// "( |,|, )?(at|from|and)?( on)?( )");
+		// return matchingExpression.replaceAll(" ", "(.+)?");
+		return matchingExpression.replaceAll(" ",
+				"( |,|, )?(at|from|and)?( on)?( )");
 	}
 
 	private static String replaceCommasWithAnd(String parsingInput) {

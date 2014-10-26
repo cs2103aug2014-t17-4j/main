@@ -270,4 +270,17 @@ public class TaskBuilderAdvancedTest {
 		}
 		assertEquals(true, caught);
 	}
+
+	// Catch mixed date types, in different many characters away.
+	@Test
+	public void tc32() {
+		boolean caught = false;
+		try {
+			taskBuilder
+					.createTask("Meet boss 5pm and 6pm and then meet secretary from 5pm to 7pm.");
+		} catch (UnsupportedOperationException e) {
+			caught = true;
+		}
+		assertEquals(true, caught);
+	}
 }

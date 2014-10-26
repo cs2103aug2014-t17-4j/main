@@ -7,10 +7,17 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 		if (userInput == null || userInput.trim().isEmpty()) {
 			return null;
 		}
+		Task task;
+		try {
+			String interpretedString = TaskCatalystCommons
+					.getInterpretedString(userInput);
 
-		String interpretedString = TaskCatalystCommons
-				.getInterpretedString(userInput);
+			task = new TaskAdvanced(interpretedString);
 
-		return new TaskAdvanced(interpretedString);
+		} catch (UnsupportedOperationException e) {
+			task = null;
+		}
+
+		return task;
 	}
 }
