@@ -162,7 +162,7 @@ public class TaskBuilderAdvancedTest {
 	@Test
 	public void tc18() {
 		Task task = taskBuilder.createTask("At at at at at at at today 5pm");
-		assertEquals("At at at at at at today 5PM", task.getDescriptionEdit());
+		assertEquals("At today 5PM", task.getDescriptionEdit());
 	}
 
 	// Able to handle "at" and "from" between date/time specifications
@@ -210,5 +210,40 @@ public class TaskBuilderAdvancedTest {
 	public void tc24() {
 		Task task = taskBuilder.createTask("Meet boss 5PM and today.");
 		assertEquals("Meet boss today 5PM.", task.getDescription());
+	}
+
+	// Ignore parsing of number words
+	@Test
+	public void tc25() {
+		Task task = taskBuilder.createTask("Twenty four");
+		assertEquals("Twenty four", task.getDescription());
+	}
+
+	// Ignore parsing of number words
+	@Test
+	public void tc26() {
+		Task task = taskBuilder.createTask("one thing from 1 oct 2013 5pm to 1 oct 2013 6pm");
+		assertEquals("one thing from 1 Oct 2013 5PM to 6PM", task.getDescription());
+	}
+	
+	// Handle words like "a*", "h*", after a date range
+	@Test
+	public void tc27() {
+		Task task = taskBuilder.createTask("Meet boss from 5 Oct 1pm to 2pm a");
+		assertEquals("Meet boss from 5 Oct 1PM to 2PM a", task.getDescription());
+	}
+
+	// Handle words like "test" after a date range
+	@Test
+	public void tc28() {
+		Task task = taskBuilder.createTask("Meet boss from 5 Oct 1pm to 2pm test");
+		assertEquals("Meet boss from 5 Oct 1PM to 2PM test", task.getDescription());
+	}
+	
+	// Handle words like "rated" after a date range
+	@Test
+	public void tc29() {
+		Task task = taskBuilder.createTask("Get movie rated 1pm");
+		assertEquals("Get movie rated today 1PM", task.getDescription());
 	}
 }

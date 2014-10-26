@@ -111,7 +111,17 @@ public class TaskCatalystCommons {
 
 	// High-Level Interpreted String Parsing Methods
 
-	public static String getInterpretedString(String userInput)
+	public static String getInterpretedString(String userInput) {
+		String interpretedString = userInput;
+		String interpretedStringNextPass = getInterpretedStringSinglePass(interpretedString);
+		if (!interpretedStringNextPass.equals(interpretedString)) {
+			return getInterpretedString(interpretedStringNextPass);
+		} else {
+			return interpretedString;
+		}
+	}
+
+	public static String getInterpretedStringSinglePass(String userInput)
 			throws UnsupportedOperationException {
 
 		String interpretedInput = getInterpretedInput(userInput);
@@ -129,15 +139,19 @@ public class TaskCatalystCommons {
 	private static String getInterpretedInput(String userInput) {
 
 		String fivePlusDigits = "\\d{5,}";
-		String endWithNumber = "[a-zA-Z-_]+[0-9]+";
-		String hashtaggedWords = "[#]+[a-zA-Z0-9]+";
+		String endWithNumber = "[a-zA-Z-_$]+\\d+\\b";
+		String hashtaggedWords = "[#]+\\w+";
+		String wordsContainingEst = "\\w*est\\w*";
+		String wordsContainingAted = "\\w*ated\\w*";
 
 		String interpretedInput = userInput;
 		interpretedInput = interpretedInput.replaceAll("tmr", "tomorrow");
-		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
+		interpretedInput = ignoreBasedOnRegex(interpretedInput, wordsContainingEst);
+		interpretedInput = ignoreBasedOnRegex(interpretedInput, wordsContainingAted);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, fivePlusDigits);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, endWithNumber);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, hashtaggedWords);
+		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
 
 		return interpretedInput;
 	}
@@ -145,8 +159,9 @@ public class TaskCatalystCommons {
 	private static String getParsingInput(String interpretedInput) {
 
 		String parsingInput = interpretedInput;
-		parsingInput = removeIgnoredWords(interpretedInput);
+		parsingInput = removeWordsInBrackets(interpretedInput);
 		parsingInput = removeSensitiveParsingWords(parsingInput);
+		parsingInput = removeNumberWords(parsingInput);
 		parsingInput = replaceCommasWithAnd(parsingInput);
 		parsingInput = removeConsecutiveAnds(parsingInput);
 		parsingInput = removeConsecutiveWhitespaces(parsingInput);
@@ -162,13 +177,15 @@ public class TaskCatalystCommons {
 			String parsingInput, List<DateGroup> dateGroups)
 			throws UnsupportedOperationException {
 
-		int dateGroupCount = dateGroups.size();
-
 		for (DateGroup dateGroup : dateGroups) {
 
 			boolean wholeMatch = isWholeMatch(parsingInput, dateGroup);
 			boolean longMatch = isLongMatch(dateGroup);
 			boolean isValidDateGroup = longMatch && wholeMatch;
+			boolean isAtLeastOneGroupBefore = false;
+			boolean isDateRange = false;
+
+			System.out.println(dateGroup.getText());
 
 			if (isValidDateGroup) {
 
@@ -179,38 +196,55 @@ public class TaskCatalystCommons {
 				int dateCount = dates.size();
 				String matchingText = dateGroup.getText();
 
-				String connector = getConnector(dateGroupCount, dateCount,
-						matchingText);
+				String connector = getConnector(matchingText);
+
+				if (matchingText.contains(" to ") && !isDateRange) {
+					isDateRange = true;
+				}
+
+				boolean isMultipleDate = dateCount > 2;
+
+				exceptionIfInvalidTaskDate(isDateRange, isMultipleDate,
+						isAtLeastOneGroupBefore);
 
 				String dateString = getDateString(dates, connector);
 
 				interpretedInput = replaceDateString(interpretedInput,
 						matchingText, dateString);
+
+				isAtLeastOneGroupBefore = true;
 			}
 		}
 
 		return interpretedInput;
 	}
 
-	private static String getConnector(int dateGroupCount, int dateCount,
-			String matchingText) throws UnsupportedOperationException {
+	private static void exceptionIfInvalidTaskDate(boolean isDateRange,
+			boolean isMultipleDate, boolean isAtLeastOneGroupBefore)
+			throws UnsupportedOperationException {
 
-		String finalConnector;
+		boolean isRangeHasMultipleDates = isDateRange && isMultipleDate;
+		boolean isMixedDateTypes = isDateRange && isAtLeastOneGroupBefore;
+		boolean isInvalidTaskDate = isRangeHasMultipleDates || isMixedDateTypes;
+
+		if (isInvalidTaskDate) {
+			throw new UnsupportedOperationException();
+		}
+	}
+
+	private static String getConnector(String matchingText) {
+
+		String connector;
 
 		boolean isDateRange = matchingText.contains(" to ");
-		boolean multipleDateGroups = dateGroupCount > 1;
-		boolean moreThanTwoDates = dateCount > 2;
-		boolean isInvalidDateRange = multipleDateGroups || moreThanTwoDates;
 
-		if (isDateRange && isInvalidDateRange) {
-			throw new UnsupportedOperationException();
-		} else if (isDateRange) {
-			finalConnector = " to ";
+		if (isDateRange) {
+			connector = " to ";
 		} else {
-			finalConnector = " and ";
+			connector = " and ";
 		}
 
-		return finalConnector;
+		return connector;
 	}
 
 	private static String removePrepositionBeforeDateStrings(
@@ -231,14 +265,14 @@ public class TaskCatalystCommons {
 	private static void removeRepeatedDates(List<Date> dates) {
 		int j = 0;
 		while (j < dates.size() - 1) {
-			
+
 			// This is necessary because PrettyTime may return varying
 			// milliseconds.
 			boolean isSameDate = TaskCatalystCommons.isSameDate(dates.get(j),
 					dates.get(j + 1));
 			boolean isSameTime = TaskCatalystCommons.isSameTime(dates.get(j),
 					dates.get(j + 1));
-			
+
 			if (isSameDate && isSameTime) {
 				dates.remove(j);
 			} else {
@@ -306,12 +340,28 @@ public class TaskCatalystCommons {
 				+ openingCurlyBrace, openingCurlyBrace);
 	}
 
-	private static String removeSensitiveParsingWords(String parsingInput) {
-		return parsingInput.replaceAll("(\\b)(at|in|from|on)( |$)", " ");
+	private static String removeNumberWords(String parsingInput) {
+		String[] numberWords = { "one", "two", "three", "four", "five", "six",
+				"seven", "eight", "nine", "ten", "eleven", "twelve",
+				"thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+				"eighteen", "nineteen", "twenty" };
+		String newParsingInput = parsingInput;
+		for (String numberWord : numberWords) {
+			newParsingInput = newParsingInput.replaceAll("(\\b)(" + numberWord
+					+ ")( |$)", " ");
+		}
+		return newParsingInput;
 	}
 
-	private static String removeIgnoredWords(String interpretedInput) {
-		return interpretedInput.replaceAll("\\[(.*?)\\]", "");
+	private static String removeSensitiveParsingWords(String parsingInput) {
+		String newParsingInput = parsingInput;
+		newParsingInput = parsingInput.replaceAll(
+				"(\\b)(at|in|from|on)(\\b|$)", " ");
+		return newParsingInput;
+	}
+
+	private static String removeWordsInBrackets(String interpretedInput) {
+		return interpretedInput.replaceAll("(\\[|\\{)(.*?)(\\]|\\})", "");
 	}
 
 	private static String removeConsecutiveWhitespaces(String interpretedInput) {
@@ -327,8 +377,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String replaceSpacesWithWildcard(String matchingExpression) {
-		return matchingExpression.replaceAll(" ",
-				"( |,|, )?(at|from|and)?( on)?( )");
+		return matchingExpression.replaceAll(" ", "(.+)?");
+		//return matchingExpression.replaceAll(" ", "( |,|, )?(at|from|and)?( on)?( )");
 	}
 
 	private static String replaceCommasWithAnd(String parsingInput) {
@@ -363,8 +413,9 @@ public class TaskCatalystCommons {
 
 	// Add ignore brackets ([]) around anything in input matching the regex.
 	private static String ignoreBasedOnRegex(String input, String regex) {
+		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
 		String ignoredString = input;
-		Pattern pattern = Pattern.compile(regex);
+		Pattern pattern = Pattern.compile(regex + onlyOutsideBrackets);
 		Matcher matcher = pattern.matcher(input);
 		while (matcher.find()) {
 			String matching = matcher.group();
