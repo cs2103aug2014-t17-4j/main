@@ -276,7 +276,7 @@ public class TaskManagerActual implements TaskManager {
 		taskSelected = -1;
 		clearHighlights(displayList);
 		highlightAllPriority(displayList);
-		highlightAllOverlap(displayList);
+		highlightAllOverlap(taskList);
 	}
 
 	private void clearHighlights(List<Task> tasks) {
