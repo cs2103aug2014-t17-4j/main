@@ -54,4 +54,12 @@ public class BlackBox {
 	public void finest(String string) {
 		logger.finest(string);
 	}
+
+	public void close() {
+		for (Handler handler : logger.getHandlers()) {
+			handler.close();
+		}
+		logger = null;
+		blackBox = null;
+	}
 }

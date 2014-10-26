@@ -84,17 +84,10 @@ public class TaskManagerActual implements TaskManager {
 
 	@Override
 	public boolean addTask(Task task) {
-		boolean isAdded = taskList.add(task);
-		boolean isSaved = false;
-		if (isAdded) {
-			isSaved = saveTasks();
-		}
-		boolean isSuccess = isAdded && isSaved;
-		if (isSuccess) {
-			refreshLists();
-			displayAutoswitchToTask(task);
-		}
-		taskSelected = displayList.indexOf(task);
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+		int tasksAdded = addTasks(tasks);
+		boolean isSuccess = tasksAdded == 1;
 		return isSuccess;
 	}
 
@@ -123,8 +116,8 @@ public class TaskManagerActual implements TaskManager {
 		if (isSuccess) {
 			refreshLists();
 			for (Task task : tasks) {
-				task.setHighlightType(HighlightType.LAST_ADDED);
 				displayAutoswitchToTask(task);
+				taskSelected = displayList.indexOf(task);
 			}
 		}
 
@@ -177,16 +170,10 @@ public class TaskManagerActual implements TaskManager {
 
 	@Override
 	public boolean removeTask(Task task) {
-		boolean isRemoved = taskList.remove(task);
-		boolean isSaved = false;
-		if (isRemoved) {
-			isSaved = saveTasks();
-		}
-		boolean isSuccess = isRemoved && isSaved;
-		if (isSuccess) {
-			refreshLists();
-		}
-		displayAutoswitchToTask(task);
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+		int tasksRemoved = removeTasks(tasks);
+		boolean isSuccess = tasksRemoved == 1;
 		return isSuccess;
 	}
 
@@ -342,7 +329,7 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	private void displayAutoswitchToTask(Task task) {
-		boolean isTaskDisplayed = displayList.contains(task);
+		boolean isTaskDisplayed = task != null && displayList.contains(task);
 		boolean isListEmpty = displayList.isEmpty();
 		boolean isNeedAutoswitch = !isTaskDisplayed || isListEmpty;
 		if (isNeedAutoswitch) {

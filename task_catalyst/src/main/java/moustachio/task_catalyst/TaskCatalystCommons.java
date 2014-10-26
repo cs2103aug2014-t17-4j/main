@@ -111,13 +111,16 @@ public class TaskCatalystCommons {
 
 	// High-Level Interpreted String Parsing Methods
 
-	public static String getInterpretedString(String userInput) {
+	public static String getInterpretedString(String userInput)
+			throws UnsupportedOperationException {
 		String interpretedString = userInput;
 		String interpretedStringNextPass = getInterpretedStringSinglePass(interpretedString);
 		if (!interpretedStringNextPass.equals(interpretedString)) {
 			return getInterpretedString(interpretedStringNextPass);
 		} else {
-			return interpretedString;
+			String attemptReparseWithoutBraces = removeCurlyBraces(interpretedString);
+			interpretedStringNextPass = getInterpretedStringSinglePass(attemptReparseWithoutBraces);
+			return interpretedStringNextPass;
 		}
 	}
 
@@ -146,6 +149,7 @@ public class TaskCatalystCommons {
 
 		String interpretedInput = userInput;
 		interpretedInput = interpretedInput.replaceAll("tmr", "tomorrow");
+		interpretedInput = interpretedInput.replaceAll("\\} \\{", "\\}, \\{");
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				wordsContainingEst);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
@@ -236,7 +240,9 @@ public class TaskCatalystCommons {
 
 		String connector;
 
-		boolean isDateRange = matchingText.contains(" to ");
+		boolean isContainsTo = matchingText.contains(" to ");
+		boolean isContainsDash = matchingText.contains(" - ");
+		boolean isDateRange = isContainsTo || isContainsDash;
 
 		if (isDateRange) {
 			connector = " to ";

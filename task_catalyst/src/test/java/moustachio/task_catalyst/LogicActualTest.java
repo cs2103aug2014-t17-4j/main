@@ -483,28 +483,28 @@ public class LogicActualTest {
 	@Test
 	public void hasHashtagTc1() {
 		logic.processCommand("Not hashtagged");
-		assertFalse(logic.getList().get(0).hasHashtag("hashtag"));
+		assertEquals(false, logic.getList().get(0).hasHashtag("hashtag"));
 	}
 
 	// Hashtag in front.
 	@Test
 	public void hasHashtagTc2() {
 		logic.processCommand("#hashtag in front");
-		assertTrue(logic.getList().get(0).hasHashtag("hashtag"));
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
 	}
 
 	// Hashtag behind.
 	@Test
 	public void hasHashtagTc3() {
 		logic.processCommand("behind #hashtag");
-		assertTrue(logic.getList().get(0).hasHashtag("hashtag"));
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
 	}
 
 	// Hashtagged, but search for non-existent.
 	@Test
 	public void hasHashtagTc4() {
 		logic.processCommand("#hashtag in front");
-		assertFalse(logic.getList().get(0).hasHashtag("hashtag2"));
+		assertEquals(false, logic.getList().get(0).hasHashtag("hashtag2"));
 	}
 
 	// Priority Recognition - Not Priority.
@@ -843,13 +843,16 @@ public class LogicActualTest {
 		logic.processCommand("item 1PM to 2PM #pri");
 		logic.processCommand("item 1PM to 2PM");
 		logic.processCommand("item 1PM to 2PM");
+		logic.processCommand("item 1PM to 2PM");
 		List<Task> tasks = logic.getList();
 		Task task1 = tasks.get(0);
 		Task task2 = tasks.get(1);
 		Task task3 = tasks.get(2);
+		Task task4 = tasks.get(3);
 		assertEquals(HighlightType.PRIORITY_OVERLAP, task1.getHighlightType());
 		assertEquals(HighlightType.OVERLAP, task2.getHighlightType());
 		assertEquals(HighlightType.OVERLAP, task3.getHighlightType());
+		assertEquals(HighlightType.OVERLAP, task4.getHighlightType());
 	}
 	
 	// Check multi-last added highlighting.
@@ -864,8 +867,9 @@ public class LogicActualTest {
 		Task task1 = tasks.get(0);
 		Task task2 = tasks.get(1);
 		Task task3 = tasks.get(2);
-		assertEquals(HighlightType.LAST_ADDED, task1.getHighlightType());
-		assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
-		assertEquals(HighlightType.LAST_ADDED, task3.getHighlightType());
+		assertEquals(HighlightType.NORMAL, task1.getHighlightType());
+		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
+		assertEquals(HighlightType.NORMAL, task3.getHighlightType());
+		assertEquals(2, logic.getTaskSelected());
 	}
 }

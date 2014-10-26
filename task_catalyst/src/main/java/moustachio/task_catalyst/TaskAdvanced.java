@@ -4,25 +4,40 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
-
 public class TaskAdvanced implements Task {
 
 	boolean isDone;
 	String description;
 	HighlightType highlightType;
 
+	Date dateStart;
+	Date dateEnd;
+	List<Date> allDates;
+
 	public TaskAdvanced(String description) {
 		highlightType = HighlightType.NORMAL;
 		this.description = description;
 		isDone = false;
+		initializeDates();
 	}
 
 	// Description Mutators
 
+	private void initializeDates() {
+		String descriptionRaw = getDescriptionRaw();
+		allDates = TaskCatalystCommons.getAllDates(descriptionRaw);
+		if (!allDates.isEmpty()) {
+			int firstIndex = 0;
+			int lastIndex = allDates.size() - 1;
+			dateStart = allDates.get(firstIndex);
+			dateEnd = allDates.get(lastIndex);
+		}
+	}
+
 	@Override
 	public void setDescription(String description) {
 		this.description = description;
+		initializeDates();
 	}
 
 	@Override
@@ -85,33 +100,16 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public List<Date> getAllDates() {
-		String descriptionRaw = getDescriptionRaw();
-
-		List<Date> allDates = TaskCatalystCommons.getAllDates(descriptionRaw);
-
 		return allDates;
 	}
 
 	@Override
 	public Date getDateStart() {
-		List<Date> allDates = getAllDates();
-		Date dateStart = null;
-		if (!allDates.isEmpty()) {
-			int firstIndex = 0;
-			dateStart = allDates.get(firstIndex);
-		}
-		Collections.sort(allDates);
 		return dateStart;
 	}
 
 	@Override
 	public Date getDateEnd() {
-		List<Date> allDates = getAllDates();
-		Date dateEnd = null;
-		if (!allDates.isEmpty()) {
-			int lastIndex = allDates.size() - 1;
-			dateEnd = allDates.get(lastIndex);
-		}
 		return dateEnd;
 	}
 

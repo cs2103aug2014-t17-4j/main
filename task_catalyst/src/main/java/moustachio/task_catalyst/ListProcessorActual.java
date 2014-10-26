@@ -161,11 +161,16 @@ public class ListProcessorActual implements ListProcessor {
 	}
 	
 	private boolean isOverlappingTwoRanged(Task task1, Task task2) {
-		if(task1.getDateEnd().before(task2.getDateStart()) || task2.getDateEnd().before(task1.getDateStart())) {
-			return false;
+		if(task1.getDateStart().after(task2.getDateStart())) {
+			Task temp = task1;
+			task1 = task2;
+			task2 = temp;
+		}
+		if(task2.getDateStart().before(task1.getDateEnd())) {
+			return true;
 		}
 		else {
-			return true;
+			return false;
 		}
 	}
 
