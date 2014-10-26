@@ -103,6 +103,7 @@ public class TaskCatalystCommons {
 		} else if (Undo.isThisAction(commandLowerCase) && noParameters) {
 			return CommandType.UNDO;
 		} else {
+			System.out.println("add");
 			return CommandType.ADD;
 		}
 	}
@@ -146,8 +147,10 @@ public class TaskCatalystCommons {
 
 		String interpretedInput = userInput;
 		interpretedInput = interpretedInput.replaceAll("tmr", "tomorrow");
-		interpretedInput = ignoreBasedOnRegex(interpretedInput, wordsContainingEst);
-		interpretedInput = ignoreBasedOnRegex(interpretedInput, wordsContainingAted);
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				wordsContainingEst);
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				wordsContainingAted);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, fivePlusDigits);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, endWithNumber);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, hashtaggedWords);
@@ -378,7 +381,8 @@ public class TaskCatalystCommons {
 
 	private static String replaceSpacesWithWildcard(String matchingExpression) {
 		return matchingExpression.replaceAll(" ", "(.+)?");
-		//return matchingExpression.replaceAll(" ", "( |,|, )?(at|from|and)?( on)?( )");
+		// return matchingExpression.replaceAll(" ",
+		// "( |,|, )?(at|from|and)?( on)?( )");
 	}
 
 	private static String replaceCommasWithAnd(String parsingInput) {
