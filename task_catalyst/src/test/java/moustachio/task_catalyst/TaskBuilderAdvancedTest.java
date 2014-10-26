@@ -178,14 +178,14 @@ public class TaskBuilderAdvancedTest {
 	@Test
 	public void tc20() {
 		Task task = taskBuilder.createTask("Meet boss at 5PM");
-		assertFalse(task.isRange());
+		assertEquals(false, task.isRange());
 	}
 
 	// Test Range Recognition - Range
 	@Test
 	public void tc21() {
 		Task task = taskBuilder.createTask("Meet boss from 5PM to 6PM");
-		assertTrue(task.isRange());
+		assertEquals(true, task.isRange());
 	}
 
 	// Repeated Date Correction
@@ -222,10 +222,12 @@ public class TaskBuilderAdvancedTest {
 	// Ignore parsing of number words
 	@Test
 	public void tc26() {
-		Task task = taskBuilder.createTask("one thing from 1 oct 2013 5pm to 1 oct 2013 6pm");
-		assertEquals("one thing from 1 Oct 2013 5PM to 6PM", task.getDescription());
+		Task task = taskBuilder
+				.createTask("one thing from 1 oct 2013 5pm to 1 oct 2013 6pm");
+		assertEquals("one thing from 1 Oct 2013 5PM to 6PM",
+				task.getDescription());
 	}
-	
+
 	// Handle words like "a*", "h*", after a date range
 	@Test
 	public void tc27() {
@@ -236,8 +238,10 @@ public class TaskBuilderAdvancedTest {
 	// Handle words like "test" after a date range
 	@Test
 	public void tc28() {
-		Task task = taskBuilder.createTask("Meet boss from 5 Oct 1pm to 2pm test");
-		assertEquals("Meet boss from 5 Oct 1PM to 2PM test", task.getDescription());
+		Task task = taskBuilder
+				.createTask("Meet boss from 5 Oct 1pm to 2pm test");
+		assertEquals("Meet boss from 5 Oct 1PM to 2PM test",
+				task.getDescription());
 	}
 
 	// Handle words like "rated" after a date range
@@ -247,10 +251,23 @@ public class TaskBuilderAdvancedTest {
 		assertEquals("Get movie rated today 1PM", task.getDescription());
 	}
 
-	// Display Comma Separated Items Properly
+	// Display Comma Separated Items Properly (artifact problem from multi-pass
+	// parsing)
 	@Test
 	public void tc30() {
-		Task task = taskBuilder.createTask("Meet boss 5pm 6pm 7pm");
+		Task task = taskBuilder.createTask("Meet boss 5pm 6pm 7pm.");
 		assertEquals("Meet boss today 5PM, 6PM and 7PM.", task.getDescription());
+	}
+
+	// Catch mixed date types in this situation.
+	@Test
+	public void tc31() {
+		boolean caught = false;
+		try {
+			taskBuilder.createTask("Meet boss 5pm 6pm to 7pm.");
+		} catch (UnsupportedOperationException e) {
+			caught = true;
+		}
+		assertEquals(true, caught);
 	}
 }

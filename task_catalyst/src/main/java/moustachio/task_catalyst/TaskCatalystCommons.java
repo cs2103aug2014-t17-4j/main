@@ -240,7 +240,9 @@ public class TaskCatalystCommons {
 
 		String connector;
 
-		boolean isDateRange = matchingText.contains(" to ");
+		boolean isContainsTo = matchingText.contains(" to ");
+		boolean isContainsDash = matchingText.contains(" - ");
+		boolean isDateRange = isContainsTo || isContainsDash;
 
 		if (isDateRange) {
 			connector = " to ";
@@ -288,8 +290,6 @@ public class TaskCatalystCommons {
 	// Generates a single Date String for a DateGroup.
 	// Example Date String: {date}, {date} and {date}
 	private static String getDateString(List<Date> dates, String finalConnector) {
-
-		System.out.println(dates.size());
 
 		SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy KK:mm a");
 		int dateCount = dates.size();

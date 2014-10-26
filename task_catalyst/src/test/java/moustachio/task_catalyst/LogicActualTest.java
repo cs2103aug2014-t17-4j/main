@@ -483,28 +483,28 @@ public class LogicActualTest {
 	@Test
 	public void hasHashtagTc1() {
 		logic.processCommand("Not hashtagged");
-		assertFalse(logic.getList().get(0).hasHashtag("hashtag"));
+		assertEquals(false, logic.getList().get(0).hasHashtag("hashtag"));
 	}
 
 	// Hashtag in front.
 	@Test
 	public void hasHashtagTc2() {
 		logic.processCommand("#hashtag in front");
-		assertTrue(logic.getList().get(0).hasHashtag("hashtag"));
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
 	}
 
 	// Hashtag behind.
 	@Test
 	public void hasHashtagTc3() {
 		logic.processCommand("behind #hashtag");
-		assertTrue(logic.getList().get(0).hasHashtag("hashtag"));
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
 	}
 
 	// Hashtagged, but search for non-existent.
 	@Test
 	public void hasHashtagTc4() {
 		logic.processCommand("#hashtag in front");
-		assertFalse(logic.getList().get(0).hasHashtag("hashtag2"));
+		assertEquals(false, logic.getList().get(0).hasHashtag("hashtag2"));
 	}
 
 	// Priority Recognition - Not Priority.
