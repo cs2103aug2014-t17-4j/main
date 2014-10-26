@@ -328,7 +328,11 @@ public class TaskManagerActual implements TaskManager {
 
 		hashtagList.clear();
 		hashtagList.addAll(defaultHashtags);
-		hashtagList.addAll(customHashtags);
+		for (String hashtag: customHashtags) {
+			if (!defaultHashtags.contains(hashtag)) {
+				hashtagList.add(hashtag);
+			}
+		}
 
 		clearHashtagHighlights();
 		highlightAllDefaultHashtags();
