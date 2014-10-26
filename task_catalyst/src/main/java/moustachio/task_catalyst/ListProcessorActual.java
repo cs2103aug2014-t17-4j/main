@@ -10,93 +10,25 @@ public class ListProcessorActual implements ListProcessor {
 	
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
-		List<Task> filteredList = new ArrayList<Task>();
 		switch(hashtag) {
 			case "all": 
-				for(Task task:list) {
-					if(!task.isDone()) {
-						filteredList.add(task);
-					}
-				}
-				return filteredList;
+				return searchByHashtagAll(list);
 			case "pri":
-				for(Task task:list) {
-					if(!task.isDone() && task.isPriority()) {
-						filteredList.add(task);
-					}
-				}
-				return filteredList;
+				return searchByHashtagPriority(list);
 			case "tdy": 
-				for(Task task:list) {
-					if(!task.isDone() 
-						&& task.isRange()
-						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 0)) {
-						filteredList.add(task);
-					}
-					else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
-						for(Date date:task.getAllDates()) {
-							if(TaskCatalystCommons.isToday(date)) {
-								filteredList.add(task);
-							}
-						}
-					}
-				}
-				return filteredList;
+				return searchByHashtagToday(list);
 			case "tmr": 
-				for(Task task:list) {
-					if(!task.isDone() 
-						&& task.isRange() 
-						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 1)) {
-						filteredList.add(task);
-					}
-					else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
-						for(Date date:task.getAllDates()) {
-							if(TaskCatalystCommons.isTomorrow(date)) {
-								filteredList.add(task);
-							}
-						}
-					}
-				}
-				return filteredList;
+				return searchByHashtagTomorrow(list);
 			case "upc": 
-				for(Task task:list) {
-					if(!task.isDone() 
-						&& task.isRange() 
-						&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) >= 2)) {
-						filteredList.add(task);
-					}
-					else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
-						for(Date date:task.getAllDates()) {
-							if(TaskCatalystCommons.daysFromToday(date) >= 2) {
-								filteredList.add(task);
-							}
-						}
-					}
-				}
-				return filteredList;
+				return searchByHashTagUpcoming(list);
 			case "smd":
-				for(Task task:list) {
-					if(!task.isDone() && task.getAllDates().isEmpty()) {
-						filteredList.add(task);
-					}
-				}
-				return filteredList;
+				return searchByHashtagSomeday(list);
 			case "dne":
-				for(Task task:list) {
-					if(task.isDone()) {
-						filteredList.add(task);
-					}
-				}
-				return filteredList;
+				return searchByHashtagDone(list);
 			case "olp":
 				return getOverlapping(list);
 			default:
-				for(Task task:list) {
-					if(!task.isDone() && task.hasHashtag(hashtag)) {
-						filteredList.add(task);
-					}
-				}
-				return filteredList;
+				return searchByHashTagUserDefined(list, hashtag);
 		}
 	}
 
@@ -141,7 +73,115 @@ public class ListProcessorActual implements ListProcessor {
 		}
 		return overlapList;
 	}
-	
+
+	private List<Task> searchByHashtagAll(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			
+			if(!task.isDone()) {
+				filteredList.add(task);
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagPriority(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			if(!task.isDone() && task.isPriority()) {
+				filteredList.add(task);
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagToday(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			if(!task.isDone() 
+				&& task.isRange()
+				&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 0)) {
+				filteredList.add(task);
+			}
+			else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
+				for(Date date:task.getAllDates()) {
+					if(TaskCatalystCommons.isToday(date)) {
+						filteredList.add(task);
+					}
+				}
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagTomorrow(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			if(!task.isDone() 
+				&& task.isRange() 
+				&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 1)) {
+				filteredList.add(task);
+			}
+			else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
+				for(Date date:task.getAllDates()) {
+					if(TaskCatalystCommons.isTomorrow(date)) {
+						filteredList.add(task);
+					}
+				}
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashTagUpcoming(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			if(!task.isDone() 
+				&& task.isRange() 
+				&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) >= 2)) {
+				filteredList.add(task);
+			}
+			else if(!task.isDone() && !task.getAllDates().isEmpty() && !task.isRange()) {
+				for(Date date:task.getAllDates()) {
+					if(TaskCatalystCommons.daysFromToday(date) >= 2) {
+						filteredList.add(task);
+					}
+				}
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashTagUserDefined(List<Task> list, String hashtag) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			if(!task.isDone() && task.hasHashtag(hashtag)) {
+				filteredList.add(task);
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagSomeday(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			if(!task.isDone() && task.getAllDates().isEmpty()) {
+				filteredList.add(task);
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagDone(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for(Task task:list) {
+			if(task.isDone()) {
+				filteredList.add(task);
+			}
+		}
+		return filteredList;
+	}
+
 	private boolean isOverlapping(Task task1, Task task2) {
 		if(task1.isDone() || task2.isDone() || task1.getAllDates().isEmpty()|| task2.getAllDates().isEmpty() || task1.equals(task2)) {
 			return false;
