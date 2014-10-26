@@ -8,7 +8,7 @@ import java.util.TreeSet;
 public class TaskManagerActual implements TaskManager {
 
 	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#tdy",
-			"#tmr", "#upc", "#smd", "#dne" };
+			"#tmr", "#upc", "#smd", "#olp", "#dne" };
 	private static final DisplayMode DEFAULT_DISPLAY_MODE = DisplayMode.HASHTAG;
 	private static final String DEFAULT_DISPLAY_KEYWORD = "all";
 	private static final String DEFAULT_FILE_NAME = "tasks.txt";

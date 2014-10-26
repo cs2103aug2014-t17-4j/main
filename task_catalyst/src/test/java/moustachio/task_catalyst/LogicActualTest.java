@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class LogicActualTest {
 
-	private static final int NUM_OF_DEFAULT_HASHTAGS = 7;
+	private static final int NUM_OF_DEFAULT_HASHTAGS = 8;
 	Logic logic;
 	TaskManager taskManager;
 
@@ -425,7 +425,8 @@ public class LogicActualTest {
 		assertEquals("#tmr", defaultHashtags.get(3));
 		assertEquals("#upc", defaultHashtags.get(4));
 		assertEquals("#smd", defaultHashtags.get(5));
-		assertEquals("#dne", defaultHashtags.get(6));
+		assertEquals("#olp", defaultHashtags.get(6));
+		assertEquals("#dne", defaultHashtags.get(7));
 	}
 
 	// Get hashtags on empty list.
