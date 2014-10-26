@@ -788,4 +788,65 @@ public class LogicActualTest {
 		logic.processCommand("edit 1 boss3");
 		assertEquals(2, logic.getList().size());
 	}
+
+	// Test if #all is highlighted by default.
+	@Test
+	public void highlightHashtagTc1() {
+		assertEquals(0, logic.getHashtagSelected());
+	}
+
+	// Test if #tdy is highlighted when #tdy is called.
+	@Test
+	public void highlightHashtagTc2() {
+		logic.processCommand("#tdy");
+		assertEquals(2, logic.getHashtagSelected());
+	}
+
+	// Test if search is added and highlighted.
+	@Test
+	public void highlightHashtagTc3() {
+		logic.processCommand("#tdy");
+		logic.processCommand("search fish");
+		assertEquals("search fish", logic.getHashtags().get(0));
+		assertEquals(0, logic.getHashtagSelected());
+	}
+
+	// Check if a last added task is marked, and others unmarked.
+	@Test
+	public void highlightTaskTc1() {
+		logic.processCommand("item 1");
+		logic.processCommand("item 2");
+		List<Task> tasks = logic.getList();
+		Task task1 = tasks.get(0);
+		Task task2 = tasks.get(1);
+		assertEquals(HighlightType.NORMAL, task1.getHighlightType());
+		assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
+	}
+	
+	// Check if a priority task is marked.
+		@Test
+		public void highlightTaskTc2() {
+			logic.processCommand("item 1 #pri");
+			logic.processCommand("item 2");
+			List<Task> tasks = logic.getList();
+			Task task1 = tasks.get(0);
+			Task task2 = tasks.get(1);
+			assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
+			assertEquals(HighlightType.LAST_ADDED, task2.getHighlightType());
+		}
+		
+		// Check if a priority task is marked.
+		@Test
+		public void highlightTaskTc3() {
+			logic.processCommand("item 1 1PM to 2PM #pri");
+			logic.processCommand("item 2 1PM to 2PM");
+			logic.processCommand("item 3 1PM to 2PM");
+			List<Task> tasks = logic.getList();
+			Task task1 = tasks.get(0);
+			Task task2 = tasks.get(1);
+			Task task3 = tasks.get(2);
+			assertEquals(HighlightType.PRIORITY_OVERLAP, task1.getHighlightType());
+			assertEquals(HighlightType.OVERLAP, task2.getHighlightType());
+			assertEquals(HighlightType.LAST_ADDED, task3.getHighlightType());
+		}
 }

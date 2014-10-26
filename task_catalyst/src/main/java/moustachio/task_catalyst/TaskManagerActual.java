@@ -288,11 +288,13 @@ public class TaskManagerActual implements TaskManager {
 
 	private void highlightAllOverlap(List<Task> tasks) {
 		List<Task> overlapList = listProcessor.getOverlapping(tasks);
+		System.out.println("overlap list"+overlapList.size());
 		for (Task task : overlapList) {
+			//System.out.println(task.getDescription());
 			if (task.isPriority()) {
 				task.setHighlightType(HighlightType.PRIORITY_OVERLAP);
 			} else {
-				task.setHighlightType(HighlightType.PRIORITY);
+				task.setHighlightType(HighlightType.OVERLAP);
 			}
 		}
 	}

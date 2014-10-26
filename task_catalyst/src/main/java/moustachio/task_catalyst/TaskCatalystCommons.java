@@ -187,8 +187,6 @@ public class TaskCatalystCommons {
 			boolean isAtLeastOneGroupBefore = false;
 			boolean isDateRange = false;
 
-			System.out.println(dateGroup.getText());
-
 			if (isValidDateGroup) {
 
 				List<Date> dates = dateGroup.getDates();
