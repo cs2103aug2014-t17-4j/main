@@ -318,7 +318,7 @@ public class TaskManagerActual implements TaskManager {
 
 		highlightAllPriority();
 
-		// Add absolute overlap code here?
+		highlightAllOverlapping();
 	}
 
 	private void refreshHashtagList() {
@@ -328,7 +328,7 @@ public class TaskManagerActual implements TaskManager {
 
 		hashtagList.clear();
 		hashtagList.addAll(defaultHashtags);
-		for (String hashtag: customHashtags) {
+		for (String hashtag : customHashtags) {
 			if (!defaultHashtags.contains(hashtag)) {
 				hashtagList.add(hashtag);
 			}
@@ -387,6 +387,18 @@ public class TaskManagerActual implements TaskManager {
 		for (Task task : displayList) {
 			if (task.isPriority()) {
 				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY, task);
+			}
+		}
+	}
+
+	private void highlightAllOverlapping() {
+		List<Task> overlappingList = listProcessor.getOverlapping(displayList);
+		for (Task task : overlappingList) {
+			if (task.isPriority()) {
+				addTaskHighlight(Highlight.TYPE_TASK_PRIORITY_OVERLAP_STATIC,
+						task);
+			} else {
+				addTaskHighlight(Highlight.TYPE_TASK_OVERLAP_STATIC, task);
 			}
 		}
 	}

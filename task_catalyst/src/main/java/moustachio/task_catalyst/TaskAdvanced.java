@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
+
 public class TaskAdvanced implements Task {
 
 	boolean isDone;
@@ -96,6 +98,7 @@ public class TaskAdvanced implements Task {
 			int firstIndex = 0;
 			dateStart = allDates.get(firstIndex);
 		}
+		Collections.sort(allDates);
 		return dateStart;
 	}
 
