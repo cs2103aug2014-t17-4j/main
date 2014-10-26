@@ -24,6 +24,8 @@ public class Edit extends Action {
 
 	private Task targetTask;
 	private Task replacementTask;
+	
+	private int taskNumber;
 
 	public Edit(String userCommand) {
 		taskBuilder = new TaskBuilderAdvanced();
@@ -33,7 +35,7 @@ public class Edit extends Action {
 				.removeFirstWord(userCommand);
 		String taskNumberString = TaskCatalystCommons
 				.getFirstWord(taskNumberAndContent);
-		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
+		taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
 
 		targetTask = taskManager.getDisplayTask(taskNumber);
 
@@ -45,7 +47,15 @@ public class Edit extends Action {
 
 	@Override
 	public Message execute() {
-		if (targetTask == null || replacementTask == null) {
+		
+		if (targetTask != null && replacementTask== null) {
+			int type = Message.TYPE_AUTOCOMPLETE;
+			String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber, targetTask.getDescriptionEdit());
+
+			return new Message(type, message);
+		}
+		
+		if (targetTask == null && replacementTask == null) {
 			int type = Message.TYPE_ERROR;
 			String message = String.format(EXECUTE_ERROR);
 
