@@ -74,8 +74,14 @@ public class UIController {
 	}
 
 	@FXML
-	private void exitButtonAction() {
-		Platform.exit();
+	public void exitButtonAction() {
+		//Platform.exit();
+		Platform.runLater(new Runnable() {
+			@Override 
+			public void run() {
+				tc.getStage().hide();
+			}
+		});
 	}
 
 	@FXML
@@ -171,7 +177,7 @@ public class UIController {
 
 	/**
 	 * 
-	 * @author A0112764
+	 * @author A0112764J
 	 */
 	public void handleHotKeys(final String associatedText) {
 		Platform.runLater(new Runnable() {
@@ -181,20 +187,26 @@ public class UIController {
 				switch (message.getType()) {
 				case Message.TYPE_SUCCESS:
 					statusMessage.setText(message.getMessage());
-
 					displayHashTags();
 					displayTask();
+					clearForm();
 					break;
 				case Message.TYPE_ERROR:
 					statusMessage.setText(message.getMessage());
+					clearForm();
 					break;
 				case Message.TYPE_AUTOCOMPLETE:
 					statusMessage.setText(message.getMessage());
+					clearForm();
 					break;
 				}
 			}
 
 		});
+	}
+	
+	public boolean isCompletedCommand(KeyEvent event){
+		return event.getCode().equals(KeyCode.ENTER);
 	}
 
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {

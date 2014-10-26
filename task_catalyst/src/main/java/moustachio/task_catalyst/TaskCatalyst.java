@@ -10,7 +10,9 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -24,6 +26,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import javax.swing.JOptionPane;
 
 public class TaskCatalyst extends Application {
@@ -31,18 +34,24 @@ public class TaskCatalyst extends Application {
 	private double initialX; 
 	
 	private UIController controller;
+	private Stage primaryStage;
 
 	public static void main(String[] args) {
-		loadSystemTray();
 		launch(args);
+	}
+	
+	public Stage getStage() {
+		return this.primaryStage;
 	}
 
 	@Override
 	public void start(Stage primaryStage){
+		this.primaryStage = primaryStage;
 		
 		try {
 			/*Parent root = FXMLLoader.load(getClass().getResource(
 					"userInterface.fxml"));*/
+			loadSystemTray(this.primaryStage);
 			FXMLLoader loader = new FXMLLoader(TaskCatalyst.class.getResource("userInterface.fxml"));
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
@@ -55,16 +64,17 @@ public class TaskCatalyst extends Application {
 					getClass().getResource("DarkTheme.css").toExternalForm());
 
 			// set stage
-			primaryStage.setScene(scene);
-			primaryStage.initStyle(StageStyle.UNDECORATED);
-			primaryStage.show();
+			Platform.setImplicitExit(false);
+			this.primaryStage.setScene(scene);
+			this.primaryStage.initStyle(StageStyle.UNDECORATED);
+			this.primaryStage.show();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}	
 	}
 	
 	/**
-	 * This function does minimize when "ctrl+m" is pressed and maximize for toggling case.
+	 * 
 	 * 
 	 * @author Lin XiuQing (A0112764J)
 	 */
@@ -73,23 +83,27 @@ public class TaskCatalyst extends Application {
 		final KeyCombination minHotKey = new KeyCodeCombination(KeyCode.M, KeyCombination.CONTROL_DOWN);
 		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y, KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.CONTROL_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>(){
 			
 		@Override
 			public void handle(KeyEvent event){
 				if(minHotKey.match(event)){
-					stage.setIconified(!stage.isIconified());
+					stage.hide();
 				}
-				else if(undoHotKey.match(event))  {
+				else if(undoHotKey.match(event))  {	
 					controller.handleHotKeys("undo");
 				}
 				else if (redoHotKey.match(event)) {
 					controller.handleHotKeys("redo");
 				}
+				else if(exitHotKey.match(event)){
+					controller.handleHotKeys("exit");
+				}
 			}	
 		});
 	}
-	
+
 	private void addDragListeners(final Node mainUI) {
 
 		mainUI.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -118,8 +132,8 @@ public class TaskCatalyst extends Application {
 			}
 		});
 	}
-
-	private static void loadSystemTray() {
+	
+	private static void loadSystemTray(Stage stage) {
 		// checking for support
 		if (!SystemTray.isSupported()) {
 			System.out.println("System tray is not supported !!! ");
@@ -133,8 +147,25 @@ public class TaskCatalyst extends Application {
 
 		// popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();
-
+		
 		// 1st menuitem for popupmenu
+		MenuItem launch = new MenuItem("Launch");
+		launch.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						stage.show();
+						stage.toFront();
+					}
+				});
+			}
+		});
+		trayPopupMenu.add(launch);
+		trayPopupMenu.addSeparator();
+
+		// 2nd menuitem for popupmenu
 		MenuItem action = new MenuItem("Action");
 		action.addActionListener(new ActionListener() {
 			@Override
@@ -144,7 +175,7 @@ public class TaskCatalyst extends Application {
 		});
 		trayPopupMenu.add(action);
 
-		// 2nd menuitem of popupmenu
+		// 3rd menuitem of popupmenu
 		MenuItem close = new MenuItem("Exit");
 		close.addActionListener(new ActionListener() {
 			@Override
