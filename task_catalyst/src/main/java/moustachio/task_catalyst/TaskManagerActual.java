@@ -59,6 +59,11 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
+	public String[] getDefaultHashtags() {
+		return DEFAULT_HASHTAGS;
+	}
+
+	@Override
 	public List<Task> getDisplayList() {
 		return displayList;
 	}

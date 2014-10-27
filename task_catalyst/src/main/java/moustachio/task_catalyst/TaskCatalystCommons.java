@@ -17,6 +17,7 @@ import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collecti
 
 public class TaskCatalystCommons {
 
+	private static TaskManager taskManager = TaskManagerActual.getInstance();
 	private static PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 	private static final int INVALID_INTEGER = -1;
 
@@ -124,6 +125,7 @@ public class TaskCatalystCommons {
 				interpretedStringNextPass = getInterpretedStringSinglePass(interpretedStringNextPass);
 			}
 			exceptionIfInvalidRange(interpretedStringNextPass);
+			exceptionIfContainsDefaultHashtag(interpretedStringNextPass);
 			return interpretedStringNextPass;
 		}
 	}
@@ -137,7 +139,25 @@ public class TaskCatalystCommons {
 		boolean isMoreThanTwoDates = getAllDates(interpretedStringNextPass)
 				.size() > 2;
 		if (isRange && isMoreThanTwoDates) {
-			throw new UnsupportedOperationException();
+			throw new UnsupportedOperationException(
+					"Please only specify one pair of date ranges per task and do not mix date types.");
+		}
+	}
+
+	private static void exceptionIfContainsDefaultHashtag(
+			String interpretedStringNextPass)
+			throws UnsupportedOperationException {
+		String[] defaultHashtags = taskManager.getDefaultHashtags();
+		boolean isContainsDefaultHashtag = false;
+		for (String hashtag : defaultHashtags) {
+			if (interpretedStringNextPass.contains(hashtag)) {
+				isContainsDefaultHashtag = true;
+				break;
+			}
+		}
+		if (isContainsDefaultHashtag) {
+			throw new UnsupportedOperationException(
+					"Please remove default hashtags from your task description.");
 		}
 	}
 
@@ -165,7 +185,6 @@ public class TaskCatalystCommons {
 		String wordsContainingAted = "\\w*ated\\w*";
 
 		String interpretedInput = userInput;
-		interpretedInput = interpretedInput.replaceAll("tmr", "tomorrow");
 		interpretedInput = interpretedInput.replaceAll("\\} \\{", "\\}, \\{");
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				wordsContainingEst);
@@ -193,6 +212,7 @@ public class TaskCatalystCommons {
 	}
 
 	private static List<DateGroup> parseParsingInput(String parsingInput) {
+		prettyTimeParser = new PrettyTimeParser();
 		return prettyTimeParser.parseSyntax(parsingInput);
 	}
 
@@ -484,7 +504,7 @@ public class TaskCatalystCommons {
 			} else if (isTomorrow(currentDate)) {
 				formatString = "'tomorrow'";
 			} else if (isThisWeek(currentDate)) {
-				if (previousDate==null) {
+				if (previousDate == null) {
 					formatString = "'on' ";
 				}
 				formatString += "E";

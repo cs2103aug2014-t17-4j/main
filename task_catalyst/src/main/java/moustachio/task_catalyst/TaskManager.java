@@ -5,6 +5,8 @@ import java.util.List;
 public interface TaskManager {
 
 	public List<String> getHashtags();
+	
+	public String[] getDefaultHashtags();
 
 	public List<Task> getDisplayList();
 

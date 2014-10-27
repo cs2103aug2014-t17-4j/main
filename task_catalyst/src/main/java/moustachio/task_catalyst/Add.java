@@ -65,7 +65,7 @@ public class Add extends Action {
 			messageString = TaskCatalystCommons.getFriendlyString(userCommand);
 			messageType = Message.TYPE_HINT;
 		} catch (UnsupportedOperationException e) {
-			messageString = "You cannot mix date types, and you can only specify one pair of date ranges per task.";
+			messageString = e.getMessage();
 			messageType = Message.TYPE_ERROR;
 		}
 		messageString += "\nAdd: You can include date information. Use []s to ignore processing.";
