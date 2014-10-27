@@ -13,15 +13,18 @@ import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
 import static org.loadui.testfx.Assertions.verifyThat;
+import static org.loadui.testfx.controls.Commons.hasText;
 import static org.loadui.testfx.controls.TableViews.containsCell;
+import static org.loadui.testfx.controls.TableViews.numberOfRowsIn;
 import javafx.scene.input.KeyCode;
+
 public class UITest extends GuiTest {
 	public Parent getRootNode() {
 		Parent root = null;
 		try {
-			root = FXMLLoader.load(getClass().getResource("userInterface.fxml"));
+			root = FXMLLoader
+					.load(getClass().getResource("userInterface.fxml"));
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return root;
@@ -30,8 +33,35 @@ public class UITest extends GuiTest {
 	@Test
 	public void test() {
 		type("Meet boss at 1pm");
+		verifyThat(".text-field", hasText("Meet boss at 1pm"));
+	}
+
+	@Test
+	public void test2() {
+		type("Meet boss at 1pm");
 		push(KeyCode.ENTER);
-		verifyThat("#taskTable", containsCell("Meet boss at 1pm"));
+		verifyThat("#statusMessage",
+				hasText("Task successfully added: Meet boss today 1PM"));
+	}
+
+	// This is a partial command partition
+	@Test
+	public void test3() {
+		type("edi");
+		verifyThat("#statusMessage", hasText("Do you mean \"edit\"?"));
+	}
+
+	// This is a partial command partition
+	@Test
+	public void test4() {
+		type("edit");
+		verifyThat("#statusMessage", hasText("Edit: Press space or enter after entering a valid task number to continue."));
+		
+		type(" ");
+		verifyThat("#statusMessage", hasText("Edit: Press space or enter after entering a valid task number to continue."));
+		
+		type("1");
+		verifyThat("#statusMessage", hasText("Edit: Press space or enter after entering a valid task number to continue."));	
 	}
 
 }
