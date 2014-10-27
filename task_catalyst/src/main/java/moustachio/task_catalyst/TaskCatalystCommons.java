@@ -262,7 +262,7 @@ public class TaskCatalystCommons {
 
 		if (isDateRange) {
 			connector = " to ";
-		} else if (isContainsOr){
+		} else if (isContainsOr) {
 			connector = " or ";
 		} else {
 			connector = " and ";
@@ -506,7 +506,9 @@ public class TaskCatalystCommons {
 			Date currentDate, Date nextDate) {
 		String formatString = "";
 		if (!isSameDate(previousDate, currentDate)) {
-			if (isToday(currentDate)) {
+			if (isYesterday(currentDate)) {
+				formatString = "'yesterday'";
+			} else if (isToday(currentDate)) {
 				formatString = "'today'";
 			} else if (isTomorrow(currentDate)) {
 				formatString = "'tomorrow'";
@@ -606,6 +608,10 @@ public class TaskCatalystCommons {
 		Calendar cal1 = Calendar.getInstance();
 		cal1.setTime(date);
 		return cal1.get(Calendar.MINUTE);
+	}
+
+	public static boolean isYesterday(Date date) {
+		return daysFromToday(date) == -1;
 	}
 
 	public static boolean isToday(Date date) {
