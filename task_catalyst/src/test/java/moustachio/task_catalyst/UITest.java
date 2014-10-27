@@ -55,13 +55,13 @@ public class UITest extends GuiTest {
 	@Test
 	public void test4() {
 		type("edit");
-		verifyThat("#statusMessage", hasText("Edit: Press space or enter after entering a valid task number to continue."));
+		verifyThat("#statusMessage", hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));
 		
 		type(" ");
-		verifyThat("#statusMessage", hasText("Edit: Press space or enter after entering a valid task number to continue."));
+		verifyThat("#statusMessage", hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));
 		
 		type("1");
-		verifyThat("#statusMessage", hasText("Edit: Press space or enter after entering a valid task number to continue."));	
+		verifyThat("#statusMessage", hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));	
 	}
 
 }
