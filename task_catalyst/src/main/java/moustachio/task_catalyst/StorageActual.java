@@ -14,6 +14,7 @@ import java.util.List;
 public class StorageActual implements Storage {
 
 	private static BlackBox blackbox = BlackBox.getInstance();
+	FileHandler fileHandler = new FileHandler();
 	
 	@Override
 	public boolean saveTasks(List<Task> list, String fileName) {
@@ -22,24 +23,24 @@ public class StorageActual implements Storage {
 
 	@Override
 	public List<Task> loadTasks(String fileName) {
-		return FileHandler.readTask(fileName);
+		return fileHandler.readTask(fileName);
 	}
 
 	@Override
 	public boolean saveSetting(String name, String fileName, String value) {
-		return FileHandler.writeSetting(name, fileName, value) ;
+		return fileHandler.writeSetting(name, fileName, value) ;
 	}
 
 	@Override
 	public String loadSetting(String name, String fileName) {
-		return FileHandler.readSetting(name, fileName);
+		return fileHandler.readSetting(name, fileName);
 	}
 	
 	private boolean saveTasksToFile(List<Task> list, String fileName) {
 		try{
-			FileHandler.clear(fileName);
+			fileHandler.clear(fileName);
 			for(int i=0; i<list.size(); i++){
-				 FileHandler.writeTask(list.get(i), fileName);
+				fileHandler.writeTask(list.get(i), fileName);
 			}
 			return true;
 		}catch (IOException e) {

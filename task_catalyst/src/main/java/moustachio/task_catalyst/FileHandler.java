@@ -24,8 +24,8 @@ import org.json.simple.parser.ParseException;
 public class FileHandler {
 
 	private static BlackBox blackBox = BlackBox.getInstance();
-	
-	public static void writeTask(Task task, String fileName) throws IOException{
+
+	public void writeTask(Task task, String fileName) throws IOException{
 		assert(task!=null);
 		assert(fileName!=null);
 		try{
@@ -35,7 +35,7 @@ public class FileHandler {
 		} 
 	}
 	
-	private static void writeJSONFile(Task task, String fileName) throws IOException {
+	private void writeJSONFile(Task task, String fileName) throws IOException {
 		FileWriter jsonFile = new FileWriter(fileName, true);
 		BufferedWriter writer = new BufferedWriter(jsonFile);
 		JSONObject object = new JSONObject();
@@ -47,7 +47,7 @@ public class FileHandler {
 		writer.close();
 	}
 	
-	public static List<Task> readTask(String fileName){
+	public List<Task> readTask(String fileName){
 		assert(fileName!=null);
 		List<Task> list = new ArrayList<Task> ();
 		
@@ -59,7 +59,7 @@ public class FileHandler {
 		return list;
 	}
 
-	private static void readJSONFile(String fileName, List<Task> list) {
+	private void readJSONFile(String fileName, List<Task> list) {
 		try {
 			readJSONFormat(fileName, list);
 		}catch (FileNotFoundException e){
@@ -71,7 +71,7 @@ public class FileHandler {
 		}
 	}
 
-	private static void readJSONFormat(String fileName, List<Task> list)
+	private void readJSONFormat(String fileName, List<Task> list)
 			throws FileNotFoundException, IOException, ParseException {
 		String stringLine;
 		BufferedReader breader = getReader(fileName);
@@ -83,7 +83,7 @@ public class FileHandler {
 		breader.close();
 	}
 	
-	public static boolean writeSetting(String name, String fileName, String value) {
+	public boolean writeSetting(String name, String fileName, String value) {
 		assert(fileName!=null);
 		Boolean isSuccess = false;
 		try {
@@ -96,7 +96,7 @@ public class FileHandler {
 		return isSuccess;
 	}
 
-	private static Boolean write(String name, String fileName, String value) throws IOException {
+	private Boolean write(String name, String fileName, String value) throws IOException {
 		assert(value!=null && name!=null);
 		Boolean isSuccess;
 		if(name!=null && value!=null && fileName!=null){
@@ -111,7 +111,7 @@ public class FileHandler {
 		return isSuccess;
 	} 
 	
-	public static String readSetting(String name, String fileName){
+	public String readSetting(String name, String fileName){
 		assert(fileName!=null);
 		assert(name!=null);
 		String value = "";
@@ -135,14 +135,14 @@ public class FileHandler {
 		return value;
 	}
 	
-	private static BufferedReader getReader(String fileName)
+	private BufferedReader getReader(String fileName)
 			throws FileNotFoundException {
 		FileReader freader = new FileReader(fileName);
 		BufferedReader reader = new BufferedReader (freader);
 		return reader;
 	}
 
-	private static boolean isEmptyFile(String fileName) {
+	private boolean isEmptyFile(String fileName) {
 		try {
 			BufferedReader reader = getReader(fileName);
 			if (reader.readLine() == null) {
@@ -156,7 +156,7 @@ public class FileHandler {
 		return false;
 	}
 	
-	public static void clear(String fileName) {
+	public void clear(String fileName) {
 		try {
 			PrintWriter writer;
 			writer = new PrintWriter(fileName);
