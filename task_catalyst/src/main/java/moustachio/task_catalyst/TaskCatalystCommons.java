@@ -484,7 +484,10 @@ public class TaskCatalystCommons {
 			} else if (isTomorrow(currentDate)) {
 				formatString = "'tomorrow'";
 			} else if (isThisWeek(currentDate)) {
-				formatString = "'on' E";
+				if (previousDate==null) {
+					formatString = "'on' ";
+				}
+				formatString += "E";
 			} else {
 				formatString = "'on' d MMM";
 			}
