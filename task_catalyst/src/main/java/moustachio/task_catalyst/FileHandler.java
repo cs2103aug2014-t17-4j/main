@@ -16,10 +16,11 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
 /**
- * This program is to manage writing and reading tasks in a specific text file. 
+ * This program is to manage writing and reading tasks in a specific text file.
  * 
- * The description of a task is converted into JSON object before saving it in the file. 
- * Likewise, the saved task is converted again to text for the purpose of editing or displaying. 
+ * The description of a task is converted into JSON object before saving it in
+ * the file. Likewise, the saved task is converted again to text for the purpose
+ * of editing or displaying.
  * 
  * @author Lin XiuQing (A0112764J)
  */
@@ -28,21 +29,21 @@ public class FileHandler {
 
 	private static BlackBox blackBox = BlackBox.getInstance();
 
-	public void writeTask(Task task, String fileName) throws IOException{
-		assert(task!=null);
-		
-		if(isinvalidFileFormat(fileName)){
+	public void writeTask(Task task, String fileName) throws IOException {
+		assert (task != null);
+
+		if (isinvalidFileFormat(fileName)) {
 			blackBox.info("Invalid file format!");
-			throw new Error ("Invalid file format!");
+			throw new Error("Invalid file format!");
 		}
-		
-		try{
+
+		try {
 			writeJSONFile(task, fileName);
 		} catch (IOException e) {
 			blackBox.info("IO fault has been enountered.");
-		} 
+		}
 	}
-	
+
 	private void writeJSONFile(Task task, String fileName) throws IOException {
 		FileWriter jsonFile = new FileWriter(fileName, true);
 		BufferedWriter writer = new BufferedWriter(jsonFile);
@@ -54,19 +55,19 @@ public class FileHandler {
 		writer.flush();
 		writer.close();
 	}
-	
-	public List<Task> readTask(String fileName){
-		List<Task> list = new ArrayList<Task> ();
-		
-		if(isinvalidFileFormat(fileName)){
+
+	public List<Task> readTask(String fileName) {
+		List<Task> list = new ArrayList<Task>();
+
+		if (isinvalidFileFormat(fileName)) {
 			blackBox.info("Invalid file format!");
-			throw new Error ("Invalid file format!");
+			throw new Error("Invalid file format!");
 		}
-		
-		if(isEmptyFile(fileName)){
+
+		if (isEmptyFile(fileName)) {
 			return new ArrayList<Task>();
-		}else{
-			if(isinvalidFileFormat(fileName)){
+		} else {
+			if (isinvalidFileFormat(fileName)) {
 				readJSONFile(fileName, list);
 			}
 		}
@@ -76,11 +77,11 @@ public class FileHandler {
 	private void readJSONFile(String fileName, List<Task> list) {
 		try {
 			readJSONFormat(fileName, list);
-		}catch (FileNotFoundException e){
+		} catch (FileNotFoundException e) {
 			blackBox.info("The file is empty.");
-		}catch (IOException e){
+		} catch (IOException e) {
 			blackBox.info("IO fault has been enountered.");
-		}catch (ParseException e){
+		} catch (ParseException e) {
 			blackBox.info("Incorrect format has been found");
 		}
 	}
@@ -91,78 +92,84 @@ public class FileHandler {
 		BufferedReader breader = getReader(fileName);
 		JSONConverter objCodec = new JSONConverter();
 
-		while ((stringLine = breader.readLine()) != null){
-			list.add(objCodec.decodeToString(stringLine));
+		while ((stringLine = breader.readLine()) != null) {
+			Task task = objCodec.decodeToString(stringLine);
+			if (task != null) {
+				list.add(task);
+			}
 		}
 		breader.close();
 	}
-	
+
 	public boolean writeSetting(String name, String fileName, String value) {
 		Boolean isSuccess = false;
-		
-		if(isinvalidFileFormat(fileName) || isinvalidFileFormat(name) || isinvalidFileFormat(value)){
+
+		if (isinvalidFileFormat(fileName) || isinvalidFileFormat(name)
+				|| isinvalidFileFormat(value)) {
 			blackBox.info("Invalid file format!");
-			throw new Error ("Invalid file format!");
+			throw new Error("Invalid file format!");
 		}
-		
+
 		try {
 			isSuccess = write(name, fileName, value);
-		}catch (FileNotFoundException e){
+		} catch (FileNotFoundException e) {
 			blackBox.info("The file is not found!");
-		}catch (IOException e) {
+		} catch (IOException e) {
 			blackBox.info("IO fault has been enountered.");
 		}
 		return isSuccess;
 	}
 
-	private Boolean write(String name, String fileName, String value) throws IOException {
-		assert(value!=null && name!=null);
+	private Boolean write(String name, String fileName, String value)
+			throws IOException {
+		assert (value != null && name != null);
 		Boolean isSuccess;
-		if(name!=null && value!=null && fileName!=null){
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,true));
-			writer.write(name+ "," + value);
+		if (name != null && value != null && fileName != null) {
+			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
+					true));
+			writer.write(name + "," + value);
 			writer.newLine();
 			writer.close();
 			isSuccess = true;
-		}else{
-			isSuccess=false;
+		} else {
+			isSuccess = false;
 		}
 		return isSuccess;
-	} 
-	
-	public String readSetting(String name, String fileName){
-		assert(name!=null);
-		
-		if(isinvalidFileFormat(fileName) || isinvalidFileFormat(name)){
+	}
+
+	public String readSetting(String name, String fileName) {
+		assert (name != null);
+
+		if (isinvalidFileFormat(fileName) || isinvalidFileFormat(name)) {
 			blackBox.info("Invalid file format!");
-			throw new Error ("Invalid file format!");
+			throw new Error("Invalid file format!");
 		}
-		
+
 		String value = "";
-		try{
+		try {
 			BufferedReader reader = getReader(fileName);
 			String lineString;
-			if(isEmptyFile(fileName)){
+			if (isEmptyFile(fileName)) {
 				reader.close();
 				return "Empty file";
 			}
-		
-			while((lineString=reader.readLine()) !=null){
-				if(lineString.contains(name)){
+
+			while ((lineString = reader.readLine()) != null) {
+				if (lineString.contains(name)) {
 					value += lineString + " ";
 				}
 			}
 			reader.close();
-		}catch (IOException e){
+		} catch (IOException e) {
 			blackBox.info("IO fault has been enountered.");
 		}
 		return value;
 	}
-	
+
 	private BufferedReader getReader(String fileName)
 			throws FileNotFoundException {
 		FileReader freader = new FileReader(fileName);
-		BufferedReader reader = new BufferedReader (freader);
+		BufferedReader reader = new BufferedReader(freader);
 		return reader;
 	}
 
@@ -179,7 +186,7 @@ public class FileHandler {
 		}
 		return false;
 	}
-	
+
 	public void clear(String fileName) {
 		try {
 			PrintWriter writer;
@@ -190,22 +197,21 @@ public class FileHandler {
 			blackBox.info("The file is not found!");
 		}
 	}
-	
-	private static boolean isinvalidFileFormat(String text){
-		if(text.contains(".")){
+
+	private static boolean isinvalidFileFormat(String text) {
+		if (text.contains(".")) {
 			String[] name = text.split("\\.");
-			return (!(isValidName(name[0]) && isValidName(name[1]) && name[1].equals("txt") && name[1]!=null));
-		}
-		else{
+			return (!(isValidName(name[0]) && isValidName(name[1])
+					&& name[1].equals("txt") && name[1] != null));
+		} else {
 			return true;
 		}
 	}
-	
-	public static boolean isValidName(String text)
-	{
-	    Pattern pattern = Pattern.compile("^[^/./\\:*?\"<>|]+$");
-	    Matcher matcher = pattern.matcher(text);
-	    boolean isMatch = matcher.matches();
-	    return isMatch;
+
+	public static boolean isValidName(String text) {
+		Pattern pattern = Pattern.compile("^[^/./\\:*?\"<>|]+$");
+		Matcher matcher = pattern.matcher(text);
+		boolean isMatch = matcher.matches();
+		return isMatch;
 	}
 }
