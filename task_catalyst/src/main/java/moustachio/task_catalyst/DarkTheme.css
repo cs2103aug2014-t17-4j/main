@@ -20,6 +20,11 @@
 	-fx-border-color: black;
 }
 
+#idColumn {
+    -fx-alignment: CENTER;
+}
+
+/* GUI Interface background colour */
 .theme {
     master-color: grey;
     -fx-background-color: #DFB951;
@@ -32,64 +37,50 @@
     -fx-background-color: derive(master-color, 100%);
 }
 
-.darkList {
-	master-color: grey;
-    -fx-background-color: derive(master-color, -60%);
-}
-
-.darkList .list-cell {
-    -fx-padding: 6 0 0 13;
-    -fx-background-color: derive(master-color, -60%);
-    -fx-text-fill: lightgrey;
-}
-
-.darkList .list-cell:focused {
-    -fx-text-fill: white;
-    -fx-background-color: derive(master-color, -60%);
-}
-
-.lightList {
-	master-color: grey;
-    -fx-background-color: derive(master-color, -60%);
-}
-
+/* Background colour for Hashtag list */
 .lightList .list-cell {
     -fx-padding: 6 0 0 13;
     -fx-background-color: derive(master-color, -60%);
     -fx-text-fill: lightgrey;
 }
 
-.lightList .list-cell:focused {
-    -fx-text-fill: white;
-    -fx-background-color: derive(white, -60%);
+/* Selected row for Hashtag list */
+.lightList .list-cell:focused:selected {
+    -fx-text-fill: black;
+    -fx-background-color: #6495ed;
 }
 
-.lightList {
-	master-color: grey;
-    -fx-background-color: derive(master-color, -60%);
+/* Selected row for table */
+.table-view:focused .table-row-cell:filled:focused:selected {
+    -fx-background-color: #6495ed;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
+    -fx-text-fill: -fx-selection-bar-text;
 }
 
-.lightList .list-cell {
-    -fx-padding: 6 0 0 13;
-    -fx-background-color: derive(master-color, -60%);
-    -fx-text-fill: lightgrey;
+/* Selected row when table not focused */
+.table-row-cell:filled:focused:selected {
+    -fx-background-color: grey;
+    -fx-background-insets: 0, 1, 2;
+    -fx-background: -fx-accent;
+    -fx-text-fill: -fx-selection-bar-text;
 }
 
-.lightList table-view:focused {
-    -fx-text-fill: white;
-    -fx-background-color: derive(white, -60%);
+/* Table row border colour */
+.table-row-cell {
+	 -fx-border-color: white;
 }
 
-#idColumn {
-    -fx-alignment: CENTER;
-}
+/* Removed border colour when task table is empty */
 .table-row-cell:empty {
     -fx-background-color: white;
 }
- 
+
 .table-row-cell:empty .table-cell {
     -fx-border-width: 0px;
 }
+
+/* Different highlight type for task*/
 .isTaskLastAdded { 
 	-fx-background-color: #DFEFF0;
 }
