@@ -1,8 +1,10 @@
 package moustachio.task_catalyst;
 
 import static org.junit.Assert.*;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +17,7 @@ import org.junit.Test;
 public class StorageTest {
 	
 	Storage data = new StorageActual();
+	FileHandler fileHandler = new FileHandler();
 	
 	String fileName;
 	Task task1 = new TaskAdvanced("meet boss at 5pm tmr");
@@ -40,7 +43,7 @@ public class StorageTest {
 	@Test
 	public void testLoadEmptyFile(){
 		List<Task> list = new ArrayList<Task> ();
-		FileHandler.clear(fileName);
+		fileHandler.clear(fileName);
 		list = data.loadTasks(fileName);
 		assertEquals(list.isEmpty(),true);
 	}
@@ -79,7 +82,7 @@ public class StorageTest {
 	public void testSaveTaskstoEmptyFile() {
 		List<Task> list = new ArrayList<Task> ();
 		list.add(task1);
-		FileHandler.clear(fileName);
+		fileHandler.clear(fileName);
 		assertEquals(data.saveTasks(list, fileName), true);
 	}
 	
@@ -103,7 +106,7 @@ public class StorageTest {
 	/* This is a boundary case for 'save single setting' partition */
 	@Test
 	public void testSaveOneSetting(){
-		FileHandler.clear(fileName);
+		fileHandler.clear(fileName);
 		assertEquals(true, data.saveSetting(font1, fileName, size1));
 	}
 	
@@ -120,7 +123,7 @@ public class StorageTest {
 	/* This is a boundary case for 'load setting from empty file' partition */
 	@Test 
 	public void testLoadSettingEmptyFile(){
-		FileHandler.clear(fileName);
+		fileHandler.clear(fileName);
 		String str = "font";
 		String expectedString = data.loadSetting(str, fileName);
 		assertEquals("Empty file", expectedString);
@@ -129,7 +132,7 @@ public class StorageTest {
 	/* This is a boundary case for 'load one setting' partition */
 	@Test 
 	public void testLoadSetting(){
-		FileHandler.clear(fileName);
+		fileHandler.clear(fileName);
 		data.saveSetting(font1, fileName, size1);
 		String input = font1 + "," + size1 + " ";
 		//System.out.println(input);
@@ -140,7 +143,7 @@ public class StorageTest {
 	/* This is a boundary case for 'load two settings' partition */
 	@Test 
 	public void testLoadSettings(){
-		FileHandler.clear(fileName);
+		fileHandler.clear(fileName);
 		data.saveSetting(font1, fileName, size1);
 		data.saveSetting(font2, fileName, size2);
 		String input1 = font1 + "," + size1 + " ";
