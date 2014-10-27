@@ -31,7 +31,7 @@ public class FileHandler {
 	public void writeTask(Task task, String fileName) throws IOException{
 		assert(task!=null);
 		
-		if(!isValidFileFormat(fileName)){
+		if(isinvalidFileFormat(fileName)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
@@ -58,7 +58,7 @@ public class FileHandler {
 	public List<Task> readTask(String fileName){
 		List<Task> list = new ArrayList<Task> ();
 		
-		if(!isValidFileFormat(fileName)){
+		if(isinvalidFileFormat(fileName)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
@@ -66,7 +66,7 @@ public class FileHandler {
 		if(isEmptyFile(fileName)){
 			return new ArrayList<Task>();
 		}else{
-			if(isValidFileFormat(fileName)){
+			if(isinvalidFileFormat(fileName)){
 				readJSONFile(fileName, list);
 			}
 		}
@@ -100,7 +100,7 @@ public class FileHandler {
 	public boolean writeSetting(String name, String fileName, String value) {
 		Boolean isSuccess = false;
 		
-		if(!isValidFileFormat(fileName) || !isValidFileFormat(name) || !isValidFileFormat(value)){
+		if(isinvalidFileFormat(fileName) || isinvalidFileFormat(name) || isinvalidFileFormat(value)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
@@ -133,7 +133,7 @@ public class FileHandler {
 	public String readSetting(String name, String fileName){
 		assert(name!=null);
 		
-		if(!isValidFileFormat(fileName) || !isValidFileFormat(name)){
+		if(isinvalidFileFormat(fileName) || isinvalidFileFormat(name)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
@@ -191,13 +191,13 @@ public class FileHandler {
 		}
 	}
 	
-	private static boolean isValidFileFormat(String text){
+	private static boolean isinvalidFileFormat(String text){
 		if(text.contains(".")){
 			String[] name = text.split("\\.");
-			return (isValidName(name[0]) && isValidName(name[1]) && name[1].equals("txt") && name[1]!=null);
+			return (!(isValidName(name[0]) && isValidName(name[1]) && name[1].equals("txt") && name[1]!=null));
 		}
 		else{
-			return false;
+			return true;
 		}
 	}
 	
