@@ -77,7 +77,7 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			Platform.setImplicitExit(false);
 			this.primaryStage.setScene(scene);
 			this.primaryStage.initStyle(StageStyle.UNDECORATED);
-			primaryStage.setAlwaysOnTop(true);
+			this.primaryStage.setAlwaysOnTop(true);
 			this.primaryStage.show();
 			
 		} catch (IOException e) {
