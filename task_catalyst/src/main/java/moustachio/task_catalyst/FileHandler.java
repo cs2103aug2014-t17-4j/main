@@ -9,6 +9,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -27,7 +30,12 @@ public class FileHandler {
 
 	public void writeTask(Task task, String fileName) throws IOException{
 		assert(task!=null);
-		assert(fileName!=null);
+		
+		if(isValidFileFormat(fileName)){
+			blackBox.info("Invalid file format!");
+			throw new Error ("Invalid file format!");
+		}
+		
 		try{
 			writeJSONFile(task, fileName);
 		} catch (IOException e) {
@@ -48,8 +56,12 @@ public class FileHandler {
 	}
 	
 	public List<Task> readTask(String fileName){
-		assert(fileName!=null);
 		List<Task> list = new ArrayList<Task> ();
+		
+		if(isValidFileFormat(fileName)){
+			blackBox.info("Invalid file format!");
+			throw new Error ("Invalid file format!");
+		}
 		
 		if(isEmptyFile(fileName)){
 			return new ArrayList<Task>();
@@ -84,8 +96,13 @@ public class FileHandler {
 	}
 	
 	public boolean writeSetting(String name, String fileName, String value) {
-		assert(fileName!=null);
 		Boolean isSuccess = false;
+		
+		if(isValidFileFormat(fileName) || isValidFileFormat(name) || isValidFileFormat(value)){
+			blackBox.info("Invalid file format!");
+			throw new Error ("Invalid file format!");
+		}
+		
 		try {
 			isSuccess = write(name, fileName, value);
 		}catch (FileNotFoundException e){
@@ -112,8 +129,13 @@ public class FileHandler {
 	} 
 	
 	public String readSetting(String name, String fileName){
-		assert(fileName!=null);
 		assert(name!=null);
+		
+		if(isValidFileFormat(fileName) || isValidFileFormat(name)){
+			blackBox.info("Invalid file format!");
+			throw new Error ("Invalid file format!");
+		}
+		
 		String value = "";
 		try{
 			BufferedReader reader = getReader(fileName);
@@ -165,5 +187,23 @@ public class FileHandler {
 		} catch (FileNotFoundException e) {
 			blackBox.info("The file is not found!");
 		}
+	}
+	
+	private static boolean isValidFileFormat(String text){
+		if(text.contains(".")){
+			String[] name = text.split("\\.");
+			return (isValidName(name[0]) && isValidName(name[1]) && name[1].equals("txt") && name[1]!=null);
+		}
+		else{
+			return false;
+		}
+	}
+	
+	public static boolean isValidName(String text)
+	{
+	    Pattern pattern = Pattern.compile("^[^/./\\:*?\"<>|]+$");
+	    Matcher matcher = pattern.matcher(text);
+	    boolean isMatch = matcher.matches();
+	    return isMatch;
 	}
 }
