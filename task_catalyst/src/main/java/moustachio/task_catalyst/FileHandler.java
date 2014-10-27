@@ -31,7 +31,7 @@ public class FileHandler {
 	public void writeTask(Task task, String fileName) throws IOException{
 		assert(task!=null);
 		
-		if(isValidFileFormat(fileName)){
+		if(!isValidFileFormat(fileName)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
@@ -58,7 +58,7 @@ public class FileHandler {
 	public List<Task> readTask(String fileName){
 		List<Task> list = new ArrayList<Task> ();
 		
-		if(isValidFileFormat(fileName)){
+		if(!isValidFileFormat(fileName)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
@@ -66,7 +66,9 @@ public class FileHandler {
 		if(isEmptyFile(fileName)){
 			return new ArrayList<Task>();
 		}else{
-			readJSONFile(fileName, list);
+			if(isValidFileFormat(fileName)){
+				readJSONFile(fileName, list);
+			}
 		}
 		return list;
 	}
@@ -98,7 +100,7 @@ public class FileHandler {
 	public boolean writeSetting(String name, String fileName, String value) {
 		Boolean isSuccess = false;
 		
-		if(isValidFileFormat(fileName) || isValidFileFormat(name) || isValidFileFormat(value)){
+		if(!isValidFileFormat(fileName) || !isValidFileFormat(name) || !isValidFileFormat(value)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
@@ -131,7 +133,7 @@ public class FileHandler {
 	public String readSetting(String name, String fileName){
 		assert(name!=null);
 		
-		if(isValidFileFormat(fileName) || isValidFileFormat(name)){
+		if(!isValidFileFormat(fileName) || !isValidFileFormat(name)){
 			blackBox.info("Invalid file format!");
 			throw new Error ("Invalid file format!");
 		}
