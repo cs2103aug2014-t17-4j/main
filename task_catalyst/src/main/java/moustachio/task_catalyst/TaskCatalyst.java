@@ -33,64 +33,66 @@ import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
-public class TaskCatalyst extends Application implements HotKeyListener{
+public class TaskCatalyst extends Application implements HotKeyListener {
 	private double initialY;
-	private double initialX; 
-	
+	private double initialX;
+
 	private UIController controller;
 	private Stage primaryStage;
-	
+
 	private static Provider hotKeys = null;
 	private static String toggleLaunchHK = "control M";
-	
+
 	public static void main(String[] args) {
 		try {
-		    if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
-		        throw new RuntimeException("This application is single instance!");
-		    }
-		    launch(args);
-		}
-		finally{
-		    Lock.releaseLock(); 
+			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
+				throw new RuntimeException(
+						"This application is single instance!");
+			}
+			launch(args);
+		} finally {
+			Lock.releaseLock();
 		}
 	}
-	
+
 	Stage getStage() {
 		return this.primaryStage;
 	}
 
 	@Override
-	public void start(Stage primaryStage){
+	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		
+
 		try {
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
-			FXMLLoader loader = new FXMLLoader(TaskCatalyst.class.getResource("userInterface.fxml"));
+			FXMLLoader loader = new FXMLLoader(
+					TaskCatalyst.class.getResource("/fxml/userInterface.fxml"));
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			controller = loader.getController();
 			controller.connectWithMainTaskCatalyst(this);
-			addHotKeysListeners(primaryStage,scene);
+			addHotKeysListeners(primaryStage, scene);
 			addDragListeners(root);
 			// set stylesheet
 			scene.getStylesheets().add(
-					getClass().getResource("DarkTheme.css").toExternalForm());
+					getClass().getResource("/css/DarkTheme.css").toExternalForm());
 
 			// set stage
 			Platform.setImplicitExit(false);
 			this.primaryStage.setScene(scene);
 			this.primaryStage.initStyle(StageStyle.UNDECORATED);
-			//this.primaryStage.setAlwaysOnTop(true);
+			// this.primaryStage.setAlwaysOnTop(true);
 			this.primaryStage.show();
-			
+
 		} catch (IOException e) {
 			e.printStackTrace();
-		}	
+		}
 	}
-	
+
 	/**
-	 * This function registers the global hotkey (ctrl+m). 
+	 * This function registers the global hotkey (ctrl+m).
+	 * 
 	 * @author A0112764J
 	 */
 	private void startHotKeys() {
@@ -106,9 +108,10 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			}
 		}).start();
 	}
-	
+
 	/**
 	 * This function disables the global hotkey (ctrl+m).
+	 * 
 	 * @author A0112764J
 	 */
 	private static void stopHotKeys() {
@@ -122,36 +125,39 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			}
 		}).start();
 	}
-	
+
 	/**
-	 * This function creates hotkey for the actions that are undo,redo and exit. 
+	 * This function creates hotkey for the actions that are undo,redo and exit.
 	 * 
 	 * @author Lin XiuQing (A0112764J)
 	 */
-	
-	private void addHotKeysListeners(Stage stage, Scene scene){
-		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z, KeyCodeCombination.CONTROL_DOWN);
-		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y, KeyCodeCombination.CONTROL_DOWN);
-		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.Q, KeyCodeCombination.CONTROL_DOWN);
-		scene.addEventHandler(KeyEvent.KEY_RELEASED, new EventHandler<KeyEvent>(){
-			
-		@Override
-			public void handle(KeyEvent event){
-				if(undoHotKey.match(event))  {	
-					controller.handleHotKeys("undo");
-				}
-				else if (redoHotKey.match(event)) {
-					controller.handleHotKeys("redo");
-				}
-				else if(exitHotKey.match(event)){
-					System.exit(0);
-				}
-			}	
-		});
+
+	private void addHotKeysListeners(Stage stage, Scene scene) {
+		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z,
+				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y,
+				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.Q,
+				KeyCodeCombination.CONTROL_DOWN);
+		scene.addEventHandler(KeyEvent.KEY_RELEASED,
+				new EventHandler<KeyEvent>() {
+
+					@Override
+					public void handle(KeyEvent event) {
+						if (undoHotKey.match(event)) {
+							controller.handleHotKeys("undo");
+						} else if (redoHotKey.match(event)) {
+							controller.handleHotKeys("redo");
+						} else if (exitHotKey.match(event)) {
+							stop();
+						}
+					}
+				});
 	}
 
 	/**
 	 * This function enables the UI to be draggable
+	 * 
 	 * @author A0111921W
 	 */
 	private void addDragListeners(final Node mainUI) {
@@ -176,33 +182,36 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			@Override
 			public void handle(MouseEvent me) {
 				if (me.getButton() != MouseButton.MIDDLE) {
-					mainUI.getScene().getWindow().setX(me.getScreenX() - initialX);
-					mainUI.getScene().getWindow().setY(me.getScreenY() - initialY);
+					mainUI.getScene().getWindow()
+							.setX(me.getScreenX() - initialX);
+					mainUI.getScene().getWindow()
+							.setY(me.getScreenY() - initialY);
 				}
 			}
 		});
 	}
-	
+
 	/**
 	 * 
 	 * @author A0112764J
 	 */
 	@Override
-	public void stop(){
+	public void stop() {
 		BlackBox.getInstance().close();
 		try {
 			super.stop();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		System.exit(0);
 	}
-	
+
 	/**
-	 * This function creates a system tray with 2 popup menu Launch and Exit 
+	 * This function creates a system tray with 2 popup menu Launch and Exit
 	 * 
 	 * @author A0111921W
 	 * 
-	 * @param stage 
+	 * @param stage
 	 */
 	private static void loadSystemTray(Stage stage) {
 		// checking for support
@@ -214,16 +223,16 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		SystemTray systemTray = SystemTray.getSystemTray();
 		// get default toolkit
 		Image image = Toolkit.getDefaultToolkit().getImage(
-				"src/main/java/moustachio/images/moustachio.png");
+				"/images/moustachio.png");
 
 		// popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();
-		
+
 		/**
 		 * 
 		 * @author A0112764J
 		 */
-		
+
 		// 1st menuitem for popupmenu
 		MenuItem launch = new MenuItem("Launch");
 		launch.addActionListener(new ActionListener() {
@@ -263,10 +272,11 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			awtException.printStackTrace();
 		}
 	}
-	
+
 	/**
-	 * This function is to execute global hot key ctrl+m that minimizes application while it is running, 
-	 * and to relaunch application while it is minimize at system tray.
+	 * This function is to execute global hot key ctrl+m that minimizes
+	 * application while it is running, and to relaunch application while it is
+	 * minimize at system tray.
 	 * 
 	 * @author A0112764J
 	 * 
@@ -275,7 +285,7 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 	@Override
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
-		case java.awt.event.KeyEvent.VK_M :
+		case java.awt.event.KeyEvent.VK_M:
 			if (primaryStage.isShowing()) {
 				Platform.runLater(new Runnable() {
 					@Override
@@ -283,8 +293,7 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 						primaryStage.hide();
 					}
 				});
-			}
-			else {
+			} else {
 				Platform.runLater(new Runnable() {
 					@Override
 					public void run() {
@@ -295,6 +304,6 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			}
 			break;
 		}
-		
+
 	}
 }
