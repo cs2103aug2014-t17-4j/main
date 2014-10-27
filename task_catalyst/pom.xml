@@ -4,7 +4,7 @@
 
 	<groupId>moustachio</groupId>
 	<artifactId>task_catalyst</artifactId>
-	<version>0.1</version>
+	<version>0.2</version>
 	<packaging>jar</packaging>
 
 	<name>Task Catalyst</name>
@@ -36,10 +36,10 @@
 			<version>1.1</version>
 		</dependency>
 		<dependency>
-        	<groupId>com.github.tulskiy</groupId>
-        	<artifactId>jkeymaster</artifactId>
-        	<version>1.1</version>
-    	</dependency>
+			<groupId>com.github.tulskiy</groupId>
+			<artifactId>jkeymaster</artifactId>
+			<version>1.1</version>
+		</dependency>
 		<dependency>
 			<groupId>org.loadui</groupId>
 			<artifactId>testFx</artifactId>
@@ -52,51 +52,28 @@
 			<plugins>
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<version>3.0</version>
-					<configuration>
-						<source>1.8</source>
-						<target>1.8</target>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-jar-plugin</artifactId>
-					<configuration>
-						<archive>
-							<manifest>
-								<addClasspath>true</addClasspath>
-								<mainClass>moustachio.task_catalyst.TaskCatalyst</mainClass>
-							</manifest>
-						</archive>
-					</configuration>
-				</plugin>
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-assembly-plugin</artifactId>
-					<version>2.2.1</version>
 					<configuration>
 						<descriptorRefs>
 							<descriptorRef>jar-with-dependencies</descriptorRef>
 						</descriptorRefs>
 						<archive>
 							<manifest>
-								<addClasspath>true</addClasspath>
 								<mainClass>moustachio.task_catalyst.TaskCatalyst</mainClass>
 							</manifest>
 						</archive>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-compiler-plugin</artifactId>
+					<version>3.2</version>
+					<configuration>
+						<source>1.8</source>
+						<target>1.8</target>
+					</configuration>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 	</build>
-
-	<profiles>
-		<profile>
-			<id>Default</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
-		</profile>
-	</profiles>
 </project>

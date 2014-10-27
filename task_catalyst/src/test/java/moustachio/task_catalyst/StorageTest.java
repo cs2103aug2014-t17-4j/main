@@ -107,12 +107,12 @@ public class StorageTest {
 		assertEquals(true, data.saveSetting(font1, fileName, size1));
 	}
 	
-	/* This is a boundary case for 'save null setting' partition */
-	@Test 
-	public void testSaveEmptySetting(){
-		FileHandler.clear(fileName);
-		assertEquals(false,data.saveSetting(null, fileName, null));
-	}
+//	/* This is a boundary case for 'save null setting' partition */
+//	@Test 
+//	public void testSaveEmptySetting(){
+//		FileHandler.clear(fileName);
+//		assertEquals(false,data.saveSetting(null, fileName, null));
+//	}
 	
 	
 	/*** Load Setting ***/
