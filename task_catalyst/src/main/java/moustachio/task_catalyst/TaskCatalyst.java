@@ -42,13 +42,21 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 	private Stage primaryStage;
 	
 	private static Provider hotKeys = null;
-	private String toggleLaunchHK = "control M";
-
+	private static String toggleLaunchHK = "control M";
+	
 	public static void main(String[] args) {
-		launch(args);
+		try {
+		    if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
+		        throw new RuntimeException("This application is single instance!");
+		    }
+		    launch(args);
+		}
+		finally{
+		    Lock.releaseLock(); 
+		}
 	}
 	
-	public Stage getStage() {
+	Stage getStage() {
 		return this.primaryStage;
 	}
 
