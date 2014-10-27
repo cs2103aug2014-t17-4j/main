@@ -11,7 +11,8 @@ public class Done extends Action {
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
 
-	private static final String HINT_MESSAGE = "Complete: Enter the task number to complete. Eqv. commands: done, complete";
+	private static final String HINT_MESSAGE = "Complete: Hit enter after typing a valid task number to complete it."
+			+ "\nSyntax: done <task number>" + "\nAlternatives: done, complete";
 
 	private TaskManager taskManager;
 	private Task task;

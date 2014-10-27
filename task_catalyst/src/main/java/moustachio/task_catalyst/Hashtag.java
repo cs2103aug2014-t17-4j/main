@@ -4,14 +4,14 @@ public class Hashtag extends Action {
 
 	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: #%s.";
 
-	private static final String HINT_MESSAGE = "Hashtag: Enter a hashtag category to continue.";
+	private static final String HINT_MESSAGE = "Hashtag: Hit enter after typing a valid hashtag to continue.";
 
 	TaskManager taskManager;
 	String hashtag;
 
 	public Hashtag(String userCommand) {
 		taskManager = TaskManagerActual.getInstance();
-		hashtag = userCommand.replaceAll("#","");
+		hashtag = userCommand.replaceAll("#", "");
 	}
 
 	@Override
@@ -28,7 +28,7 @@ public class Hashtag extends Action {
 	public Message undo() {
 		return execute();
 	}
-	
+
 	public static Message getHint(String userCommand) {
 		int type = Message.TYPE_HINT;
 		Message returnMessage = new Message(type, HINT_MESSAGE);

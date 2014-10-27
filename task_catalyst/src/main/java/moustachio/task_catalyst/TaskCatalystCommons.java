@@ -120,13 +120,20 @@ public class TaskCatalystCommons {
 		} else {
 			String attemptReparseWithoutBraces = removeCurlyBraces(interpretedString);
 			interpretedStringNextPass = getInterpretedStringSinglePass(attemptReparseWithoutBraces);
+			if (!interpretedStringNextPass.equals(interpretedString)) {
+				interpretedStringNextPass = getInterpretedStringSinglePass(interpretedStringNextPass);
+			}
 			exceptionIfInvalidRange(interpretedStringNextPass);
 			return interpretedStringNextPass;
 		}
 	}
 
-	private static void exceptionIfInvalidRange(String interpretedStringNextPass) throws UnsupportedOperationException {
-		boolean isRange = interpretedStringNextPass.contains("} to {");
+	private static void exceptionIfInvalidRange(String interpretedStringNextPass)
+			throws UnsupportedOperationException {
+		// isRange is true when there exists a "to" between two dates,
+		// with the "to" at most 2 words away from the second date.
+		String rangeCondition = ".*\\}.*(\\bto\\b\\s)(\\b\\w*\\b\\s){0,2}\\{.*";
+		boolean isRange = interpretedStringNextPass.matches(rangeCondition);
 		boolean isMoreThanTwoDates = getAllDates(interpretedStringNextPass)
 				.size() > 2;
 		if (isRange && isMoreThanTwoDates) {

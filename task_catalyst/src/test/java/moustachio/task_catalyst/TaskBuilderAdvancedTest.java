@@ -1,8 +1,6 @@
 package moustachio.task_catalyst;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -244,7 +242,7 @@ public class TaskBuilderAdvancedTest {
 				task.getDescription());
 	}
 
-	// Handle words like "rated" after a date range
+	// Handle words containing "ated" after a date range
 	@Test
 	public void tc29() {
 		Task task = taskBuilder.createTask("Get movie rated 1pm");
@@ -271,6 +269,67 @@ public class TaskBuilderAdvancedTest {
 	public void tc32() {
 		Task task = taskBuilder
 				.createTask("Meet boss 5pm and 6pm and then meet secretary from 5pm to 7pm.");
+		assertEquals(null, task);
+	}
+
+	// Detect range "to" keyword with other intermediate words.
+	@Test
+	public void tc33() {
+		Task task = taskBuilder
+				.createTask("Meet boss at 5pm for fun to around 6pm.");
+		assertEquals(true, task.isRange());
+	}
+
+	// Catch invalid date range in the case of tc33.
+	@Test
+	public void tc34() {
+		Task task = taskBuilder
+				.createTask("Meet boss at 5pm for fun to around 6pm and then at 7pm.");
+		assertEquals(null, task);
+	}
+
+	// Do not consider a task ranged if the "to" is more than 2 words away from
+	// the time.
+	// For example, 5PM to do project and 6PM.
+	@Test
+	public void tc35() {
+		Task task = taskBuilder
+				.createTask("Meet boss at 5pm to do project and 6pm for fun and then 7pm.");
+		assertEquals(false, task.isRange());
+		assertEquals(
+				"Meet boss today 5PM to do project and 6PM for fun and then 7PM.",
+				task.getDescription());
+	}
+
+	// Consider a task ranged if the "to" is less than 2 words away from the
+	// time.
+	@Test
+	public void tc36() {
+		Task task = taskBuilder
+				.createTask("Meet boss at 5pm to do project to around 6pm.");
+		assertEquals(true, task.isRange());
+		assertEquals("Meet boss today 5PM to do project to around 6PM.",
+				task.getDescription());
+	}
+
+	// Fixed a problem when a partial keyword is found between two valid dates.
+	@Test
+	public void tc37() {
+		Task task = taskBuilder.createTask("5pm mor 6pm");
+		assertEquals("today 5PM mor 6PM", task.getDescription());
+	}
+
+	// Alternate case to tc37.
+	@Test
+	public void tc38() {
+		Task task = taskBuilder.createTask("5pm mor even 6pm");
+		assertEquals("today 5PM mor even 6PM", task.getDescription());
+	}
+
+	// Catch mixed date types in repeated dates.
+	@Test
+	public void tc39() {
+		Task task = taskBuilder.createTask("5pm 5pm 5pm to 6pm and 7pm");
 		assertEquals(null, task);
 	}
 }

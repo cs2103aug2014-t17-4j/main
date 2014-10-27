@@ -9,7 +9,8 @@ public class Search extends Action {
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
 	private static final String EXECUTE_ERROR = "Please enter a valid search term.";
 
-	private static final String HINT_MESSAGE = "Search: Enter a keyword to search for (case-insensitive).";
+	private static final String HINT_MESSAGE = "Search: Hit enter after typing a search term to continue."
+			+ "\nSyntax: search <search term>";
 
 	TaskManager taskManager;
 	String keyword;

@@ -10,7 +10,8 @@ public class Edit extends Action {
 
 	private static final String HINT_INVALID_TASK = "Edit: Invalid task number specified.";
 
-	private static final String HINT_MESSAGE = "Edit: Press space or enter after entering a valid task number to continue.";
+	private static final String HINT_MESSAGE = "Edit: Hit space or enter after typing a valid task number to continue."
+			+ "\nSyntax: edit <task number>";
 
 	private static final String[] DICTIONARY = { "edit" };
 
@@ -24,7 +25,7 @@ public class Edit extends Action {
 
 	private Task targetTask;
 	private Task replacementTask;
-	
+
 	private int taskNumber;
 
 	public Edit(String userCommand) {
@@ -47,14 +48,15 @@ public class Edit extends Action {
 
 	@Override
 	public Message execute() {
-		
-		if (targetTask != null && replacementTask== null) {
+
+		if (targetTask != null && replacementTask == null) {
 			int type = Message.TYPE_AUTOCOMPLETE;
-			String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber, targetTask.getDescriptionEdit());
+			String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
+					targetTask.getDescriptionEdit());
 
 			return new Message(type, message);
 		}
-		
+
 		if (targetTask == null && replacementTask == null) {
 			int type = Message.TYPE_ERROR;
 			String message = String.format(EXECUTE_ERROR);

@@ -17,7 +17,9 @@ public class Delete extends Action {
 	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully deleted %d tasks.";
 	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
 
-	private static final String HINT_MESSAGE = "Delete: Enter the task number to delete. Eqv. commands: delete, rm, del";
+	private static final String HINT_MESSAGE = "Delete: Hit enter after typing a valid task number to delete it."
+			+ "\nSyntax: delete {<task number> [task number] ... | all}"
+			+ "\nAlternatives: rm, del, delete";
 
 	private TaskManager taskManager;
 	private List<Task> tasks;

@@ -121,7 +121,9 @@ public class LogicActualTest {
 	public void getMessageTypingTc1() {
 		Message message = logic.getMessageTyping("");
 		assertEquals(Message.TYPE_HINT, message.getType());
-		assertEquals("Type something to begin.", message.getMessage());
+		assertEquals("Type something to begin adding a task."
+				+ "\nOther Commands: delete, edit, done, redo, undo, #",
+				message.getMessage());
 	}
 
 	// Test whitespace string
@@ -130,7 +132,9 @@ public class LogicActualTest {
 	public void getMessageTypingTc2() {
 		Message message = logic.getMessageTyping(" ");
 		assertEquals(Message.TYPE_HINT, message.getType());
-		assertEquals("Type something to begin.", message.getMessage());
+		assertEquals("Type something to begin adding a task."
+				+ "\nOther Commands: delete, edit, done, redo, undo, #",
+				message.getMessage());
 	}
 
 	// Test null
@@ -138,7 +142,9 @@ public class LogicActualTest {
 	public void getMessageTypingTc3() {
 		Message message = logic.getMessageTyping(null);
 		assertEquals(Message.TYPE_HINT, message.getType());
-		assertEquals("Type something to begin.", message.getMessage());
+		assertEquals("Type something to begin adding a task."
+				+ "\nOther Commands: delete, edit, done, redo, undo, #",
+				message.getMessage());
 	}
 
 	// Test command partial match
@@ -166,7 +172,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit");
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
-				"Edit: Press space or enter after entering a valid task number to continue.",
+				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -177,7 +183,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit ");
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
-				"Edit: Press space or enter after entering a valid task number to continue.",
+				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -189,7 +195,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit 2");
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
-				"Edit: Press space or enter after entering a valid task number to continue.",
+				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -834,7 +840,7 @@ public class LogicActualTest {
 		Task task2 = tasks.get(1);
 		assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
 		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
-		assertEquals(1,logic.getTaskSelected());
+		assertEquals(1, logic.getTaskSelected());
 	}
 
 	// Check if a priority task is marked.
@@ -854,7 +860,7 @@ public class LogicActualTest {
 		assertEquals(HighlightType.OVERLAP, task3.getHighlightType());
 		assertEquals(HighlightType.OVERLAP, task4.getHighlightType());
 	}
-	
+
 	// Check multi-last added highlighting.
 	@Test
 	public void highlightTaskTc4() {

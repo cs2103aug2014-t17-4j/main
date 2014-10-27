@@ -78,7 +78,8 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isRange() {
-		return description.contains(" to {");
+		return description
+				.matches(".*\\}.*(\\bto\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
 	}
 
 	@Override
