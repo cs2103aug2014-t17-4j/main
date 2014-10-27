@@ -5,6 +5,7 @@ import java.util.List;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyObjectWrapper;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -61,7 +62,7 @@ public class UIController {
 			.observableArrayList();
 
 	private TaskCatalyst tc;
-	
+
 	/**
 	 * Initializes the controller class. This method is automatically called
 	 * after the fxml file has been loaded.
@@ -71,18 +72,37 @@ public class UIController {
 		logic = new LogicActual();
 		testInterface();
 		initializeForms();
+
+		
+		listChangeListener();
 	}
-	
+
+	/**
+	 * This function handles ChangeListener for ListView to look for change in focus
+	 * @author A0111921W
+	 */
+	private void listChangeListener() {
+		hashTagList.getSelectionModel().selectedItemProperty()
+				.addListener(new ChangeListener<String>() {
+					public void changed(ObservableValue<? extends String> ov,
+							String old_val, String new_val) {
+						logic.processCommand(new_val);
+						displayTask();
+					}
+				});
+	}
+
 	@FXML
 	public void exitButtonAction() {
 		Platform.runLater(new Runnable() {
-			@Override 
+			@Override
 			public void run() {
 				tc.getStage().hide();
 			}
 		});
 	}
 
+	
 	@FXML
 	private void openSettingsWindow() {
 		Pane myPane;
@@ -91,7 +111,6 @@ public class UIController {
 			Stage stage = new Stage();
 			stage.setScene(new Scene(myPane));
 			stage.show();
-
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -175,7 +194,9 @@ public class UIController {
 	}
 
 	/**
-	 * This function handles hotKey to execute a desired action that is done by user. 
+	 * This function handles hotKey to execute a desired action that is done by
+	 * user.
+	 * 
 	 * @author A0112764J
 	 */
 	public void handleHotKeys(final String associatedText) {
@@ -266,11 +287,12 @@ public class UIController {
 
 										setGraphic(text);
 									}
-									if (item != null){
+									if (item != null) {
 										String cssSelector = null;
-										Task task = logic.getList().get(this.getIndex());
-										
-										switch(task.getHighlightType()){
+										Task task = logic.getList().get(
+												this.getIndex());
+
+										switch (task.getHighlightType()) {
 										case LAST_ADDED:
 											cssSelector = "isTaskLastAdded";
 											break;
@@ -287,7 +309,8 @@ public class UIController {
 											cssSelector = null;
 											break;
 										}
-										this.getTableRow().getStyleClass().add(cssSelector);
+										this.getTableRow().getStyleClass()
+												.add(cssSelector);
 									}
 								}
 							};
