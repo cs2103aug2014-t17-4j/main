@@ -348,8 +348,8 @@ public class UIController {
 		assert hashTagList != null : "fx:id=\"hashTagList\" was not injected: check your FXML file 'interface.fxml'.";
 		assert statusMessage != null : "fx:id=\"statusMessage\" was not injected: check your FXML file 'interface.fxml'.";
 		assert commandBar != null : "fx:id=\"commandBar\" was not injected: check your FXML file 'interface.fxml'.";
-		assert settingsButton != null : "fx:id=\"settingsButton\" was not injected: check your FXML file 'interface.fxml'.";
 		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'interface.fxml'.";
+		//assert settingsButton != null : "fx:id=\"settingsButton\" was not injected: check your FXML file 'interface.fxml'.";
 	}
 
 }
