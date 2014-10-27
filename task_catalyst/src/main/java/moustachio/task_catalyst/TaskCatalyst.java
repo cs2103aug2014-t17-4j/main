@@ -27,7 +27,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import javax.swing.JOptionPane;
 import javax.swing.KeyStroke;
 
 import com.tulskiy.keymaster.common.HotKey;
@@ -65,9 +64,6 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		this.primaryStage = primaryStage;
 		
 		try {
-			/*Parent root = FXMLLoader.load(getClass().getResource(
-					"userInterface.fxml"));*/
-		
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
 			FXMLLoader loader = new FXMLLoader(TaskCatalyst.class.getResource("userInterface.fxml"));
@@ -154,6 +150,10 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		});
 	}
 
+	/**
+	 * This function enables the UI to be draggable
+	 * @author A0111921W
+	 */
 	private void addDragListeners(final Node mainUI) {
 
 		mainUI.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -183,6 +183,10 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		});
 	}
 	
+	/**
+	 * 
+	 * @author A0112764J
+	 */
 	@Override
 	public void stop(){
 		BlackBox.getInstance().close();
@@ -193,6 +197,13 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		}
 	}
 	
+	/**
+	 * This function creates a system tray with 2 popup menu Launch and Exit 
+	 * 
+	 * @author A0111921W
+	 * 
+	 * @param stage 
+	 */
 	private static void loadSystemTray(Stage stage) {
 		// checking for support
 		if (!SystemTray.isSupported()) {
@@ -230,17 +241,7 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 		trayPopupMenu.add(launch);
 		trayPopupMenu.addSeparator();
 
-		// 2nd menuitem for popupmenu
-		MenuItem action = new MenuItem("Action");
-		action.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				JOptionPane.showMessageDialog(null, "Action Clicked");
-			}
-		});
-		trayPopupMenu.add(action);
-
-		// 3rd menuitem of popupmenu
+		// 2nd menuitem of popupmenu
 		MenuItem close = new MenuItem("Exit");
 		close.addActionListener(new ActionListener() {
 			@Override
@@ -262,6 +263,7 @@ public class TaskCatalyst extends Application implements HotKeyListener{
 			awtException.printStackTrace();
 		}
 	}
+	
 	/**
 	 * This function is to execute global hot key ctrl+m that minimizes application while it is running, 
 	 * and to relaunch application while it is minimize at system tray.

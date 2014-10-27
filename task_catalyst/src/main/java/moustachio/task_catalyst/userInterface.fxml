@@ -19,7 +19,6 @@
                   <ImageView fx:id="programTitle" fitHeight="27.0" fitWidth="200.0" />
                </children>
             </HBox>
-            <Button id="settingsButton" fx:id="settingsButton" alignment="CENTER" contentDisplay="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#openSettingsWindow" prefHeight="25.0" prefWidth="25.0" textAlignment="CENTER" HBox.hgrow="NEVER" />
             <Button id="exitButton" fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#exitButtonAction" prefHeight="25.0" prefWidth="25.0" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
          </children>
          <BorderPane.margin>
