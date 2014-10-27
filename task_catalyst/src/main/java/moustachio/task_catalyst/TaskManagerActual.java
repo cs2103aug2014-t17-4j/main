@@ -34,10 +34,11 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	private TaskManagerActual() {
-		storage = new StorageActual();
+		instance = this;
 		listProcessor = new ListProcessorActual();
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
+		storage = new StorageActual();
 		taskList = storage.loadTasks(DEFAULT_FILE_NAME);
 		hashtagList = new ArrayList<String>();
 		refreshLists();

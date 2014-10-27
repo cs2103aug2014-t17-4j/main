@@ -9,14 +9,15 @@ import java.util.logging.Logger;
 
 /**
  * 
- * credited 
- * http://nerdydevel.blogspot.sg/2012/07/run-only-single-java-application-instance.html
+ * credited
+ * http://nerdydevel.blogspot.sg/2012/07/run-only-single-java-application
+ * -instance.html
  * 
  * @author linxiuqing (A0112764J)
  *
  */
 
-public class Lock{
+public class Lock {
 	private Lock() {
 	}
 
@@ -24,14 +25,15 @@ public class Lock{
 	FileLock lock = null;
 	FileChannel lockChannel = null;
 	FileOutputStream lockStream = null;
-	
+
 	private static Lock sInstance;
 
 	/**
 	 * This program instantiates a new lock.
 	 *
-	 * @param lockKey Unique application key
-	 * @throws Exception 
+	 * @param lockKey
+	 *            Unique application key
+	 * @throws Exception
 	 */
 	private Lock(String lockKey) throws Exception {
 		String tmpDir = System.getProperty("java.io.tmpdir");
@@ -65,7 +67,13 @@ public class Lock{
 
 		String fileContent = "Java Lock Object\r\nLocked by key: " + lockKey
 				+ "\r\n";
+		try {
 		lockStream.write(fileContent.getBytes());
+		} catch (Exception e) {
+			Logger.getLogger(Lock.class.getName()).log(Level.INFO,
+					"Another instance detected");
+			System.exit(0);
+		}
 
 		lockChannel = lockStream.getChannel();
 
@@ -101,12 +109,13 @@ public class Lock{
 		this.release();
 		super.finalize();
 	}
-	
+
 	/**
-	 * This function is to make only one application to be run 
-	 * and ignore next call of the application.
+	 * This function is to make only one application to be run and ignore next
+	 * call of the application.
 	 *
-	 * @param lockKey Unique application lock key
+	 * @param lockKey
+	 *            Unique application lock key
 	 * @return true, if successful
 	 */
 	public static boolean setLock(String lockKey) {
@@ -118,22 +127,27 @@ public class Lock{
 			sInstance = new Lock(lockKey);
 		} catch (Exception ex) {
 			sInstance = null;
-			Logger.getLogger(Lock.class.getName()).log(Level.SEVERE, "Fail to set Lock.", ex);
+			Logger.getLogger(Lock.class.getName()).log(Level.SEVERE,
+					"Fail to set Lock.", ex);
 			return false;
 		}
 
 		Runtime.getRuntime().addShutdownHook(new Thread() {
 			@Override
 			public void run() {
-				Lock.releaseLock();
+				try {
+					Lock.releaseLock();
+				} catch (Exception e) {
+					System.exit(0);
+				}
 			}
 		});
 		return true;
 	}
 
 	/**
-	 * This function is trying to release lock.
-	 * It disables to use Lock again after executing release.
+	 * This function is trying to release lock. It disables to use Lock again
+	 * after executing release.
 	 */
 	public static void releaseLock() {
 		try {
@@ -142,7 +156,8 @@ public class Lock{
 			}
 			sInstance.release();
 		} catch (Throwable ex) {
-			Logger.getLogger(Lock.class.getName()).log(Level.SEVERE, "Fail to release lock.", ex);
+//			Logger.getLogger(Lock.class.getName()).log(Level.SEVERE,
+//					"Fail to release lock.", ex);
 		}
 	}
 }
