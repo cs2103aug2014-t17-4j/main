@@ -4,7 +4,7 @@
  
 #exitButton {          
     -fx-background-image: url("../images/close24.png");
-    -fx-background-size: 24 24;
+    -fx-background-size: 24.0 24.0;
     -fx-background-repeat: no-repeat;
     -fx-background-position:left;   
     -fx-background-color: transparent;  
@@ -15,7 +15,7 @@
 
 #settingsButton {          
     -fx-background-image: url("../images/settings24.png");
-    -fx-background-size: 24 24;
+    -fx-background-size: 24.0 24.0;
     -fx-background-repeat: no-repeat;
     -fx-background-position:left;   
     -fx-background-color: transparent;  
@@ -30,49 +30,46 @@
 
 /* GUI Interface background colour */
 .theme {
-    master-color: grey;
-    -fx-background-color: #ffc107;
-    -fx-font-size: 14px;
+    master-color: gray;
+    -fx-background-color: orange;
+    -fx-font-size: 14.0px;
 }
 
 .split-pane {
-    -fx-padding: 0;
-    -fx-border-width: 0;
-    -fx-background-color: derive(master-color, 100%);
+    -fx-padding: 0.0;
+    -fx-border-width: 0.0;
+    -fx-background-color: derive(master-color, 100.0%);
 }
 
 /* Background colour for Hashtag list */
 .lightList .list-cell {
-    -fx-padding: 6 0 0 13;
-    -fx-background-color: derive(master-color, -60%);
+    -fx-padding: 6.0 0.0 0.0 13.0;
+    -fx-background-color: derive(master-color, -60.0%);
     -fx-text-fill: lightgrey;
 }
 
 /* Selected row for Hashtag list */
 .lightList .list-cell:focused:selected {
     -fx-text-fill: black;
-    -fx-background-color: #6495ed;
+    -fx-background-color: gray;
 }
 
-/* Selected row for table */
-.table-view:focused .table-row-cell:filled:focused:selected {
-    -fx-background-color: #6495ed;
-    -fx-background-insets: 0, 1, 2;
+/* Selected row */
+.table-row-cell:selected {
+	-fx-border-color: turquoise;
+	-fx-border-insets: 0.0;
+	-fx-border-width: 0.0 0.0 0.0 5.0;
+    -fx-background-insets: 0.0;
     -fx-background: -fx-accent;
-    -fx-text-fill: -fx-selection-bar-text;
+    -fx-text-fill: white, -fx-selection-bar-text;
 }
 
-/* Selected row when table not focused */
-.table-row-cell:filled:focused:selected {
-    -fx-background-color: #6495ed;
-    -fx-background-insets: 0, 1, 2;
-    -fx-background: -fx-accent;
-    -fx-text-fill: -fx-selection-bar-text;
+.table-row-cell:selected .text {
+       -fx-fill: #000001 ;
 }
 
 /* Table row border colour */
 .table-row-cell {
-	 -fx-border-color: white;
 }
 
 /* Removed border colour when task table is empty */
@@ -81,17 +78,20 @@
 }
 
 .table-row-cell:empty .table-cell {
-    -fx-border-width: 0px;
+    -fx-border-width: 0.0px;
+}
+
+#cmdTextField {
+	-fx-focus-color: orange;
+    -fx-faint-focus-color: orange;
+    -fx-background-insets: 1.0,1.0,1.0,1.0;
 }
 
 /* Different highlight type for task*/
-.isTaskLastAdded { 
-	-fx-background-color: #DFEFF0;
+.isNormal { 
+	-fx-background-color: #ffffff;
 }
 .isOverlapStatic { 
-	-fx-background-color: #EB77A6;
-}
-.isOverlapDynamic { 
 	-fx-background-color: #EB77A6;
 }
 .isPriority { 
@@ -99,16 +99,4 @@
 }
 .isPriorityOverlapStatic { 
 	-fx-background-color: #E23D80;
-}
-.isPriorityOverlapDynamic { 
-	-fx-background-color: #E23D80;
-}
-.isDefaultHashtag { 
-	-fx-background-color: skyblue;
-}
-.isSelectedHashtag { 
-	-fx-background-color: white ;
-}
-.isInvalidHashtag { 
-	-fx-background-color: red;
 }

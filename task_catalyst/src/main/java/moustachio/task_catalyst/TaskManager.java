@@ -36,7 +36,7 @@ public interface TaskManager {
 
 	public int getHashtagSelected();
 	
-	public int getTaskSelected();
+	public List<Integer> getTasksSelected();
 
 	public void testMode();
 }

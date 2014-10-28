@@ -221,7 +221,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		SystemTray systemTray = SystemTray.getSystemTray();
 		// get default toolkit
 		Image image = Toolkit.getDefaultToolkit().getImage(
-				"/images/moustachio.png");
+				TaskCatalyst.class.getResource("/images/moustachio.png"));
 
 		// popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();

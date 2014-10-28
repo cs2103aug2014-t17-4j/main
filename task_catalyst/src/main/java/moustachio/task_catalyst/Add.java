@@ -2,6 +2,8 @@ package moustachio.task_catalyst;
 
 public class Add extends Action {
 
+	private static final String HINT_MESSAGE = "\nAdd: You can include date information. Use []s to ignore processing.";
+
 	private static final String EXECUTE_ERROR = "There was an error adding the task.";
 	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
 	private static final String UNDO_ERROR = "There was an error removing the task.";
@@ -21,7 +23,7 @@ public class Add extends Action {
 	public Message execute() {
 		if (task == null) {
 			int type = Message.TYPE_ERROR;
-			String message = String.format(EXECUTE_ERROR);
+			String message = String.format(EXECUTE_ERROR) + HINT_MESSAGE;
 
 			return new Message(type, message);
 		}
@@ -35,7 +37,7 @@ public class Add extends Action {
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else {
 			type = Message.TYPE_ERROR;
-			message = String.format(EXECUTE_ERROR);
+			message = String.format(EXECUTE_ERROR) + HINT_MESSAGE;
 		}
 		return new Message(type, message);
 	}
@@ -68,7 +70,7 @@ public class Add extends Action {
 			messageString = e.getMessage();
 			messageType = Message.TYPE_ERROR;
 		}
-		messageString += "\nAdd: You can include date information. Use []s to ignore processing.";
+		messageString += HINT_MESSAGE;
 
 		Message returnMessage = new Message(messageType, messageString);
 

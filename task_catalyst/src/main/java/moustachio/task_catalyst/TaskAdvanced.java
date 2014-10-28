@@ -138,7 +138,7 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean hasKeyword(String keyword) {
-		String descriptionLowerCase = this.description.toLowerCase();
+		String descriptionLowerCase = getDescription().toLowerCase();
 		String keywordLowerCase = keyword.toLowerCase();
 		return descriptionLowerCase.contains(keywordLowerCase);
 	}

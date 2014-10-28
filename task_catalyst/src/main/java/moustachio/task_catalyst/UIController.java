@@ -73,12 +73,13 @@ public class UIController {
 		testInterface();
 		initializeForms();
 
-		
 		listChangeListener();
 	}
 
 	/**
-	 * This function handles ChangeListener for ListView to look for change in focus
+	 * This function handles ChangeListener for ListView to look for change in
+	 * focus
+	 * 
 	 * @author A0111921W
 	 */
 	private void listChangeListener() {
@@ -97,12 +98,12 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				tc.getStage().hide(); 		
+				tc.getStage().hide();
+				commandBar.requestFocus();
 			}
 		});
 	}
 
-	
 	@FXML
 	private void openSettingsWindow() {
 		Pane myPane;
@@ -122,7 +123,8 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				statusMessage.setText("Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #");
+				statusMessage
+						.setText("Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #");
 				hashTagList.scrollTo(0);
 				hashTagList.getSelectionModel().select(0);
 				commandBar.requestFocus();
@@ -140,6 +142,12 @@ public class UIController {
 				taskTable.getSelectionModel().select(index);
 			}
 		});
+	}
+
+	private void setFocusForTaskTableList(List<Integer> list) {
+		for (int index : list) {
+			setFocusForTaskTable(index);
+		}
 	}
 
 	private void setFocusForHashTable(int index) {
@@ -174,10 +182,14 @@ public class UIController {
 				}
 			}
 			setFocusForHashTable(logic.getHashtagSelected());
-			setFocusForTaskTable(logic.getTaskSelected());
+			setFocusForTaskTableList(logic.getTasksSelected());
 			displayHashTags();
 			displayTask();
 			clearForm();
+			break;
+		case Message.TYPE_AUTOCOMPLETE:
+			commandBar.setText(message.getMessage());
+			commandBar.positionCaret(commandBar.getText().length());
 			break;
 		case Message.TYPE_ERROR:
 			statusMessage.setText(message.getMessage());
@@ -294,8 +306,8 @@ public class UIController {
 												this.getIndex());
 
 										switch (task.getHighlightType()) {
-										case LAST_ADDED:
-											cssSelector = "isTaskLastAdded";
+										case NORMAL:
+											cssSelector = "isNormal";
 											break;
 										case PRIORITY:
 											cssSelector = "isPriority";
@@ -307,11 +319,17 @@ public class UIController {
 											cssSelector = "isPriorityOverlapStatic";
 											break;
 										default:
-											cssSelector = null;
+											cssSelector = "isNormal";
 											break;
 										}
-										this.getTableRow().getStyleClass()
-												.add(cssSelector);
+										ObservableList<String> currentStyleList = this
+												.getTableRow().getStyleClass();
+										// Clear all additional styles other
+										// than the default.
+										while (currentStyleList.size() > 3) {
+											currentStyleList.remove(3);
+										}
+										currentStyleList.add(cssSelector);
 									}
 								}
 							};
@@ -350,7 +368,8 @@ public class UIController {
 		assert statusMessage != null : "fx:id=\"statusMessage\" was not injected: check your FXML file 'interface.fxml'.";
 		assert commandBar != null : "fx:id=\"commandBar\" was not injected: check your FXML file 'interface.fxml'.";
 		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'interface.fxml'.";
-		//assert settingsButton != null : "fx:id=\"settingsButton\" was not injected: check your FXML file 'interface.fxml'.";
+		// assert settingsButton != null :
+		// "fx:id=\"settingsButton\" was not injected: check your FXML file 'interface.fxml'.";
 	}
 
 }

@@ -18,10 +18,11 @@ public class StorageTest {
 	
 	Storage data = new StorageActual();
 	FileHandler fileHandler = new FileHandler();
+	TaskBuilder taskBuilder = new TaskBuilderAdvanced();
 	
 	String fileName;
-	Task task1 = new TaskAdvanced("meet boss at 5pm tmr");
-	Task task2 = new TaskAdvanced("go school tmr 9am");
+	Task task1 = taskBuilder.createTask("meet boss at 5pm tmr");
+	Task task2 = taskBuilder.createTask("go school tmr 9am");
 	
 	String font1 = "font";
 	String size1 = "10";

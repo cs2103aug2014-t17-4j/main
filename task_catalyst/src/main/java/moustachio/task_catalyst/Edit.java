@@ -4,18 +4,22 @@ import java.util.Arrays;
 
 public class Edit extends Action {
 
+	private static final String HINT_SYNTAX = "\nSyntax: edit <task number>";
+
 	private static final String FORMAT_AUTOCOMPLETE = "edit %d %s";
 
-	private static final String HINT_VALID_TASK = "\nEdit: Hit enter after making your changes.";
+	private static final String HINT_VALID_TASK = "\nEdit: Hit enter after making your changes."
+			+ HINT_SYNTAX;
 
-	private static final String HINT_INVALID_TASK = "Edit: Invalid task number specified.";
+	private static final String HINT_INVALID_TASK = "Invalid task number specified."
+			+ HINT_SYNTAX;
 
 	private static final String HINT_MESSAGE = "Edit: Hit space or enter after typing a valid task number to continue."
-			+ "\nSyntax: edit <task number>";
+			+ HINT_SYNTAX;
 
 	private static final String[] DICTIONARY = { "edit" };
 
-	private static final String EXECUTE_ERROR = "There was an error editing the task.";
+	private static final String EXECUTE_ERROR = "Invalid task number specified.";
 	private static final String EXECUTE_SUCCESS = "Task successfully edited: %s";
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
@@ -59,7 +63,7 @@ public class Edit extends Action {
 
 		if (targetTask == null && replacementTask == null) {
 			int type = Message.TYPE_ERROR;
-			String message = String.format(EXECUTE_ERROR);
+			String message = String.format(EXECUTE_ERROR) + HINT_SYNTAX;
 
 			return new Message(type, message);
 		}

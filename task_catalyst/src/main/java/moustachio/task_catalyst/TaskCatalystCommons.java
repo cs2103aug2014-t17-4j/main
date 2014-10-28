@@ -17,7 +17,6 @@ import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collecti
 
 public class TaskCatalystCommons {
 
-	private static TaskManager taskManager = TaskManagerActual.getInstance();
 	private static PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 	private static final int INVALID_INTEGER = -1;
 
@@ -147,10 +146,12 @@ public class TaskCatalystCommons {
 	private static void exceptionIfContainsDefaultHashtag(
 			String interpretedStringNextPass)
 			throws UnsupportedOperationException {
+		TaskManager taskManager = TaskManagerActual.getInstance();
 		String[] defaultHashtags = taskManager.getDefaultHashtags();
 		boolean isContainsDefaultHashtag = false;
 		for (String hashtag : defaultHashtags) {
-			if (interpretedStringNextPass.contains(hashtag)) {
+			boolean isPriority = hashtag.equals("#pri");
+			if (interpretedStringNextPass.contains(hashtag) && !isPriority) {
 				isContainsDefaultHashtag = true;
 				break;
 			}

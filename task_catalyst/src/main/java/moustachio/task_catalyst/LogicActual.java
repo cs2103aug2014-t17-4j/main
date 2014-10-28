@@ -43,7 +43,7 @@ public class LogicActual implements Logic {
 	}
 
 	@Override
-	public int getTaskSelected() {
-		return taskManager.getTaskSelected();
+	public List<Integer> getTasksSelected() {
+		return taskManager.getTasksSelected();
 	}
 }

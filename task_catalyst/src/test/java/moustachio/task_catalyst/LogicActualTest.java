@@ -206,7 +206,7 @@ public class LogicActualTest {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 2 ");
 		assertEquals(Message.TYPE_HINT, message.getType());
-		assertEquals("Edit: Invalid task number specified.",
+		assertEquals("Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -237,7 +237,7 @@ public class LogicActualTest {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 1 item 1");
 		assertEquals(Message.TYPE_HINT, message.getType());
-		assertEquals("item 1\nEdit: Hit enter after making your changes.",
+		assertEquals("item 1\nEdit: Hit enter after making your changes.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -248,7 +248,7 @@ public class LogicActualTest {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 2 item 1");
 		assertEquals(Message.TYPE_HINT, message.getType());
-		assertEquals("Edit: Invalid task number specified.",
+		assertEquals("Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -388,7 +388,7 @@ public class LogicActualTest {
 	public void editTc1() {
 		Message message = logic.processCommand("edit 1 after!");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error editing the task.",
+		assertEquals("Invalid task number specified.",
 				message.getMessage());
 	}
 
@@ -397,7 +397,7 @@ public class LogicActualTest {
 	public void editTc2() {
 		Message message = logic.processCommand("edit");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error editing the task.",
+		assertEquals("Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -407,7 +407,7 @@ public class LogicActualTest {
 		logic.processCommand("hello kitty!");
 		Message message = logic.processCommand("edit");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error editing the task.",
+		assertEquals("Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -840,7 +840,7 @@ public class LogicActualTest {
 		Task task2 = tasks.get(1);
 		assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
 		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
-		assertEquals(1, logic.getTaskSelected());
+		assertEquals(1, logic.getTasksSelected().get(0).intValue());
 	}
 
 	// Check if a priority task is marked.
@@ -876,6 +876,6 @@ public class LogicActualTest {
 		assertEquals(HighlightType.NORMAL, task1.getHighlightType());
 		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
 		assertEquals(HighlightType.NORMAL, task3.getHighlightType());
-		assertEquals(2, logic.getTaskSelected());
+		assertEquals(3, logic.getTasksSelected().size());
 	}
 }

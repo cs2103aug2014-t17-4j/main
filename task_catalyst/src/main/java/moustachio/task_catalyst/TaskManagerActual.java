@@ -18,7 +18,7 @@ public class TaskManagerActual implements TaskManager {
 
 	private DisplayMode displayMode;
 	private String displayKeyword;
-	private int taskSelected;
+	private List<Integer> tasksSelected;
 
 	private List<Task> taskList;
 	private List<Task> displayList;
@@ -41,6 +41,7 @@ public class TaskManagerActual implements TaskManager {
 		storage = new StorageActual();
 		taskList = storage.loadTasks(DEFAULT_FILE_NAME);
 		hashtagList = new ArrayList<String>();
+		tasksSelected = new ArrayList<Integer>();
 		refreshLists();
 	}
 
@@ -84,8 +85,8 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
-	public int getTaskSelected() {
-		return taskSelected;
+	public List<Integer> getTasksSelected() {
+		return tasksSelected;
 	}
 
 	@Override
@@ -123,7 +124,7 @@ public class TaskManagerActual implements TaskManager {
 			refreshLists();
 			for (Task task : tasks) {
 				displayAutoswitchToTask(task);
-				taskSelected = displayList.indexOf(task);
+				tasksSelected.add(displayList.indexOf(task));
 			}
 		}
 
@@ -266,7 +267,7 @@ public class TaskManagerActual implements TaskManager {
 			break;
 		}
 		displayList = listProcessor.sortByDate(displayList);
-		taskSelected = -1;
+		tasksSelected.clear();
 		clearHighlights(displayList);
 		highlightAllPriority(displayList);
 		highlightAllOverlap(taskList);
