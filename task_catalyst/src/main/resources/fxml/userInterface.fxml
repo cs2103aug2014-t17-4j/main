@@ -30,7 +30,7 @@
       <VBox id="statusMessageLabel" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
             <TextField id="cmdTextField" fx:id="commandBar" onAction="#handleTextFieldOnAction" onKeyReleased="#handleTextFieldWhileUserTyping" />
-            <Label fx:id="statusMessage" text="Type something to begin." />
+            <Label fx:id="statusMessage" />
          </children>
       </VBox>
    </bottom>

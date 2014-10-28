@@ -97,7 +97,7 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				tc.getStage().hide();
+				tc.getStage().hide(); 		
 			}
 		});
 	}
@@ -122,6 +122,7 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
+				statusMessage.setText("Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #");
 				hashTagList.scrollTo(0);
 				hashTagList.getSelectionModel().select(0);
 				commandBar.requestFocus();
