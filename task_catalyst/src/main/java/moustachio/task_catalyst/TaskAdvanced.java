@@ -122,9 +122,11 @@ public class TaskAdvanced implements Task {
 		String[] descriptionTokenized = this.description.split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#") || token.startsWith("[#")) {
-				String tokenLowerAlphabets = "#"
-						+ token.toLowerCase().replaceAll("[^A-Za-z0-9]+", "");
-				hashtagList.add(tokenLowerAlphabets);
+				 String tokenLowerAlphabets = "#"
+				 + token.toLowerCase().replaceAll("[^A-Za-z0-9]+", "");
+				if (tokenLowerAlphabets.length() > 1) {
+					hashtagList.add(tokenLowerAlphabets);
+				}
 			}
 		}
 		return hashtagList;
