@@ -163,7 +163,7 @@ public class UIController {
 	private void initializeTable() {
 		// Enable multiple selection for the table
 		taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-
+		taskTable.setPlaceholder(new Text(""));
 		// Set message shown when there's no content
 		// taskTable.setPlaceholder();
 		// taskTable.setPlaceholder(new Text("Your localized text here"));
