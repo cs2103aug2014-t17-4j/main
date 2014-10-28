@@ -328,8 +328,10 @@ public class TaskManagerActual implements TaskManager {
 	private List<String> generateCustomHashtags() {
 		SortedSet<String> allHashtagsSet = new TreeSet<String>();
 		for (Task task : taskList) {
-			List<String> taskHashtags = task.getHashtags();
-			allHashtagsSet.addAll(taskHashtags);
+			if (!task.isDone()) {
+				List<String> taskHashtags = task.getHashtags();
+				allHashtagsSet.addAll(taskHashtags);
+			}
 		}
 		List<String> customHashtags = new ArrayList<String>(allHashtagsSet);
 		return customHashtags;

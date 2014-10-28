@@ -148,10 +148,13 @@ public class TaskCatalystCommons {
 			throws UnsupportedOperationException {
 		TaskManager taskManager = TaskManagerActual.getInstance();
 		String[] defaultHashtags = taskManager.getDefaultHashtags();
+		String lowerCaseString = interpretedStringNextPass.toLowerCase();
 		boolean isContainsDefaultHashtag = false;
 		for (String hashtag : defaultHashtags) {
+			String currentHashtag = "[" + hashtag + "]";
+			boolean isHashtagFound = lowerCaseString.contains(currentHashtag);
 			boolean isPriority = hashtag.equals("#pri");
-			if (interpretedStringNextPass.contains(hashtag) && !isPriority) {
+			if (isHashtagFound && !isPriority) {
 				isContainsDefaultHashtag = true;
 				break;
 			}
