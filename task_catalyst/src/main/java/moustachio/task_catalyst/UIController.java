@@ -1,3 +1,7 @@
+/**
+ * @author A0111921W
+ */
+
 package moustachio.task_catalyst;
 
 import java.io.IOException;
@@ -63,6 +67,10 @@ public class UIController {
 
 	private TaskCatalyst tc;
 
+	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #";
+	private static final String EMPTY_TASKVIEW_MESSAGE = "No tasks to display in this view!";
+	public static final int INITIAL_INDEX = 0;
+
 	/**
 	 * Initializes the controller class. This method is automatically called
 	 * after the fxml file has been loaded.
@@ -72,13 +80,23 @@ public class UIController {
 		logic = new LogicActual();
 		testInterface();
 		initializeForms();
-
 		listChangeListener();
+	}
+
+	@FXML
+	public void exitButtonAction() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				tc.getStage().hide();
+				commandBar.requestFocus();
+			}
+		});
 	}
 
 	/**
 	 * This function handles ChangeListener for ListView to look for change in
-	 * focus
+	 * focus & display task
 	 * 
 	 * @author A0111921W
 	 */
@@ -93,40 +111,14 @@ public class UIController {
 				});
 	}
 
-	@FXML
-	public void exitButtonAction() {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				tc.getStage().hide();
-				commandBar.requestFocus();
-			}
-		});
-	}
-
-	@FXML
-	private void openSettingsWindow() {
-		Pane myPane;
-		try {
-			myPane = FXMLLoader.load(getClass().getResource("settings.fxml"));
-			Stage stage = new Stage();
-			stage.setScene(new Scene(myPane));
-			stage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	private void initializeForms() {
 		initializeTable();
 		statusMessage.setWrapText(true);
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				statusMessage
-						.setText("Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #");
-				hashTagList.scrollTo(0);
-				hashTagList.getSelectionModel().select(0);
+				statusMessage.setText(STATUS_BAR_MESSAGE);
+				setFocusForHashTable(INITIAL_INDEX);
 				commandBar.requestFocus();
 			}
 		});
@@ -163,25 +155,29 @@ public class UIController {
 	private void initializeTable() {
 		// Enable multiple selection for the table
 		taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		taskTable.setPlaceholder(new Text("No tasks to display in this view!"));
-		// Set message shown when there's no content
-		// taskTable.setPlaceholder();
-		// taskTable.setPlaceholder(new Text("Your localized text here"));
+		taskTable.setPlaceholder(new Text(EMPTY_TASKVIEW_MESSAGE));
 	}
 
+	/**
+	 * This function handles the status message,task and hashtag to display when
+	 * user hit enter
+	 * 
+	 * @param event
+	 */
 	public void handleTextFieldOnAction(ActionEvent event) {
 		Message message = logic.processCommand(commandBar.getText());
+		handleMessage(message);
+	}
+
+	/**
+	 * This function handles the actions to execute with different message type
+	 * 
+	 * @param message
+	 */
+	private void handleMessage(Message message) {
 		switch (message.getType()) {
 		case Message.TYPE_SUCCESS:
 			statusMessage.setText(message.getMessage());
-
-			if (commandBar.getText().toLowerCase().startsWith("edit")) {
-				String[] getIndexForFocus = commandBar.getText().split("\\s");
-				if (getIndexForFocus.length >= 1) {
-					setFocusForTaskTable(Integer.valueOf(getIndexForFocus[1]));
-				}
-			}
-
 			setFocusForHashTable(logic.getHashtagSelected());
 			setFocusForTaskTableList(logic.getTasksSelected());
 			displayHashTags();
@@ -211,6 +207,7 @@ public class UIController {
 	 * This function handles hotKey to execute a desired action that is done by
 	 * user.
 	 * 
+	 * @param associatedText
 	 * @author A0112764J
 	 */
 	public void handleHotKeys(final String associatedText) {
@@ -218,34 +215,26 @@ public class UIController {
 			@Override
 			public void run() {
 				Message message = logic.processCommand(associatedText);
-				switch (message.getType()) {
-				case Message.TYPE_SUCCESS:
-					statusMessage.setText(message.getMessage());
-					setFocusForHashTable(logic.getHashtagSelected());
-					setFocusForTaskTableList(logic.getTasksSelected());
-					displayHashTags();
-					displayTask();
-					clearForm();
-					break;
-				case Message.TYPE_ERROR:
-					statusMessage.setText(message.getMessage());
-					clearForm();
-					break;
-				case Message.TYPE_AUTOCOMPLETE:
-					statusMessage.setText(message.getMessage());
-					clearForm();
-					break;
-				}
+				handleMessage(message);
 			}
-
 		});
 	}
 
+	/**
+	 * This function handles the status message to display and provide
+	 * autocomplete for edit command while using is typing
+	 * 
+	 * @param event
+	 * 
+	 */
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {
+
 		if (!event.getCode().equals(KeyCode.ENTER)) {
 			Message message = logic.getMessageTyping(commandBar.getText());
 
-			if (message.getType() == Message.TYPE_AUTOCOMPLETE) {
+			// This will remove autocomplete when hitting backspace during edit
+			if (message.getType() == Message.TYPE_AUTOCOMPLETE
+					&& !event.getCode().equals(KeyCode.BACK_SPACE)) {
 				commandBar.setText(message.getMessage());
 				commandBar.positionCaret(commandBar.getText().length());
 				handleTextFieldWhileUserTyping(event);
@@ -263,10 +252,6 @@ public class UIController {
 		commandBar.clear();
 	}
 
-	/**
-	 * 
-	 * @author A0111921W
-	 */
 	private void displayTask() {
 		if (logic.getList() != null) {
 			idColumn.setCellValueFactory(new Callback<CellDataFeatures<Task, Integer>, ObservableValue<Integer>>() {
@@ -295,6 +280,8 @@ public class UIController {
 								public void updateItem(String item,
 										boolean empty) {
 									super.updateItem(item, empty);
+
+									// This will allows text wrapping in a cell
 									if (!isEmpty()) {
 										text = new Text(item.toString());
 										text.setWrappingWidth(taskColumn
@@ -303,31 +290,14 @@ public class UIController {
 
 										setGraphic(text);
 									}
+									// This will handle highlight of task
+									// background colour
 									if (item != null) {
 										String cssSelector = null;
 										Task task = logic.getList().get(
 												this.getIndex());
 
-										switch (task.getHighlightType()) {
-										case NORMAL:
-											cssSelector = "isNormal";
-											break;
-										case PRIORITY:
-											cssSelector = "isPriority";
-											break;
-										case OVERLAP:
-											cssSelector = "isOverlapStatic";
-											break;
-										case PRIORITY_OVERLAP:
-											cssSelector = "isPriorityOverlapStatic";
-											break;
-										case OVERDUE:
-											cssSelector = "isOverdue";
-											break;
-										default:
-											cssSelector = "isNormal";
-											break;
-										}
+										cssSelector = getHighlightType(task);
 										ObservableList<String> currentStyleList = this
 												.getTableRow().getStyleClass();
 										// Clear all additional styles other
@@ -345,6 +315,31 @@ public class UIController {
 			taskColumn.setSortable(false);
 			taskTable.setItems(getTaskFromList());
 		}
+	}
+
+	private String getHighlightType(Task task) {
+		String cssSelector;
+		switch (task.getHighlightType()) {
+		case NORMAL:
+			cssSelector = "isNormal";
+			break;
+		case PRIORITY:
+			cssSelector = "isPriority";
+			break;
+		case OVERLAP:
+			cssSelector = "isOverlapStatic";
+			break;
+		case PRIORITY_OVERLAP:
+			cssSelector = "isPriorityOverlapStatic";
+			break;
+		case OVERDUE:
+			cssSelector = "isOverdue";
+			break;
+		default:
+			cssSelector = "isNormal";
+			break;
+		}
+		return cssSelector;
 	}
 
 	private ObservableList<Task> getTaskFromList() {
@@ -374,8 +369,21 @@ public class UIController {
 		assert statusMessage != null : "fx:id=\"statusMessage\" was not injected: check your FXML file 'interface.fxml'.";
 		assert commandBar != null : "fx:id=\"commandBar\" was not injected: check your FXML file 'interface.fxml'.";
 		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'interface.fxml'.";
-		// assert settingsButton != null :
-		// "fx:id=\"settingsButton\" was not injected: check your FXML file 'interface.fxml'.";
 	}
 
+	/**
+	 * This function opens settings window (NOT IMPLEMENTED)
+	 */
+	@FXML
+	private void openSettingsWindow() {
+		Pane myPane;
+		try {
+			myPane = FXMLLoader.load(getClass().getResource("settings.fxml"));
+			Stage stage = new Stage();
+			stage.setScene(new Scene(myPane));
+			stage.show();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 }
