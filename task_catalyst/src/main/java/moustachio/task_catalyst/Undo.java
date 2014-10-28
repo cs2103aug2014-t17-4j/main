@@ -9,7 +9,7 @@ public class Undo extends Action {
 	private static final String EXECUTE_SUCCESS = "Undo: %s";
 	private static final String EXECUTE_ERROR = "There is nothing to undo.";
 
-	private static final String HINT_MESSAGE = "Undo: Hit enter to undo previous action.";
+	private static final String HINT_MESSAGE = "Undo: Hit enter to undo previous action.\nYou can also use CTRL+Z";
 
 	ActionInvoker actionInvoker;
 

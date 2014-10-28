@@ -256,11 +256,14 @@ public class TaskCatalystCommons {
 		String connector;
 
 		boolean isContainsTo = matchingText.contains(" to ");
+		boolean isContainsOr = matchingText.contains(" or ");
 		boolean isContainsDash = matchingText.contains(" - ");
 		boolean isDateRange = isContainsTo || isContainsDash;
 
 		if (isDateRange) {
 			connector = " to ";
+		} else if (isContainsOr){
+			connector = " or ";
 		} else {
 			connector = " and ";
 		}
