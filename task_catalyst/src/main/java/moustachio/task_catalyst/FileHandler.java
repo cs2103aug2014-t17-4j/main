@@ -32,7 +32,7 @@ public class FileHandler {
 	public void writeTask(Task task, String fileName) throws IOException {
 		assert (task != null);
 
-		if (isinvalidFileFormat(fileName)) {
+		if (isInvalidFileFormat(fileName)) {
 			blackBox.info("Invalid file format!");
 			throw new Error("Invalid file format!");
 		}
@@ -59,7 +59,7 @@ public class FileHandler {
 	public List<Task> readTask(String fileName) {
 		List<Task> list = new ArrayList<Task>();
 
-		if (isinvalidFileFormat(fileName)) {
+		if (isInvalidFileFormat(fileName)) {
 			blackBox.info("Invalid file format!");
 			throw new Error("Invalid file format!");
 		}
@@ -67,9 +67,7 @@ public class FileHandler {
 		if (isEmptyFile(fileName)) {
 			return new ArrayList<Task>();
 		} else {
-			if (isinvalidFileFormat(fileName)) {
-				readJSONFile(fileName, list);
-			}
+			readJSONFile(fileName, list);
 		}
 		return list;
 	}
@@ -91,7 +89,6 @@ public class FileHandler {
 		String stringLine;
 		BufferedReader breader = getReader(fileName);
 		JSONConverter objCodec = new JSONConverter();
-
 		while ((stringLine = breader.readLine()) != null) {
 			Task task = objCodec.decodeToString(stringLine);
 			if (task != null) {
@@ -104,8 +101,8 @@ public class FileHandler {
 	public boolean writeSetting(String name, String fileName, String value) {
 		Boolean isSuccess = false;
 
-		if (isinvalidFileFormat(fileName) || isinvalidFileFormat(name)
-				|| isinvalidFileFormat(value)) {
+		if (isInvalidFileFormat(fileName) || isInvalidFileFormat(name)
+				|| isInvalidFileFormat(value)) {
 			blackBox.info("Invalid file format!");
 			throw new Error("Invalid file format!");
 		}
@@ -140,7 +137,7 @@ public class FileHandler {
 	public String readSetting(String name, String fileName) {
 		assert (name != null);
 
-		if (isinvalidFileFormat(fileName) || isinvalidFileFormat(name)) {
+		if (isInvalidFileFormat(fileName) || isInvalidFileFormat(name)) {
 			blackBox.info("Invalid file format!");
 			throw new Error("Invalid file format!");
 		}
@@ -198,7 +195,7 @@ public class FileHandler {
 		}
 	}
 
-	private static boolean isinvalidFileFormat(String text) {
+	private static boolean isInvalidFileFormat(String text) {
 		if (text.contains(".")) {
 			String[] name = text.split("\\.");
 			return (!(isValidName(name[0]) && isValidName(name[1])
