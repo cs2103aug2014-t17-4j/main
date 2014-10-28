@@ -195,7 +195,7 @@ public class FileHandler {
 		}
 	}
 
-	private boolean isInvalidFileFormat(String text) {
+	public boolean isInvalidFileFormat(String text) {
 		if (text.contains(".")) {
 			String[] name = text.split("\\.");
 			return (!(isValidName(name[0]) && isValidName(name[1])

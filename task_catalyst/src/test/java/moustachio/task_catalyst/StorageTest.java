@@ -40,9 +40,44 @@ public class StorageTest {
 	
 	
 	/*** Check fileName ***/
+	
 	@Test
-	public void testFileName(){
-		
+	
+	/* This is a boundary case for 'valid alpha name' partition */
+	public void testValidAlphaName(){
+		String name = "abc";
+		assertEquals(true, fileHandler.isValidName(name));
+	}
+	
+	/* This is a boundary case for 'valid numeric name' partition */
+	@Test
+	public void testValidNumbericName(){
+		String name = "123";
+		assertEquals(true, fileHandler.isValidName(name));
+	}
+	
+	/* This is a boundary case for 'invalid name' partition */
+	@Test
+	public void testInvalidName(){
+		String name = "file.1";
+		assertEquals(false, fileHandler.isValidName(name));
+	}
+	
+	
+	/*** Check format of text file ***/
+	
+	/* This is a boundary case for 'invalid file format' partition */
+	@Test
+	public void testInvalidFormat(){
+		String name = "file.1";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+	
+	/* This is a boundary case for 'valid file format' partition */
+	@Test
+	public void testvalidFormat(){
+		String name = "file.txt";
+		assertEquals(false, fileHandler.isInvalidFileFormat(name));
 	}
 	
 	/*** Load task ***/
