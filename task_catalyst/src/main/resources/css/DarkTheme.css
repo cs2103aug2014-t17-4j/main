@@ -1,3 +1,7 @@
+/**
+ * @author Toh Zhen Yu (A0111921W)
+ */
+ 
 #exitButton {          
     -fx-background-image: url("../images/close24.png");
     -fx-background-size: 24 24;
@@ -27,7 +31,7 @@
 /* GUI Interface background colour */
 .theme {
     master-color: grey;
-    -fx-background-color: #DFB951;
+    -fx-background-color: #ffc107;
     -fx-font-size: 14px;
 }
 
@@ -60,7 +64,7 @@
 
 /* Selected row when table not focused */
 .table-row-cell:filled:focused:selected {
-    -fx-background-color: grey;
+    -fx-background-color: #6495ed;
     -fx-background-insets: 0, 1, 2;
     -fx-background: -fx-accent;
     -fx-text-fill: -fx-selection-bar-text;

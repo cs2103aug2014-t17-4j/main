@@ -21,7 +21,9 @@ public class BlackBox {
 		try {
 			logger = Logger.getLogger(BlackBox.class.getName());
 			// logger.setLevel(Level.ALL);
-			Handler handler = new FileHandler("blackbox.log");
+			String fileName = "blackbox.log";
+			boolean appendToFile = true;
+			Handler handler = new FileHandler(fileName, appendToFile);
 			logger.addHandler(handler);
 		} catch (IOException e) {
 		}
