@@ -73,7 +73,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			addDragListeners(root);
 			// set stylesheet
 			scene.getStylesheets().add(
-					getClass().getResource("/css/DarkTheme.css").toExternalForm());
+					getClass().getResource("/css/DarkTheme.css")
+							.toExternalForm());
 
 			// set stage
 			Platform.setImplicitExit(false);
