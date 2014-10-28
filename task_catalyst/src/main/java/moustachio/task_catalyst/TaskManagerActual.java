@@ -7,8 +7,8 @@ import java.util.TreeSet;
 
 public class TaskManagerActual implements TaskManager {
 
-	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#tdy",
-			"#tmr", "#upc", "#smd", "#olp", "#dne" };
+	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#ovd",
+			"#tdy", "#tmr", "#upc", "#smd", "#olp", "#dne" };
 	private static final DisplayMode DEFAULT_DISPLAY_MODE = DisplayMode.HASHTAG;
 	private static final String DEFAULT_DISPLAY_KEYWORD = "all";
 	private static final String DEFAULT_FILE_NAME = "tasks.txt";
@@ -271,6 +271,7 @@ public class TaskManagerActual implements TaskManager {
 		clearHighlights(displayList);
 		highlightAllPriority(displayList);
 		highlightAllOverlap(taskList);
+		highlightAllOverdue(displayList);
 	}
 
 	private void clearHighlights(List<Task> tasks) {
@@ -283,6 +284,14 @@ public class TaskManagerActual implements TaskManager {
 		for (Task task : tasks) {
 			if (task.isPriority()) {
 				task.setHighlightType(HighlightType.PRIORITY);
+			}
+		}
+	}
+
+	private void highlightAllOverdue(List<Task> tasks) {
+		for (Task task : tasks) {
+			if (task.isOverdue()) {
+				task.setHighlightType(HighlightType.OVERDUE);
 			}
 		}
 	}

@@ -15,6 +15,8 @@ public class ListProcessorActual implements ListProcessor {
 			return searchByHashtagAll(list);
 		case "pri":
 			return searchByHashtagPriority(list);
+		case "ovd":
+			return searchByHashtagOverdue(list);
 		case "tdy":
 			return searchByHashtagToday(list);
 		case "tmr":
@@ -89,6 +91,16 @@ public class ListProcessorActual implements ListProcessor {
 		List<Task> filteredList = new ArrayList<Task>();
 		for (Task task : list) {
 			if (!task.isDone() && task.isPriority()) {
+				filteredList.add(task);
+			}
+		}
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagOverdue(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+		for (Task task : list) {
+			if (!task.isDone() && task.isOverdue()) {
 				filteredList.add(task);
 			}
 		}

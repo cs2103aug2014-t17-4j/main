@@ -163,7 +163,7 @@ public class UIController {
 	private void initializeTable() {
 		// Enable multiple selection for the table
 		taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		taskTable.setPlaceholder(new Text(""));
+		taskTable.setPlaceholder(new Text("No tasks to display in this view!"));
 		// Set message shown when there's no content
 		// taskTable.setPlaceholder();
 		// taskTable.setPlaceholder(new Text("Your localized text here"));
@@ -319,6 +319,9 @@ public class UIController {
 											break;
 										case PRIORITY_OVERLAP:
 											cssSelector = "isPriorityOverlapStatic";
+											break;
+										case OVERDUE:
+											cssSelector = "isOverdue";
 											break;
 										default:
 											cssSelector = "isNormal";

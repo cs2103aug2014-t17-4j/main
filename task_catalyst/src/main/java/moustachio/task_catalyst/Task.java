@@ -26,6 +26,8 @@ public interface Task extends Comparable<Task> {
 	public boolean isDone();
 
 	public boolean isPriority();
+	
+	public boolean isOverdue();
 
 	public void setDone(boolean done);
 

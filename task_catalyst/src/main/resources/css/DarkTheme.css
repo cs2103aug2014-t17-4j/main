@@ -100,3 +100,6 @@
 .isPriorityOverlapStatic { 
 	-fx-background-color: #E23D80;
 }
+.isOverdue { 
+	-fx-background-color: skyblue;
+}

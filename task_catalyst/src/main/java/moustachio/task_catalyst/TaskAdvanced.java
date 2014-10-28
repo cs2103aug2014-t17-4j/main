@@ -97,6 +97,16 @@ public class TaskAdvanced implements Task {
 		return hasHashtag("pri");
 	}
 
+	@Override
+	public boolean isOverdue() {
+		if (getDateStart() == null) {
+			return false;
+		} else {
+			Date now = new Date();
+			return now.after(getDateStart());
+		}
+	}
+
 	// Date Methods
 
 	@Override
@@ -122,8 +132,8 @@ public class TaskAdvanced implements Task {
 		String[] descriptionTokenized = this.description.split(" ");
 		for (String token : descriptionTokenized) {
 			if (token.startsWith("#") || token.startsWith("[#")) {
-				 String tokenLowerAlphabets = "#"
-				 + token.toLowerCase().replaceAll("[^A-Za-z0-9]+", "");
+				String tokenLowerAlphabets = "#"
+						+ token.toLowerCase().replaceAll("[^A-Za-z0-9]+", "");
 				if (tokenLowerAlphabets.length() > 1) {
 					hashtagList.add(tokenLowerAlphabets);
 				}
@@ -154,12 +164,10 @@ public class TaskAdvanced implements Task {
 		} else if (!this.isPriority() && o.isPriority()) {
 			return 1;
 		}
-		if (thisDateTime == null && otherDateTime == null) {
-			return 0;
-		} else if (thisDateTime == null) {
-			return -1;
-		} else if (otherDateTime == null) {
+		if (thisDateTime == null) {
 			return 1;
+		} else if (otherDateTime == null) {
+			return -1;
 		} else {
 			return thisDateTime.compareTo(otherDateTime);
 		}
