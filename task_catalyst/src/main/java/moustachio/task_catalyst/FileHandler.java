@@ -223,9 +223,9 @@ public class FileHandler {
 		writer.close();
 	}
 
-	public boolean isInvalidFileFormat(String text) {
-		if (text.contains(PATTERN_DOT)) {
-			String[] name = text.split(REGEX);
+	public boolean isInvalidFileFormat(String fileName) {
+		if (fileName.contains(PATTERN_DOT)) {
+			String[] name = fileName.split(REGEX);
 			return (!(isValidName(name[0]) && isValidName(name[1])
 					&& name[1].equals(EXTENSION) && name[1] != null));
 		} else {
@@ -233,9 +233,9 @@ public class FileHandler {
 		}
 	}
 
-	public boolean isValidName(String text) {
+	public boolean isValidName(String name) {
 		Pattern pattern = Pattern.compile(INVALID_PATTERN);
-		Matcher matcher = pattern.matcher(text);
+		Matcher matcher = pattern.matcher(name);
 		boolean isMatch = matcher.matches();
 		return isMatch;
 	}

@@ -38,7 +38,6 @@ public class StorageTest {
 	public void tearDown() throws Exception {
 	}
 	
-	
 	/*** Check fileName ***/
 	
 	@Test
@@ -151,15 +150,7 @@ public class StorageTest {
 	public void testSaveOneSetting(){
 		fileHandler.clear(fileName);
 		assertEquals(true, data.saveSetting(font1, fileName, size1));
-	}
-	
-//	/* This is a boundary case for 'save null setting' partition */
-//	@Test 
-//	public void testSaveEmptySetting(){
-//		FileHandler.clear(fileName);
-//		assertEquals(false,data.saveSetting(null, fileName, null));
-//	}
-	
+	}	
 	
 	/*** Load Setting ***/
 	
@@ -178,8 +169,6 @@ public class StorageTest {
 		fileHandler.clear(fileName);
 		data.saveSetting(font1, fileName, size1);
 		String input = font1 + "," + size1 + " ";
-		//System.out.println(input);
-		//System.out.println(data.loadSetting(input, fileName));
 		assertEquals(input, data.loadSetting(font1, fileName));
 	}
 	
@@ -191,8 +180,6 @@ public class StorageTest {
 		data.saveSetting(font2, fileName, size2);
 		String input1 = font1 + "," + size1 + " ";
 		String input2 = font2 + "," + size2 + " ";
-		System.out.println(data.loadSetting(font1, fileName));
-		System.out.println(data.loadSetting(font2, fileName));
 		assertEquals((data.loadSetting(font1, fileName).contains(input1)), true);
 		assertEquals((data.loadSetting(font2,fileName).contains(input2)), true);
 	}
