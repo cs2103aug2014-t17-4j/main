@@ -12,7 +12,7 @@ import org.junit.Test;
 
 public class LogicActualTest {
 
-	private static final int NUM_OF_DEFAULT_HASHTAGS = 8;
+	private static final int NUM_OF_DEFAULT_HASHTAGS = 9;
 	Logic logic;
 	TaskManager taskManager;
 
@@ -431,12 +431,13 @@ public class LogicActualTest {
 		List<String> defaultHashtags = logic.getHashtags();
 		assertEquals("#all", defaultHashtags.get(0));
 		assertEquals("#pri", defaultHashtags.get(1));
-		assertEquals("#tdy", defaultHashtags.get(2));
-		assertEquals("#tmr", defaultHashtags.get(3));
-		assertEquals("#upc", defaultHashtags.get(4));
-		assertEquals("#smd", defaultHashtags.get(5));
-		assertEquals("#olp", defaultHashtags.get(6));
-		assertEquals("#dne", defaultHashtags.get(7));
+		assertEquals("#ovd", defaultHashtags.get(2));
+		assertEquals("#tdy", defaultHashtags.get(3));
+		assertEquals("#tmr", defaultHashtags.get(4));
+		assertEquals("#upc", defaultHashtags.get(5));
+		assertEquals("#smd", defaultHashtags.get(6));
+		assertEquals("#olp", defaultHashtags.get(7));
+		assertEquals("#dne", defaultHashtags.get(8));
 	}
 
 	// Get hashtags on empty list.
@@ -810,7 +811,7 @@ public class LogicActualTest {
 	@Test
 	public void highlightHashtagTc2() {
 		logic.processCommand("#tdy");
-		assertEquals(2, logic.getHashtagSelected());
+		assertEquals(3, logic.getHashtagSelected());
 	}
 
 	// Test if search is added and highlighted.

@@ -198,6 +198,7 @@ public class TaskCatalystCommons {
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, endWithNumber);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, hashtaggedWords);
 		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
+		interpretedInput = replaceYesterday(interpretedInput);
 
 		return interpretedInput;
 	}
@@ -400,8 +401,11 @@ public class TaskCatalystCommons {
 		return parsingInput.replaceAll("(\\b)(and)+", " and ");
 	}
 
+	private static String replaceYesterday(String interpretedInput) {
+		return interpretedInput.replace("[yesterday]", "yesterday");
+	}
+
 	private static String replaceSpacesWithWildcard(String matchingExpression) {
-		// return matchingExpression.replaceAll(" ", "(.+)?");
 		return matchingExpression.replaceAll(" ",
 				"( |,|, )?(at|from|and)?( on)?( )");
 	}
