@@ -181,11 +181,7 @@ public class UIController {
 					setFocusForTaskTable(Integer.valueOf(getIndexForFocus[1]));
 				}
 			}
-			
-			if(commandBar.getText().trim().equalsIgnoreCase("exit")){
-				this.tc.stop();
-			}
-			
+
 			setFocusForHashTable(logic.getHashtagSelected());
 			setFocusForTaskTableList(logic.getTasksSelected());
 			displayHashTags();
