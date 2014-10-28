@@ -10,6 +10,7 @@ import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -25,7 +26,9 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import javax.swing.KeyStroke;
+
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
@@ -40,11 +43,17 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private static Provider hotKeys = null;
 	private static String toggleLaunchHK = "control M";
 
+	private static final String MULTIPLE_INSTANCE_EXCEPTION_MESSAGE = "This application is single instance!";
+	private static final String SYSTEM_TRAY_ERROR_MESSAGE = "System tray is not supported!";
+	
+	private static final String UI_FXML_PATH = "/fxml/userInterface.fxml";
+	private static final String CSS_PATH = "/css/DarkTheme.css";
+	private static final String SYSTEM_TRAY_IMAGE_PATH = "/images/moustachio.png";
+	
 	public static void main(String[] args) {
 		try {
 			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
-				throw new RuntimeException(
-						"This application is single instance!");
+				throw new RuntimeException(MULTIPLE_INSTANCE_EXCEPTION_MESSAGE);
 			}
 			launch(args);
 		} finally {
@@ -64,7 +73,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
 			FXMLLoader loader = new FXMLLoader(
-					TaskCatalyst.class.getResource("/fxml/userInterface.fxml"));
+					TaskCatalyst.class.getResource(UI_FXML_PATH));
 			Parent root = loader.load();
 			Scene scene = new Scene(root);
 			controller = loader.getController();
@@ -73,7 +82,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			addDragListeners(root);
 			// set stylesheet
 			scene.getStylesheets().add(
-					getClass().getResource("/css/DarkTheme.css")
+					getClass().getResource(CSS_PATH)
 							.toExternalForm());
 
 			// set stage
@@ -207,21 +216,19 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	/**
 	 * This function creates a system tray with 2 popup menu Launch and Exit
 	 * 
-	 * @author A0111921W
-	 * 
 	 * @param stage
 	 */
 	private static void loadSystemTray(Stage stage) {
 		// checking for support
 		if (!SystemTray.isSupported()) {
-			System.out.println("System tray is not supported !!! ");
+			System.out.println(SYSTEM_TRAY_ERROR_MESSAGE);
 			return;
 		}
 		// get the systemTray of the system
 		SystemTray systemTray = SystemTray.getSystemTray();
 		// get default toolkit
 		Image image = Toolkit.getDefaultToolkit().getImage(
-				TaskCatalyst.class.getResource("/images/moustachio.png"));
+				TaskCatalyst.class.getResource(SYSTEM_TRAY_IMAGE_PATH));
 
 		// popupmenu
 		PopupMenu trayPopupMenu = new PopupMenu();
