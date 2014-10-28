@@ -101,8 +101,8 @@ public class FileHandler {
 	public boolean writeSetting(String name, String fileName, String value) {
 		Boolean isSuccess = false;
 
-		if (isInvalidFileFormat(fileName) || isInvalidFileFormat(name)
-				|| isInvalidFileFormat(value)) {
+		if (isInvalidFileFormat(fileName) || !isValidName(name)
+				|| !isValidName(value)) {
 			blackBox.info("Invalid file format!");
 			throw new Error("Invalid file format!");
 		}
@@ -137,7 +137,7 @@ public class FileHandler {
 	public String readSetting(String name, String fileName) {
 		assert (name != null);
 
-		if (isInvalidFileFormat(fileName) || isInvalidFileFormat(name)) {
+		if (isInvalidFileFormat(fileName) || !isValidName(name)) {
 			blackBox.info("Invalid file format!");
 			throw new Error("Invalid file format!");
 		}

@@ -38,6 +38,13 @@ public class StorageTest {
 	public void tearDown() throws Exception {
 	}
 	
+	
+	/*** Check fileName ***/
+	@Test
+	public void testFileName(){
+		
+	}
+	
 	/*** Load task ***/
 	
 	/* This is a boundary case for 'load empty File' partition */
