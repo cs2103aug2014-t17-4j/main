@@ -14,6 +14,7 @@ import java.util.List;
 public class StorageActual implements Storage {
 
 	private static BlackBox blackbox = BlackBox.getInstance();
+	private static final String MESSAGE_IO_FAULT = "IO fault has been enountered.";
 	FileHandler fileHandler = new FileHandler();
 	
 	@Override
@@ -44,7 +45,7 @@ public class StorageActual implements Storage {
 			}
 			return true;
 		}catch (IOException e) {
-			blackbox.info("IO fault has been enountered.");
+			blackbox.info(MESSAGE_IO_FAULT);
 		}
 		return false;
 	}
