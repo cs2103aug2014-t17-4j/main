@@ -135,7 +135,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y,
 				KeyCodeCombination.CONTROL_DOWN);
-		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.Q,
+		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.E,
 				KeyCodeCombination.CONTROL_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED,
 				new EventHandler<KeyEvent>() {
