@@ -220,6 +220,8 @@ public class UIController {
 				switch (message.getType()) {
 				case Message.TYPE_SUCCESS:
 					statusMessage.setText(message.getMessage());
+					setFocusForHashTable(logic.getHashtagSelected());
+					setFocusForTaskTableList(logic.getTasksSelected());
 					displayHashTags();
 					displayTask();
 					clearForm();
