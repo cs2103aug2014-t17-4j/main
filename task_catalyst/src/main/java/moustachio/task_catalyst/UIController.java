@@ -69,7 +69,7 @@ public class UIController {
 
 	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #";
 	private static final String EMPTY_TASKVIEW_MESSAGE = "No tasks to display in this view!";
-	public static final int INITIAL_INDEX = 0;
+	private static final int INITIAL_INDEX = 0;
 
 	/**
 	 * Initializes the controller class. This method is automatically called
