@@ -240,8 +240,7 @@ public class ListProcessorActual implements ListProcessor {
 		List<Date> list2 = new ArrayList<Date>(task2.getAllDates());
 		for (Date date1 : list1) {
 			for (Date date2 : list2) {
-				if (TaskCatalystCommons.isSameDate(date1, date2)
-						&& TaskCatalystCommons.isSameTime(date1, date2)) {
+				if (date1.equals(date2)) {
 					return true;
 				}
 			}
