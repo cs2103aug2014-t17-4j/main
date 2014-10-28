@@ -195,7 +195,7 @@ public class FileHandler {
 		}
 	}
 
-	private static boolean isInvalidFileFormat(String text) {
+	private boolean isInvalidFileFormat(String text) {
 		if (text.contains(".")) {
 			String[] name = text.split("\\.");
 			return (!(isValidName(name[0]) && isValidName(name[1])
@@ -205,7 +205,7 @@ public class FileHandler {
 		}
 	}
 
-	public static boolean isValidName(String text) {
+	public boolean isValidName(String text) {
 		Pattern pattern = Pattern.compile("^[^/./\\:*?\"<>|]+$");
 		Matcher matcher = pattern.matcher(text);
 		boolean isMatch = matcher.matches();
