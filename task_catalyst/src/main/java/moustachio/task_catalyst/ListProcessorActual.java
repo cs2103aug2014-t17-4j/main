@@ -124,7 +124,7 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
-		return filteredList;
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashtagTomorrow(List<Task> list) {
@@ -144,7 +144,7 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
-		return filteredList;
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashTagUpcoming(List<Task> list) {
@@ -163,7 +163,7 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
-		return filteredList;
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashTagUserDefined(List<Task> list,
