@@ -34,6 +34,7 @@ import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
 public class TaskCatalyst extends Application implements HotKeyListener {
+	private static final String CONTROL_E = "control E";
 	private double initialY;
 	private double initialX;
 
@@ -98,7 +99,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function registers the global hotkey (ctrl+m).
+	 * This function registers the global hotkeys.
 	 * 
 	 * @author A0112764J
 	 */
@@ -112,12 +113,13 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				}
 				hotKeys.reset();
 				hotKeys.register(KeyStroke.getKeyStroke(toggleLaunchHK), tc);
+				hotKeys.register(KeyStroke.getKeyStroke(CONTROL_E), tc);
 			}
 		}).start();
 	}
 
 	/**
-	 * This function disables the global hotkey (ctrl+m).
+	 * This function disables the global hotkeys.
 	 * 
 	 * @author A0112764J
 	 */
@@ -144,8 +146,6 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y,
 				KeyCodeCombination.CONTROL_DOWN);
-		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.E,
-				KeyCodeCombination.CONTROL_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED,
 				new EventHandler<KeyEvent>() {
 
@@ -155,8 +155,6 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 							controller.handleHotKeys("undo");
 						} else if (redoHotKey.match(event)) {
 							controller.handleHotKeys("redo");
-						} else if (exitHotKey.match(event)) {
-							stop();
 						}
 					}
 				});
@@ -308,6 +306,12 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				});
 			}
 			break;
+			
+		case java.awt.event.KeyEvent.VK_E:
+			stop();
+			break;
+		
+		
 		}
 
 	}
