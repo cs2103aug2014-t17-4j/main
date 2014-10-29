@@ -99,11 +99,11 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isOverdue() {
-		if (getDateStart() == null) {
+		if (getDateEnd() == null) {
 			return false;
 		} else {
 			Date now = new Date();
-			return now.after(getDateStart());
+			return now.after(getDateEnd());
 		}
 	}
 
