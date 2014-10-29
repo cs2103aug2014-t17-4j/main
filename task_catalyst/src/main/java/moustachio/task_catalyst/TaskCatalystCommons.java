@@ -601,7 +601,10 @@ public class TaskCatalystCommons {
 		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(date);
 		cal2.setTime(date2);
-		return cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE);
+		boolean isSameDateOfMonth = cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE);
+		boolean isSameMonth = cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
+		boolean isSameYear = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+		boolean isSameDate = isSameDateOfMonth && isSameMonth && isSameYear;
 	}
 
 	public static boolean hasMinutes(Date date) {
