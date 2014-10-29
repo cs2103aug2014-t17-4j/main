@@ -116,11 +116,15 @@ public class Edit extends Action {
 			message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
 					taskDescription);
 		} else if (isBeingEdited) {
-			String friendlyString = TaskCatalystCommons
-					.getFriendlyString(furtherParameters);
+			try {
+				message = TaskCatalystCommons.getFriendlyString(userCommand);
+				type = Message.TYPE_HINT;
+			} catch (UnsupportedOperationException e) {
+				message = e.getMessage();
+				type = Message.TYPE_ERROR;
+			}
 
 			type = Message.TYPE_HINT;
-			message = friendlyString;
 			message += HINT_VALID_TASK;
 		}
 
