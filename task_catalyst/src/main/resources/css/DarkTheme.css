@@ -64,7 +64,7 @@
     -fx-text-fill: white, -fx-selection-bar-text;
 }
 
-.table-row-cell:selected .text {
+.table-row-cell .text {
        -fx-fill: #000001 ;
 }
 
