@@ -228,8 +228,8 @@ public class UIController {
 	 * 
 	 */
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {
-
-		if (!event.getCode().equals(KeyCode.ENTER)) {
+		if (!event.getCode().equals(KeyCode.ENTER)
+				&& !event.getCode().equals(KeyCode.CONTROL)) {
 			Message message = logic.getMessageTyping(commandBar.getText());
 
 			// This will remove autocomplete when hitting backspace during edit
