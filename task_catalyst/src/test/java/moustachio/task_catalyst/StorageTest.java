@@ -160,7 +160,7 @@ public class StorageTest {
 		fileHandler.clear(fileName);
 		String str = "font";
 		String expectedString = data.loadSetting(str, fileName);
-		assertEquals("Empty file", expectedString);
+		assertEquals("The file is empty.", expectedString);
 	}
 
 	/* This is a boundary case for 'load one setting' partition */

@@ -22,8 +22,8 @@ public class UITest extends GuiTest {
 	public Parent getRootNode() {
 		Parent root = null;
 		try {
-			root = FXMLLoader
-					.load(getClass().getResource("userInterface.fxml"));
+			root = FXMLLoader.load(getClass().getResource(
+					"/fxml/userInterface.fxml"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -55,13 +55,19 @@ public class UITest extends GuiTest {
 	@Test
 	public void test4() {
 		type("edit");
-		verifyThat("#statusMessage", hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));
-		
+		verifyThat(
+				"#statusMessage",
+				hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));
+
 		type(" ");
-		verifyThat("#statusMessage", hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));
-		
+		verifyThat(
+				"#statusMessage",
+				hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));
+
 		type("1");
-		verifyThat("#statusMessage", hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));	
+		verifyThat(
+				"#statusMessage",
+				hasText("Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>"));
 	}
 
 }
