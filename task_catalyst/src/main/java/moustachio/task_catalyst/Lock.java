@@ -7,13 +7,17 @@ import java.nio.channels.FileLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/** @author linxiuqing (A0112764J)
+ * 
+ */
+
 /**
  * 
  * credited
  * http://nerdydevel.blogspot.sg/2012/07/run-only-single-java-application
  * -instance.html
  * 
- * @author linxiuqing (A0112764J)
+ * 
  *
  */
 
