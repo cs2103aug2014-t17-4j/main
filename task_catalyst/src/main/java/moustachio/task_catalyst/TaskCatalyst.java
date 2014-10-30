@@ -2,13 +2,14 @@ package moustachio.task_catalyst;
 
 import java.awt.AWTException;
 import java.awt.Image;
-import java.awt.MenuItem;
-import java.awt.PopupMenu;
 import java.awt.SystemTray;
 import java.awt.Toolkit;
 import java.awt.TrayIcon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.io.IOException;
 
 import javafx.application.Application;
@@ -27,6 +28,9 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
+import javax.swing.JDialog;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
 
 import com.tulskiy.keymaster.common.HotKey;
@@ -45,11 +49,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 	private static final String MULTIPLE_INSTANCE_EXCEPTION_MESSAGE = "This application is single instance!";
 	private static final String SYSTEM_TRAY_ERROR_MESSAGE = "System tray is not supported!";
-	
+
 	private static final String UI_FXML_PATH = "/fxml/userInterface.fxml";
 	private static final String CSS_PATH = "/css/DarkTheme.css";
 	private static final String SYSTEM_TRAY_IMAGE_PATH = "/images/moustachio.png";
-	
+
 	public static void main(String[] args) {
 		try {
 			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
@@ -82,8 +86,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			addDragListeners(root);
 			// set stylesheet
 			scene.getStylesheets().add(
-					getClass().getResource(CSS_PATH)
-							.toExternalForm());
+					getClass().getResource(CSS_PATH).toExternalForm());
 
 			// set stage
 			Platform.setImplicitExit(false);
@@ -134,7 +137,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function creates hotkeys for the actions that are undo,redo and exit.
+	 * This function creates hotkeys for the actions that are undo,redo and
+	 * exit.
 	 * 
 	 * @author Lin XiuQing (A0112764J)
 	 */
@@ -231,7 +235,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				TaskCatalyst.class.getResource(SYSTEM_TRAY_IMAGE_PATH));
 
 		// popupmenu
-		PopupMenu trayPopupMenu = new PopupMenu();
+		JPopupMenu trayPopupMenu = new JPopupMenu();
 
 		/**
 		 * 
@@ -239,7 +243,10 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		 */
 
 		// 1st menuitem for popupmenu
-		MenuItem launch = new MenuItem("Launch");
+		JMenuItem launch = new JMenuItem("Launch");
+		launch.setAccelerator(KeyStroke.getKeyStroke(
+				java.awt.event.KeyEvent.VK_M,
+				java.awt.event.InputEvent.CTRL_MASK));
 		launch.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -256,7 +263,10 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		trayPopupMenu.addSeparator();
 
 		// 2nd menuitem of popupmenu
-		MenuItem close = new MenuItem("Exit");
+		JMenuItem close = new JMenuItem("Exit");
+		close.setAccelerator(KeyStroke.getKeyStroke(
+				java.awt.event.KeyEvent.VK_E,
+				java.awt.event.InputEvent.CTRL_MASK));
 		close.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -267,7 +277,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		trayPopupMenu.add(close);
 
 		// setting tray icon
-		TrayIcon trayIcon = new TrayIcon(image, "Task Catalyst", trayPopupMenu);
+		TrayIcon trayIcon = new TrayIcon(image, "Task Catalyst", null);
 		// adjust to default size as per system recommendation
 		trayIcon.setImageAutoSize(true);
 
@@ -276,6 +286,84 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		} catch (AWTException awtException) {
 			awtException.printStackTrace();
 		}
+
+		JDialog hiddenDialog = new JDialog();
+		hiddenDialog.setSize(10, 10);
+		hiddenDialog.setUndecorated(true);
+		/* Add the window focus listener to the hidden dialog */
+		hiddenDialog.addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowLostFocus(WindowEvent we) {
+				hiddenDialog.setVisible(false);
+			}
+
+			@Override
+			public void windowGainedFocus(WindowEvent we) {
+			}
+		});
+
+		trayIcon.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mousePressed(java.awt.event.MouseEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void mouseReleased(java.awt.event.MouseEvent e) {
+				if (e.getButton() == e.BUTTON1) {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							if (stage.isShowing()) {
+								Platform.runLater(new Runnable() {
+									@Override
+									public void run() {
+										stage.hide();
+									}
+								});
+							} else {
+								Platform.runLater(new Runnable() {
+									@Override
+									public void run() {
+										stage.show();
+										stage.toFront();
+									}
+								});
+							}
+						}
+					});
+				} else if (e.getButton() == e.BUTTON3) {
+					trayPopupMenu.setInvoker(hiddenDialog);
+					hiddenDialog.setVisible(true);
+					trayPopupMenu.setVisible(true);
+					hiddenDialog.setLocation((int) e.getX(), (int) e.getY()
+							- trayPopupMenu.getHeight());
+					trayPopupMenu.setLocation((int) e.getX(), (int) e.getY()
+							- trayPopupMenu.getHeight());
+				}
+
+			}
+		});
 	}
 
 	/**
@@ -307,7 +395,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 					}
 				});
 			}
-			break;		
+			break;
 		}
 
 	}
