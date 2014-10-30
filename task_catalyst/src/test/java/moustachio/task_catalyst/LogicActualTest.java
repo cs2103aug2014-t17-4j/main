@@ -239,7 +239,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit 1 item 1");
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
-				"item 1\nEdit: Hit enter after making your changes.\nSyntax: edit <task number>",
+				"edit 1 item 1\nEdit: Hit enter after making your changes.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
