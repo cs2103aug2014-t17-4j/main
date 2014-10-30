@@ -112,7 +112,7 @@ public class LogicActualTest {
 	public void addTc7() {
 		Message message = logic.processCommand(null);
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("Type something to begin.", message.getMessage());
+		assertEquals("Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #", message.getMessage());
 	}
 
 	// Test empty string
