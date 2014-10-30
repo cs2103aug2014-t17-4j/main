@@ -30,7 +30,7 @@ public class TaskBuilderAdvancedTest {
 	public void tc2() {
 		Task task = taskBuilder
 				.createTask("Meet boss from 21 jun 10am to 22nd jun");
-		assertEquals("Meet boss from 21 Jun to 22 Jun 10AM",
+		assertEquals("Meet boss from 21 Jun 10AM to 22 Jun 10AM",
 				task.getDescriptionEdit());
 	}
 

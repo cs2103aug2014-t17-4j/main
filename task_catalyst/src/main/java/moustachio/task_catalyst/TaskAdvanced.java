@@ -44,8 +44,9 @@ public class TaskAdvanced implements Task {
 	public String getDescription() {
 		String interpretedString = this.description;
 
-		String prettyString = TaskCatalystCommons
-				.getPrettyString(interpretedString);
+		boolean isAlwaysShowTime = false;
+		String prettyString = TaskCatalystCommons.getPrettyString(
+				interpretedString, isAlwaysShowTime);
 
 		String noCurlyBracesString = TaskCatalystCommons
 				.removeCurlyBraces(prettyString);
@@ -59,9 +60,10 @@ public class TaskAdvanced implements Task {
 	@Override
 	public String getDescriptionEdit() {
 		String interpretedString = this.description;
+		boolean isAlwaysShowTime = true;
 
-		String prettyString = TaskCatalystCommons
-				.getPrettyString(interpretedString);
+		String prettyString = TaskCatalystCommons.getPrettyString(
+				interpretedString, isAlwaysShowTime);
 
 		String noCurlyBracesString = TaskCatalystCommons
 				.removeCurlyBraces(prettyString);
@@ -99,11 +101,11 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isOverdue() {
-		if (getDateStart() == null) {
+		if (getDateEnd() == null) {
 			return false;
 		} else {
 			Date now = new Date();
-			return now.after(getDateStart());
+			return now.after(getDateEnd());
 		}
 	}
 

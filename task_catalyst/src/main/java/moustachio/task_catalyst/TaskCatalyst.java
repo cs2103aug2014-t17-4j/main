@@ -134,7 +134,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function creates hotkey for the actions that are undo,redo and exit.
+	 * This function creates hotkeys for the actions that are undo,redo and exit.
 	 * 
 	 * @author Lin XiuQing (A0112764J)
 	 */
@@ -307,7 +307,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 					}
 				});
 			}
-			break;
+			break;		
 		}
 
 	}

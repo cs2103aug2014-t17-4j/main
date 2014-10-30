@@ -456,7 +456,8 @@ public class TaskCatalystCommons {
 
 	// High-Level Pretty String Methods
 
-	public static String getPrettyString(String userInput) {
+	public static String getPrettyString(String userInput,
+			boolean isAlwaysShowTime) {
 		String editedUserInput = userInput;
 
 		List<DateGroup> dateGroups = getPrettyStringDateGroups(userInput);
@@ -474,7 +475,7 @@ public class TaskCatalystCommons {
 			}
 
 			SimpleDateFormat formatter = generateFormatter(previousDate,
-					currentDate, nextDate);
+					currentDate, nextDate, isAlwaysShowTime);
 
 			editedUserInput = editedUserInput.replace(dateGroups.get(i)
 					.getText(), formatter.format(currentDate));
@@ -498,16 +499,16 @@ public class TaskCatalystCommons {
 	}
 
 	private static SimpleDateFormat generateFormatter(Date previousDate,
-			Date currentDate, Date nextDate) {
+			Date currentDate, Date nextDate, boolean isAlwaysShowTime) {
 		String formatString = generateFormatString(previousDate, currentDate,
-				nextDate);
+				nextDate, isAlwaysShowTime);
 
 		SimpleDateFormat formatter = new SimpleDateFormat(formatString);
 		return formatter;
 	}
 
 	private static String generateFormatString(Date previousDate,
-			Date currentDate, Date nextDate) {
+			Date currentDate, Date nextDate, boolean isAlwaysShowTime) {
 		String formatString = "";
 		if (!isSameDate(previousDate, currentDate)) {
 			if (isYesterday(currentDate)) {
@@ -529,7 +530,8 @@ public class TaskCatalystCommons {
 				formatString = formatString + " yyyy";
 			}
 		}
-		if (!isSameTime(currentDate, nextDate) || formatString.isEmpty()) {
+		if (isAlwaysShowTime || !isSameTime(currentDate, nextDate)
+				|| formatString.isEmpty()) {
 			if (!formatString.isEmpty()) {
 				formatString = formatString + " ";
 			}
@@ -569,10 +571,11 @@ public class TaskCatalystCommons {
 
 	public static String getFriendlyString(String userCommand)
 			throws UnsupportedOperationException {
+		boolean isAlwaysShowTime = false;
 		String interpretedString = TaskCatalystCommons
 				.getInterpretedString(userCommand);
-		String prettyString = TaskCatalystCommons
-				.getPrettyString(interpretedString);
+		String prettyString = TaskCatalystCommons.getPrettyString(
+				interpretedString, isAlwaysShowTime);
 		String friendlyString = TaskCatalystCommons
 				.removeSquareBrackets(prettyString);
 		friendlyString = TaskCatalystCommons.removeCurlyBraces(friendlyString);
@@ -601,8 +604,10 @@ public class TaskCatalystCommons {
 		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(date);
 		cal2.setTime(date2);
-		boolean isSameDateOfMonth = cal1.get(Calendar.DATE) == cal2.get(Calendar.DATE);
-		boolean isSameMonth = cal1.get(Calendar.MONTH) == cal2.get(Calendar.MONTH);
+		boolean isSameDateOfMonth = cal1.get(Calendar.DATE) == cal2
+				.get(Calendar.DATE);
+		boolean isSameMonth = cal1.get(Calendar.MONTH) == cal2
+				.get(Calendar.MONTH);
 		boolean isSameYear = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
 		boolean isSameDate = isSameDateOfMonth && isSameMonth && isSameYear;
 		return isSameDate;

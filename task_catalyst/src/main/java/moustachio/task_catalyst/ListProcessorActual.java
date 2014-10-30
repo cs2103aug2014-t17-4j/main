@@ -112,7 +112,8 @@ public class ListProcessorActual implements ListProcessor {
 		for (Task task : list) {
 			if (!task.isDone()
 					&& task.isRange()
-					&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 0)) {
+					&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) <= 0)
+					&& (TaskCatalystCommons.daysFromToday(task.getDateEnd()) >= 0)) {
 				filteredList.add(task);
 			} else if (!task.isDone() && !task.getAllDates().isEmpty()
 					&& !task.isRange()) {
@@ -123,7 +124,7 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
-		return filteredList;
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashtagTomorrow(List<Task> list) {
@@ -131,7 +132,8 @@ public class ListProcessorActual implements ListProcessor {
 		for (Task task : list) {
 			if (!task.isDone()
 					&& task.isRange()
-					&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) == 1)) {
+					&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) <= 1)
+					&& TaskCatalystCommons.daysFromToday(task.getDateEnd()) >= 1) {
 				filteredList.add(task);
 			} else if (!task.isDone() && !task.getAllDates().isEmpty()
 					&& !task.isRange()) {
@@ -142,7 +144,7 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
-		return filteredList;
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashTagUpcoming(List<Task> list) {
@@ -150,7 +152,7 @@ public class ListProcessorActual implements ListProcessor {
 		for (Task task : list) {
 			if (!task.isDone()
 					&& task.isRange()
-					&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) >= 2)) {
+					&& (TaskCatalystCommons.daysFromToday(task.getDateEnd()) >= 2)) {
 				filteredList.add(task);
 			} else if (!task.isDone() && !task.getAllDates().isEmpty()
 					&& !task.isRange()) {
@@ -161,7 +163,7 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
-		return filteredList;
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashTagUserDefined(List<Task> list,
