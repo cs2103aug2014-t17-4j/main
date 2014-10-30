@@ -15,7 +15,7 @@ public class ActionInvoker {
 		}
 		return instance;
 	}
-	
+
 	public void testMode() {
 		undos.clear();
 		redos.clear();
@@ -28,7 +28,8 @@ public class ActionInvoker {
 
 	public Message doAction(Action action) {
 		Message message = new Message(Message.TYPE_ERROR,
-				"Type something to begin.");
+				"Type something to begin adding a task."
+						+ "\nOther Commands: delete, edit, done, redo, undo, #");
 		if (action != null) {
 			message = action.execute();
 			boolean isSuccess = message.getType() == Message.TYPE_SUCCESS;
