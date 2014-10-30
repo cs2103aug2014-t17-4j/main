@@ -1,11 +1,9 @@
 package moustachio.task_catalyst;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -13,12 +11,16 @@ import java.util.regex.Pattern;
 
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 public class TaskCatalystCommons {
 
-	private static PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
+	private static final String ERROR_DEFAULT_HASHTAGS = "Please remove default hashtags from your task description.";
+	private static final String ERROR_MIX_TYPES = "Please only specify one pair of date ranges per task and do not mix date types.";
 	private static final int INVALID_INTEGER = -1;
+
+	private static PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
+	private static Calendar cal1 = Calendar.getInstance();
+	private static Calendar cal2 = Calendar.getInstance();
 
 	// Command Parsing Methods
 
@@ -28,10 +30,11 @@ public class TaskCatalystCommons {
 
 		try {
 			value = Integer.parseInt(intString);
-			if (value <= 0) {
-				throw new NumberFormatException();
-			}
 		} catch (Exception e) {
+			value = INVALID_INTEGER;
+		}
+
+		if (value <= 0) {
 			value = INVALID_INTEGER;
 		}
 
@@ -114,55 +117,22 @@ public class TaskCatalystCommons {
 	public static String getInterpretedString(String userInput)
 			throws UnsupportedOperationException {
 		String interpretedString = userInput;
+		interpretedString = getInterpretedStringSingleIteration(interpretedString);
+		interpretedString = removeCurlyBraces(interpretedString);
+		interpretedString = getInterpretedStringSingleIteration(interpretedString);
+		exceptionIfInvalidRange(interpretedString);
+		exceptionIfContainsDefaultHashtag(interpretedString);
+		return interpretedString;
+	}
+
+	public static String getInterpretedStringSingleIteration(
+			String interpretedString) {
 		String interpretedStringNextPass = getInterpretedStringSinglePass(interpretedString);
-		if (!interpretedStringNextPass.equals(interpretedString)) {
-			return getInterpretedString(interpretedStringNextPass);
-		} else {
-			String attemptReparseWithoutBraces = removeCurlyBraces(interpretedString);
-			interpretedStringNextPass = getInterpretedStringSinglePass(attemptReparseWithoutBraces);
-			if (!interpretedStringNextPass.equals(interpretedString)) {
-				interpretedStringNextPass = getInterpretedStringSinglePass(interpretedStringNextPass);
-			}
-			exceptionIfInvalidRange(interpretedStringNextPass);
-			exceptionIfContainsDefaultHashtag(interpretedStringNextPass);
-			return interpretedStringNextPass;
+		while (!interpretedStringNextPass.equals(interpretedString)) {
+			interpretedString = interpretedStringNextPass;
+			interpretedStringNextPass = getInterpretedStringSinglePass(interpretedStringNextPass);
 		}
-	}
-
-	private static void exceptionIfInvalidRange(String interpretedStringNextPass)
-			throws UnsupportedOperationException {
-		// isRange is true when there exists a "to" between two dates,
-		// with the "to" at most 2 words away from the second date.
-		String rangeCondition = ".*\\}.*(\\bto\\b\\s)(\\b\\w*\\b\\s){0,2}\\{.*";
-		boolean isRange = interpretedStringNextPass.matches(rangeCondition);
-		boolean isMoreThanTwoDates = getAllDates(interpretedStringNextPass)
-				.size() > 2;
-		if (isRange && isMoreThanTwoDates) {
-			throw new UnsupportedOperationException(
-					"Please only specify one pair of date ranges per task and do not mix date types.");
-		}
-	}
-
-	private static void exceptionIfContainsDefaultHashtag(
-			String interpretedStringNextPass)
-			throws UnsupportedOperationException {
-		TaskManager taskManager = TaskManagerActual.getInstance();
-		String[] defaultHashtags = taskManager.getDefaultHashtags();
-		String lowerCaseString = interpretedStringNextPass.toLowerCase();
-		boolean isContainsDefaultHashtag = false;
-		for (String hashtag : defaultHashtags) {
-			String currentHashtag = "[" + hashtag + "]";
-			boolean isHashtagFound = lowerCaseString.contains(currentHashtag);
-			boolean isPriority = hashtag.equals("#pri");
-			if (isHashtagFound && !isPriority) {
-				isContainsDefaultHashtag = true;
-				break;
-			}
-		}
-		if (isContainsDefaultHashtag) {
-			throw new UnsupportedOperationException(
-					"Please remove default hashtags from your task description.");
-		}
+		return interpretedString;
 	}
 
 	public static String getInterpretedStringSinglePass(String userInput)
@@ -173,8 +143,6 @@ public class TaskCatalystCommons {
 		List<DateGroup> dateGroups = parseParsingInput(parsingInput);
 		interpretedInput = replaceDateStrings(interpretedInput, parsingInput,
 				dateGroups);
-		interpretedInput = removePrepositionBeforeDateStrings(interpretedInput);
-
 		return interpretedInput;
 	}
 
@@ -184,7 +152,6 @@ public class TaskCatalystCommons {
 
 		String fivePlusDigits = "\\d{5,}";
 		String endWithNumber = "[a-zA-Z-_$]+\\d+\\b";
-		String hashtaggedWords = "[#]+\\w+";
 		String wordsContainingEst = "\\w*est\\w*";
 		String wordsContainingAted = "\\w*ated\\w*";
 
@@ -196,7 +163,6 @@ public class TaskCatalystCommons {
 				wordsContainingAted);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, fivePlusDigits);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, endWithNumber);
-		interpretedInput = ignoreBasedOnRegex(interpretedInput, hashtaggedWords);
 		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
 		interpretedInput = replaceYesterday(interpretedInput);
 
@@ -207,6 +173,7 @@ public class TaskCatalystCommons {
 
 		String parsingInput = interpretedInput;
 		parsingInput = removeWordsInBrackets(interpretedInput);
+		parsingInput = removeHashtaggedWords(parsingInput);
 		parsingInput = removeSensitiveParsingWords(parsingInput);
 		parsingInput = removeNumberWords(parsingInput);
 		parsingInput = replaceCommasWithAnd(parsingInput);
@@ -217,7 +184,6 @@ public class TaskCatalystCommons {
 	}
 
 	private static List<DateGroup> parseParsingInput(String parsingInput) {
-		prettyTimeParser = new PrettyTimeParser();
 		return prettyTimeParser.parseSyntax(parsingInput);
 	}
 
@@ -236,6 +202,7 @@ public class TaskCatalystCommons {
 				List<Date> dates = dateGroup.getDates();
 				sortDates(dates);
 				removeRepeatedDates(dates);
+				truncateDateWithoutTime(dates);
 
 				String matchingText = dateGroup.getText();
 
@@ -248,6 +215,8 @@ public class TaskCatalystCommons {
 
 			}
 		}
+
+		interpretedInput = removePrepositionBeforeDateStrings(interpretedInput);
 
 		return interpretedInput;
 	}
@@ -274,11 +243,48 @@ public class TaskCatalystCommons {
 
 	private static String removePrepositionBeforeDateStrings(
 			String interpretedInput) {
+
 		interpretedInput = removePrepositionBeforeDateString(interpretedInput,
 				"on");
+
 		interpretedInput = removePrepositionBeforeDateString(interpretedInput,
 				"at");
+
 		return interpretedInput;
+	}
+
+	private static void exceptionIfInvalidRange(String interpretedStringNextPass)
+			throws UnsupportedOperationException {
+		// isRange is true when there exists a "to" between two dates,
+		// with the "to" at most 2 words away from the second date.
+		String rangeCondition = ".*\\}.*(\\bto\\b\\s)(\\b\\w*\\b\\s){0,2}\\{.*";
+		boolean isRange = interpretedStringNextPass.matches(rangeCondition);
+		boolean isMoreThanTwoDates = getAllDates(interpretedStringNextPass)
+				.size() > 2;
+		if (isRange && isMoreThanTwoDates) {
+			throw new UnsupportedOperationException(ERROR_MIX_TYPES);
+		}
+	}
+
+	private static void exceptionIfContainsDefaultHashtag(
+			String interpretedStringNextPass)
+			throws UnsupportedOperationException {
+		TaskManager taskManager = TaskManagerActual.getInstance();
+		String[] defaultHashtags = taskManager.getDefaultHashtags();
+		String lowerCaseString = interpretedStringNextPass.toLowerCase();
+		boolean isContainsDefaultHashtag = false;
+		for (String hashtag : defaultHashtags) {
+			String currentHashtag = "[" + hashtag + "]";
+			boolean isHashtagFound = lowerCaseString.contains(currentHashtag);
+			boolean isPriority = hashtag.equals("#pri");
+			if (isHashtagFound && !isPriority) {
+				isContainsDefaultHashtag = true;
+				break;
+			}
+		}
+		if (isContainsDefaultHashtag) {
+			throw new UnsupportedOperationException(ERROR_DEFAULT_HASHTAGS);
+		}
 	}
 
 	// Low-Level Interpreted String Parsing Methods
@@ -306,11 +312,35 @@ public class TaskCatalystCommons {
 		}
 	}
 
+	private static void truncateDateWithoutTime(List<Date> dates) {
+		for (Date date : dates) {
+			// This is necessary because PrettyTime may return varying
+			// milliseconds.
+
+			boolean isSameTime = TaskCatalystCommons.isSameTime(new Date(),
+					date);
+
+			if (isSameTime) {
+				truncateTime(date);
+			}
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private static Date truncateTime(Date date) {
+		date.setHours(0);
+		date.setMinutes(0);
+		date.setSeconds(1);
+		return date;
+	}
+
 	// Generates a single Date String for a DateGroup.
 	// Example Date String: {date}, {date} and {date}
 	private static String getDateString(List<Date> dates, String finalConnector) {
 
-		SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy KK:mm a");
+		SimpleDateFormat formatter = new SimpleDateFormat(
+				"dd MMM yyyy KK:mm:ss a");
+
 		int dateCount = dates.size();
 
 		String intermediateConnector = ", ";
@@ -341,7 +371,7 @@ public class TaskCatalystCommons {
 		String wordBoundaryEnd = "(\\b|$)";
 		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
 
-		String matchingExpression = matchingText;
+		String matchingExpression = matchingText.replaceAll("\\.$", "");
 		matchingExpression = removeAllAnds(matchingExpression);
 		matchingExpression = removeConsecutiveWhitespaces(matchingExpression);
 		matchingExpression = replaceSpacesWithWildcard(matchingExpression);
@@ -353,6 +383,10 @@ public class TaskCatalystCommons {
 				dateString);
 
 		return interpretedInput;
+	}
+
+	private static String removeHashtaggedWords(String parsingInput) {
+		return parsingInput.replaceAll("(\\s|^)(#\\w+)(\\s|$)", " ");
 	}
 
 	private static String removePrepositionBeforeDateString(
@@ -386,7 +420,7 @@ public class TaskCatalystCommons {
 	}
 
 	private static String removeWordsInBrackets(String interpretedInput) {
-		return interpretedInput.replaceAll("(\\[|\\{)(.*?)(\\]|\\})", "");
+		return interpretedInput.replaceAll("(\\[|\\{)(.*)(\\]|\\})", "");
 	}
 
 	private static String removeConsecutiveWhitespaces(String interpretedInput) {
@@ -411,7 +445,7 @@ public class TaskCatalystCommons {
 	}
 
 	private static String replaceCommasWithAnd(String parsingInput) {
-		return parsingInput.replaceAll(", ", " and ");
+		return parsingInput.replaceAll(",", " and ");
 	}
 
 	private static boolean isLongMatch(DateGroup dateGroup) {
@@ -420,13 +454,16 @@ public class TaskCatalystCommons {
 
 	// This checks if the match is exact
 	private static boolean isWholeMatch(String parsingInput, DateGroup dateGroup) {
+		String trailingSymbols = "[^A-Z^a-z^0-9]$";
 		String extendedText = extendMatch(parsingInput, dateGroup);
-		String originalText = Pattern.quote(dateGroup.getText());
+		String matchingText = dateGroup.getText();
+		matchingText = matchingText.replaceAll(trailingSymbols, "");
+		matchingText = matchingText.replaceAll(",", "");
 		String startWordBoundary = ".*(^|\\b)";
 		String endWordBoundary = "(\\b|$).*";
 
 		boolean wholeWord = extendedText.matches(startWordBoundary
-				+ originalText + endWordBoundary);
+				+ matchingText + endWordBoundary);
 		return wholeWord;
 	}
 
@@ -495,6 +532,10 @@ public class TaskCatalystCommons {
 				.replaceAll("to \\{(on|at) ", "to \\{");
 		editedUserInput = editedUserInput.replaceAll("from \\{(on|at) ",
 				"from \\{");
+		editedUserInput = editedUserInput.replaceAll("before \\{(on|at) ",
+				"before \\{");
+		editedUserInput = editedUserInput.replaceAll("after \\{(on|at) ",
+				"after \\{");
 		return editedUserInput;
 	}
 
@@ -518,7 +559,8 @@ public class TaskCatalystCommons {
 			} else if (isTomorrow(currentDate)) {
 				formatString = "'tomorrow'";
 			} else if (isThisWeek(currentDate)) {
-				if (previousDate == null) {
+				boolean isFirstDate = previousDate == null;
+				if (isFirstDate) {
 					formatString = "'on' ";
 				}
 				formatString += "E";
@@ -532,14 +574,17 @@ public class TaskCatalystCommons {
 		}
 		if (isAlwaysShowTime || !isSameTime(currentDate, nextDate)
 				|| formatString.isEmpty()) {
-			if (!formatString.isEmpty()) {
-				formatString = formatString + " ";
+			if (hasHours(currentDate) || hasMinutes(currentDate)
+					|| getSeconds(currentDate) != 1) {
+				if (!formatString.isEmpty()) {
+					formatString = formatString + " ";
+				}
+				formatString = formatString + "h";
+				if (hasMinutes(currentDate)) {
+					formatString = formatString + ":mm";
+				}
+				formatString = formatString + "a";
 			}
-			formatString = formatString + "h";
-			if (hasMinutes(currentDate)) {
-				formatString = formatString + ":mm";
-			}
-			formatString = formatString + "a";
 		}
 		return formatString;
 	}
@@ -588,39 +633,66 @@ public class TaskCatalystCommons {
 		if (date == null || date2 == null) {
 			return false;
 		}
-		Calendar cal1 = Calendar.getInstance();
-		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(date);
 		cal2.setTime(date2);
-		return cal1.get(Calendar.HOUR_OF_DAY) == cal2.get(Calendar.HOUR_OF_DAY)
-				&& cal1.get(Calendar.MINUTE) == cal2.get(Calendar.MINUTE);
+		int hour1 = cal1.get(Calendar.HOUR_OF_DAY);
+		int hour2 = cal2.get(Calendar.HOUR_OF_DAY);
+		int minute1 = cal1.get(Calendar.MINUTE);
+		int minute2 = cal2.get(Calendar.MINUTE);
+		boolean isSameHour = hour1 == hour2;
+		boolean isSameMinute = minute1 == minute2;
+		return isSameHour && isSameMinute;
 	}
 
 	public static boolean isSameDate(Date date, Date date2) {
 		if (date == null || date2 == null) {
 			return false;
 		}
-		Calendar cal1 = Calendar.getInstance();
-		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(date);
 		cal2.setTime(date2);
-		boolean isSameDateOfMonth = cal1.get(Calendar.DATE) == cal2
-				.get(Calendar.DATE);
-		boolean isSameMonth = cal1.get(Calendar.MONTH) == cal2
-				.get(Calendar.MONTH);
-		boolean isSameYear = cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+		int dateOfMonth1 = cal1.get(Calendar.DATE);
+		int dateOfMonth2 = cal2.get(Calendar.DATE);
+		int month1 = cal1.get(Calendar.MONTH);
+		int month2 = cal2.get(Calendar.MONTH);
+		int year1 = cal1.get(Calendar.YEAR);
+		int year2 = cal2.get(Calendar.YEAR);
+		boolean isSameDateOfMonth = dateOfMonth1 == dateOfMonth2;
+		boolean isSameMonth = month1 == month2;
+		boolean isSameYear = year1 == year2;
 		boolean isSameDate = isSameDateOfMonth && isSameMonth && isSameYear;
 		return isSameDate;
+	}
+
+	public static boolean hasHours(Date date) {
+		return getHours(date) != 0;
 	}
 
 	public static boolean hasMinutes(Date date) {
 		return getMinutes(date) != 0;
 	}
 
+	public static boolean hasSeconds(Date date) {
+		return getSeconds(date) != 0;
+	}
+
+	public static int getHours(Date date) {
+		cal1.setTime(date);
+		return cal1.get(Calendar.HOUR_OF_DAY);
+	}
+
 	public static int getMinutes(Date date) {
-		Calendar cal1 = Calendar.getInstance();
 		cal1.setTime(date);
 		return cal1.get(Calendar.MINUTE);
+	}
+
+	public static int getSeconds(Date date) {
+		cal1.setTime(date);
+		return cal1.get(Calendar.SECOND);
+	}
+
+	public static int getMilliseconds(Date date) {
+		cal1.setTime(date);
+		return cal1.get(Calendar.MILLISECOND);
 	}
 
 	public static boolean isYesterday(Date date) {
@@ -640,43 +712,34 @@ public class TaskCatalystCommons {
 	}
 
 	public static int daysFromToday(Date date) {
-		Calendar cal1 = Calendar.getInstance();
-		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(date);
-		cal2.setTime(new Date());
-		return cal1.get(Calendar.DAY_OF_YEAR) - cal2.get(Calendar.DAY_OF_YEAR)
-				+ (cal1.get(Calendar.YEAR) - cal2.get(Calendar.YEAR)) * 365;
-	}
-
-	public static int daysFromToday(LocalDateTime date) {
-		ZonedDateTime zdt = date.atZone(ZoneId.systemDefault());
-		Date output = Date.from(zdt.toInstant());
-		return daysFromToday(output);
+		cal2.setTimeInMillis(System.currentTimeMillis());
+		int dayOfYear1 = cal1.get(Calendar.DAY_OF_YEAR);
+		int dayOfYear2 = cal2.get(Calendar.DAY_OF_YEAR);
+		int year1 = cal1.get(Calendar.YEAR);
+		int year2 = cal2.get(Calendar.YEAR);
+		int dayDifference = dayOfYear1 - dayOfYear2;
+		int yearDifference = (year1 - year2) * 365;
+		return dayDifference + yearDifference;
 	}
 
 	public static boolean isThisYear(Date date) {
-		Calendar cal1 = Calendar.getInstance();
-		Calendar cal2 = Calendar.getInstance();
 		cal1.setTime(date);
-		cal2.setTime(new Date());
+		cal2.setTimeInMillis(System.currentTimeMillis());
 		return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
 	}
 
 	public static List<Date> getAllDates(String interpretedString) {
 		Pattern pattern = Pattern.compile("\\{(.*?)\\}");
 		Matcher matcher = pattern.matcher(interpretedString);
-		DateGroup previousGroup = null;
-		List<DateGroup> dateGroups = new ArrayList<DateGroup>();
-		while (matcher.find()) {
-			if (previousGroup == null) {
-				String matching = matcher.group();
-				dateGroups.addAll(new PrettyTimeParser().parseSyntax(matching));
-			}
-		}
 		List<Date> allDates = new ArrayList<Date>();
-		for (int i = 0; i < dateGroups.size(); i++) {
-			Date currentDate = dateGroups.get(i).getDates().get(0);
-			allDates.add(currentDate);
+		while (matcher.find()) {
+			String matching = matcher.group();
+			List<DateGroup> dateGroups = prettyTimeParser.parseSyntax(matching);
+			for (DateGroup dateGroup : dateGroups) {
+				List<Date> dates = dateGroup.getDates();
+				allDates.addAll(dates);
+			}
 		}
 		sortDates(allDates);
 		return allDates;

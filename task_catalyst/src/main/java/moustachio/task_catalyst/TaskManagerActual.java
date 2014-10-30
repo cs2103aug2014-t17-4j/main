@@ -124,7 +124,7 @@ public class TaskManagerActual implements TaskManager {
 			refreshLists();
 			for (Task task : tasks) {
 				displayAutoswitchToTask(task);
-				tasksSelected.add(displayList.indexOf(task));
+				tasksSelected.add(0, displayList.indexOf(task));
 			}
 		}
 
@@ -347,9 +347,11 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	private void displayAutoswitchToTask(Task task) {
-		boolean isTaskDisplayed = task != null && displayList.contains(task);
+		boolean isTaskNull = task == null;
+		boolean isTaskDisplayed = displayList.contains(task);
 		boolean isListEmpty = displayList.isEmpty();
-		boolean isNeedAutoswitch = !isTaskDisplayed || isListEmpty;
+		boolean isNeedAutoswitch = (!isTaskNull && !isTaskDisplayed)
+				|| isListEmpty;
 		if (isNeedAutoswitch) {
 			setDisplayMode(DEFAULT_DISPLAY_MODE);
 			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);

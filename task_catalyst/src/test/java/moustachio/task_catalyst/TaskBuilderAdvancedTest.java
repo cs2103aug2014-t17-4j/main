@@ -315,8 +315,8 @@ public class TaskBuilderAdvancedTest {
 	// Fixed a problem when a partial keyword is found between two valid dates.
 	@Test
 	public void tc37() {
-		Task task = taskBuilder.createTask("5pm mor 6pm");
-		assertEquals("today 5PM mor 6PM", task.getDescription());
+		Task task = taskBuilder.createTask("5pm mor 6pm mor 7pm.");
+		assertEquals("today 5PM mor 6PM mor 7PM.", task.getDescription());
 	}
 
 	// Alternate case to tc37.
@@ -331,5 +331,39 @@ public class TaskBuilderAdvancedTest {
 	public void tc39() {
 		Task task = taskBuilder.createTask("5pm 5pm 5pm to 6pm and 7pm");
 		assertEquals(null, task);
+	}
+
+	// Fix "before on" preposition.
+	@Test
+	public void tc40() {
+		Task task = taskBuilder
+				.createTask("Complete the task before 5pm 13 Oct.");
+		assertEquals("Complete the task before 13 Oct 5PM.",
+				task.getDescription());
+	}
+
+	// Friday should show up without dates.
+	@Test
+	public void tc41() {
+		Task task = taskBuilder.createTask("today");
+		assertEquals("today", task.getDescription());
+	}
+
+	// Commas after dates should be parsable.
+	@Test
+	public void tc42() {
+		Task task = taskBuilder
+				.createTask("Something mon and tue,");
+		assertEquals("Something on Mon and Tue,",
+				task.getDescription());
+	}
+
+	// Fullstops after dates should be parsable.
+	@Test
+	public void tc43() {
+		Task task = taskBuilder
+				.createTask("Something mon and tue. then something else.");
+		assertEquals("Something on Mon and Tue. then something else.",
+				task.getDescription());
 	}
 }

@@ -112,7 +112,9 @@ public class LogicActualTest {
 	public void addTc7() {
 		Message message = logic.processCommand(null);
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #", message.getMessage());
+		assertEquals(
+				"Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #",
+				message.getMessage());
 	}
 
 	// Test empty string
@@ -239,7 +241,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit 1 item 1");
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
-				"edit 1 item 1\nEdit: Hit enter after making your changes.\nSyntax: edit <task number>",
+				"item 1\nEdit: Hit enter after making your changes.\nSyntax: edit <task number>",
 				message.getMessage());
 	}
 
@@ -516,6 +518,20 @@ public class LogicActualTest {
 	public void hasHashtagTc4() {
 		logic.processCommand("#hashtag in front");
 		assertEquals(false, logic.getList().get(0).hasHashtag("hashtag2"));
+	}
+
+	// Ignore punctuations at the end.
+	@Test
+	public void hasHashtagTc5() {
+		logic.processCommand("Punctuations ending #hashtag.. ");
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Accept punctuations between.
+	@Test
+	public void hasHashtagTc6() {
+		logic.processCommand("Punctuations ending #hash.tag.. ");
+		assertEquals(true, logic.getList().get(0).hasHashtag("hash.tag"));
 	}
 
 	// Priority Recognition - Not Priority.
@@ -799,6 +815,21 @@ public class LogicActualTest {
 		assertEquals(1, logic.getList().size());
 		logic.processCommand("edit 1 boss3");
 		assertEquals(2, logic.getList().size());
+	}
+
+	// Ensure that switching occurs only when list is empty during remove.
+	@Test
+	public void autoswitchTc3() {
+		logic.processCommand("1");
+		logic.processCommand("2");
+		logic.processCommand("2");
+		assertEquals(3, logic.getList().size());
+		logic.processCommand("search 2");
+		assertEquals(2, logic.getList().size());
+		logic.processCommand("rm 1");
+		assertEquals(1, logic.getList().size());
+		logic.processCommand("rm 1");
+		assertEquals(1, logic.getList().size());
 	}
 
 	// Test if #all is highlighted by default.

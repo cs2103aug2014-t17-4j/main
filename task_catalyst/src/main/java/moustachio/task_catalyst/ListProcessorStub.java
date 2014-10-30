@@ -1,9 +1,8 @@
 package moustachio.task_catalyst;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
-
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 public class ListProcessorStub implements
 		moustachio.task_catalyst.ListProcessor {

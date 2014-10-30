@@ -117,7 +117,8 @@ public class Edit extends Action {
 					taskDescription);
 		} else if (isBeingEdited) {
 			try {
-				message = TaskCatalystCommons.getFriendlyString(userCommand);
+				message = TaskCatalystCommons.getFriendlyString(userCommand
+						.replace("edit " + taskNumber + " ", ""));
 				type = Message.TYPE_HINT;
 			} catch (UnsupportedOperationException e) {
 				message = e.getMessage();

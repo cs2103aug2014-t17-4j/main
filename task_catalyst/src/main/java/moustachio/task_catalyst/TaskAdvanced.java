@@ -133,11 +133,20 @@ public class TaskAdvanced implements Task {
 		List<String> hashtagList = new ArrayList<String>();
 		String[] descriptionTokenized = this.description.split(" ");
 		for (String token : descriptionTokenized) {
-			if (token.startsWith("#") || token.startsWith("[#")) {
-				String tokenLowerAlphabets = "#"
-						+ token.toLowerCase().replaceAll("[^A-Za-z0-9]+", "");
-				if (tokenLowerAlphabets.length() > 1) {
-					hashtagList.add(tokenLowerAlphabets);
+			if (token.startsWith("#")) {
+				String tokenProcessed = token.toLowerCase();
+				tokenProcessed = TaskCatalystCommons
+						.removeSquareBrackets(tokenProcessed);
+
+				String repeatedStartingHashtags = "(\\s|^)#+";
+				String endingPunctuations = "(,|\\.|\\?|!|:|;)+(\\s|$)";
+
+				tokenProcessed = tokenProcessed.replaceAll(
+						repeatedStartingHashtags, "#");
+				tokenProcessed = tokenProcessed.replaceAll(endingPunctuations,
+						"");
+				if (tokenProcessed.length() > 1) {
+					hashtagList.add(tokenProcessed);
 				}
 			}
 		}
@@ -161,11 +170,6 @@ public class TaskAdvanced implements Task {
 	public int compareTo(Task o) {
 		Date thisDateTime = this.getDateStart();
 		Date otherDateTime = o.getDateStart();
-		if (this.isPriority() && !o.isPriority()) {
-			return -1;
-		} else if (!this.isPriority() && o.isPriority()) {
-			return 1;
-		}
 		if (thisDateTime == null) {
 			return 1;
 		} else if (otherDateTime == null) {

@@ -86,9 +86,9 @@ public class ListProcessorActualTest {
 		tasks.add(taskBuilder.createTask("meet #boss at 5pm"));
 		tasks.add(taskBuilder.createTask("meet #KaiYao at 5pm"));
 		tasks.add(taskBuilder.createTask("ask KaiYao CS2103 project questions"));
-		assertEquals(listProcessor.sortByDate(tasks).get(0), tasks.get(2));
-		assertEquals(listProcessor.sortByDate(tasks).get(1), tasks.get(0));
-		assertEquals(listProcessor.sortByDate(tasks).get(2), tasks.get(1));
+		assertEquals(listProcessor.sortByDate(tasks).get(0), tasks.get(0));
+		assertEquals(listProcessor.sortByDate(tasks).get(1), tasks.get(1));
+		assertEquals(listProcessor.sortByDate(tasks).get(2), tasks.get(2));
 	}
 
 }
