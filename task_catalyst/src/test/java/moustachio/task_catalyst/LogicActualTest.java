@@ -882,17 +882,17 @@ public class LogicActualTest {
 	// Check if a priority task is marked.
 	@Test
 	public void highlightTaskTc3() {
-		logic.processCommand("item 1PM to 2PM #pri");
-		logic.processCommand("item 1PM to 2PM");
-		logic.processCommand("item 1PM to 2PM");
+		logic.processCommand("item tomorrow 1PM to 2PM #pri");
+		logic.processCommand("item tomorrow 1PM to 2PM");
+		logic.processCommand("item tomorrow 1PM to 2PM");
 		logic.processCommand("item 1PM to 2PM");
 		List<Task> tasks = logic.getList();
 		Task task1 = tasks.get(0);
 		Task task2 = tasks.get(1);
 		Task task3 = tasks.get(2);
 		Task task4 = tasks.get(3);
-		assertEquals(HighlightType.PRIORITY_OVERLAP, task1.getHighlightType());
-		assertEquals(HighlightType.OVERLAP, task2.getHighlightType());
+		assertEquals(HighlightType.OVERDUE, task1.getHighlightType());
+		assertEquals(HighlightType.PRIORITY_OVERLAP, task2.getHighlightType());
 		assertEquals(HighlightType.OVERLAP, task3.getHighlightType());
 		assertEquals(HighlightType.OVERLAP, task4.getHighlightType());
 	}
