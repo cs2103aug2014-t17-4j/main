@@ -126,6 +126,23 @@ public class TaskAdvanced implements Task {
 		return dateEnd;
 	}
 
+	@Override
+	public Date getNextDate() {
+		if (allDates.isEmpty()) {
+			return null;
+		} else if (isRange()) {
+			return getDateStart();
+		} else {
+			Date now = new Date();
+			for (Date date : allDates) {
+				if (date.after(now)) {
+					return date;
+				}
+			}
+			return null;
+		}
+	}
+
 	// Comparison Methods
 
 	@Override
