@@ -121,6 +121,7 @@ public class TaskCatalystCommons {
 		interpretedString = removeCurlyBraces(interpretedString);
 		interpretedString = getInterpretedStringSingleIteration(interpretedString);
 		exceptionIfInvalidRange(interpretedString);
+		exceptionIfOverlappingDates(interpretedString);
 		exceptionIfContainsDefaultHashtag(interpretedString);
 		return interpretedString;
 	}
@@ -263,6 +264,30 @@ public class TaskCatalystCommons {
 				.size() > 2;
 		if (isRange && isMoreThanTwoDates) {
 			throw new UnsupportedOperationException(ERROR_MIX_TYPES);
+		}
+	}
+
+	private static void exceptionIfOverlappingDates(
+			String interpretedStringNextPass)
+			throws UnsupportedOperationException {
+		List<Date> dates = getAllDates(interpretedStringNextPass);
+		int j = 0;
+		while (j < dates.size() - 1) {
+
+			// This is necessary because PrettyTime may return varying
+			// milliseconds.
+
+			boolean isSameDate = TaskCatalystCommons.isSameDate(dates.get(j),
+					dates.get(j + 1));
+			boolean isSameTime = TaskCatalystCommons.isSameTime(dates.get(j),
+					dates.get(j + 1));
+
+			if (isSameDate && isSameTime) {
+				throw new UnsupportedOperationException(
+						"Please resolve overlapping dates in the task.");
+			} else {
+				j++;
+			}
 		}
 	}
 

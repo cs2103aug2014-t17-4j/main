@@ -352,10 +352,8 @@ public class TaskBuilderAdvancedTest {
 	// Commas after dates should be parsable.
 	@Test
 	public void tc42() {
-		Task task = taskBuilder
-				.createTask("Something mon and tue,");
-		assertEquals("Something on Mon and Tue,",
-				task.getDescription());
+		Task task = taskBuilder.createTask("Something mon and tue,");
+		assertEquals("Something on Mon and Tue,", task.getDescription());
 	}
 
 	// Fullstops after dates should be parsable.
@@ -365,5 +363,12 @@ public class TaskBuilderAdvancedTest {
 				.createTask("Something mon and tue. then something else.");
 		assertEquals("Something on Mon and Tue. then something else.",
 				task.getDescription());
+	}
+
+	// Overlapping dates in the same task.
+	@Test
+	public void tc44() {
+		Task task = taskBuilder.createTask("Something 1pm 2pm 3pm then 1pm");
+		assertEquals(null, task);
 	}
 }
