@@ -248,7 +248,7 @@ public class UIController {
 			for (int i = 0; i < task.size(); i++) {
 				Date startDate;
 				
-				if(task.get(i).getDateStart() != null){
+				if(task.get(i).getNextDate() != null){
 					if(task.get(i).isRange() == false){
 						startDate = task.get(i).getNextDate();
 					}else{
@@ -263,7 +263,6 @@ public class UIController {
 				taskScrollPane.setContent(taskContainer);
 			}
 		}
-		
 	}
 
 	private void displayHashTags() {

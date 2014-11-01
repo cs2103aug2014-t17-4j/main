@@ -7,14 +7,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 
 public class TaskGrid extends GridPane {
-	// Image location in DarkTheme.css
-	@FXML
-	ImageView priorityIcon;
-	@FXML
-	ImageView overlapIcon;
 
 	private static LogicActual logic;
 
@@ -25,8 +21,10 @@ public class TaskGrid extends GridPane {
 	private static final int FIRST_ROW = 0;
 	private static final int SECOND_ROW = 1;
 	
-	private static final String PRIORITY_IMAGE_PATH = "/images/priority.png";
-	private static final String OVERLAP_IMAGE_PATH = "/images/overlap.png";
+	private static final String PRIORITY_ICON_IMAGE_PATH = "/images/priority.png";
+	private static final String OVERLAP_ICON_IMAGE_PATH = "/images/overlap.png";
+	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
+	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
 
 	public TaskGrid(int id, Task task) {
 		configureTaskGrid();
@@ -41,7 +39,12 @@ public class TaskGrid extends GridPane {
 		this.setHgap(10);
 		this.setVgap(5);
 		this.getStyleClass().add("grid");
-		// this.setGridLinesVisible(true);
+		ColumnConstraints column1 = new ColumnConstraints();
+	    column1.setPercentWidth(5);
+	    ColumnConstraints column2 = new ColumnConstraints();
+	    column2.setPercentWidth(17);
+	    this.getColumnConstraints().addAll(column1, column2); // each get 50% of width
+		//this.setGridLinesVisible(true);
 	}
 	
 	private void displayID(int id) {
@@ -51,7 +54,7 @@ public class TaskGrid extends GridPane {
 	}
 
 	private void displayTime(Task task) {
-		if(task.getDateStart() != null){
+		if(task.getNextDate() != null){
 			Date startDate = task.getDateStart();
 			Date endDate = task.getDateEnd();
 			
@@ -74,33 +77,40 @@ public class TaskGrid extends GridPane {
 		Label description = new Label(task.getDescription());
 		description.setWrapText(true);
 		
-		this.add(description, THIRD_COLUMN, FIRST_ROW);
+		this.add(description, THIRD_COLUMN, FIRST_ROW , 5 , 1);
 	}
 
 	private void checkAndDisplayTaskIcon(Task task) {
-		// load the image
-        Image priorityImage = new Image(PRIORITY_IMAGE_PATH);
-        Image overlapImage = new Image(OVERLAP_IMAGE_PATH);
-        
-        ImageView priorityIcon = new ImageView();
-        priorityIcon.setImage(priorityImage);
-
-        ImageView overlapIcon = new ImageView();
-        overlapIcon.setImage(overlapImage);
-
-		switch (task.getHighlightType()) {
-			case LAST_ADDED:
-				break;
-			case PRIORITY:
-				this.add(priorityIcon, THIRD_COLUMN, SECOND_ROW);
-				break;
-			case OVERLAP:
-				this.add(overlapIcon, THIRD_COLUMN, SECOND_ROW);
-				break;
-			case PRIORITY_OVERLAP:
-				break;
-			default:
-				break;
+		int iconColumn = SECOND_COLUMN;
+		ImageView icon = new ImageView();
+		
+		if(task.isDone()){
+			Image doneImage = new Image(DONE_ICON_IMAGE_PATH);
+			iconColumn++;
+			icon.setImage(doneImage);
+			this.add(icon, iconColumn, SECOND_ROW);
 		}
+		if(task.isPriority()){
+			Image priorityImage = new Image(PRIORITY_ICON_IMAGE_PATH);
+			iconColumn++;
+			ImageView priorityIcon = new ImageView();
+			priorityIcon.setImage(priorityImage);
+			this.add(priorityIcon, iconColumn, SECOND_ROW);
+		}
+		if(task.isOverdue()){
+			iconColumn++;
+			Image overdueImage = new Image(OVERDUE_ICON_IMAGE_PATH);
+			ImageView overdueIcon = new ImageView();
+			overdueIcon.setImage(overdueImage);
+			this.add(overdueIcon, iconColumn, SECOND_ROW);
+		}
+		/*
+        if(task.isOverlap()){
+        	iconColumn++;
+        	Image overlapImage = new Image(OVERLAP_ICON_IMAGE_PATH);
+            ImageView overlapIcon = new ImageView();
+            overlapIcon.setImage(overlapImage);
+            this.add(overlapIcon, iconColumn, SECOND_ROW);
+        }*/
 	}
 }
