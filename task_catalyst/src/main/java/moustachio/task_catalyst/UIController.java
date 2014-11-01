@@ -236,6 +236,9 @@ public class UIController {
 	private void displayTasks() {
 		VBox taskContainer = new VBox();
 		String dateCategory;
+		String prevDate = null;
+		String currentDate = null;
+		Date startDate;
 		List<Task> task = logic.getList();
 		
 		taskContainer.setSpacing(10);
@@ -245,20 +248,28 @@ public class UIController {
 			taskContainer.getChildren().add(new Label(EMPTY_TASKVIEW_MESSAGE));
 			taskScrollPane.setContent(taskContainer);
 		}else{
-			for (int i = 0; i < task.size(); i++) {
-				Date startDate;
-				
-				if(task.get(i).getNextDate() != null){
-					if(task.get(i).isRange() == false){
-						startDate = task.get(i).getNextDate();
+			for (int i = 0; i < task.size(); i++) {	
+				Task currentTask = task.get(i);
+
+				if(currentTask.getNextDate() != null){
+					if(currentTask.isRange() == false){
+						startDate = currentTask.getNextDate();
 					}else{
-						startDate = task.get(i).getDateStart();
+						startDate = currentTask.getDateStart();
 					}
+					
 					dateCategory = new SimpleDateFormat("MMMM dd").format(startDate);
+					
 				}else{
 					dateCategory = "Someday";
 				}
-				taskContainer.getChildren().add(new Label(dateCategory));
+				currentDate = dateCategory;
+				
+				if(!currentDate.equals(prevDate)){
+					taskContainer.getChildren().add(new Label(dateCategory));
+				}
+				
+				prevDate = currentDate;
 				taskContainer.getChildren().add(new TaskGrid(i,task.get(i)));
 				taskScrollPane.setContent(taskContainer);
 			}

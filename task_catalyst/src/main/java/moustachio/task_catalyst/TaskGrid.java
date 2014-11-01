@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javafx.fxml.FXML;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -35,16 +36,17 @@ public class TaskGrid extends GridPane {
 	}
 	
 	private void configureTaskGrid() {
+		ColumnConstraints idColumn = new ColumnConstraints();
+		ColumnConstraints timeColumn = new ColumnConstraints();
+		
+		idColumn.setPercentWidth(5);
+		timeColumn.setPercentWidth(17);
 		this.setPrefWidth(460);
 		this.setHgap(10);
 		this.setVgap(5);
 		this.getStyleClass().add("grid");
-		ColumnConstraints column1 = new ColumnConstraints();
-	    column1.setPercentWidth(5);
-	    ColumnConstraints column2 = new ColumnConstraints();
-	    column2.setPercentWidth(17);
-	    this.getColumnConstraints().addAll(column1, column2); // each get 50% of width
-		//this.setGridLinesVisible(true);
+	    this.getColumnConstraints().addAll(idColumn, timeColumn);
+		//this.setGridLinesVisible(true);	
 	}
 	
 	private void displayID(int id) {
