@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.util.List;
 
 import javafx.application.Platform;
-import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -20,33 +19,28 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableColumn.CellDataFeatures;
-import javafx.scene.control.TableView;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 
 public class UIController {
 	@FXML
 	private BorderPane rootBorderPane;
 	@FXML
+	private ScrollPane taskScrollPane;
+	@FXML
 	private ImageView programTitle;
-	@FXML
-	private TableView<Task> taskTable;
-	@FXML
-	private TableColumn<Task, Integer> idColumn;
-	@FXML
-	private TableColumn<Task, String> taskColumn;
 	@FXML
 	private ListView<String> hashTagList;
 	@FXML
@@ -65,6 +59,7 @@ public class UIController {
 	private static ObservableList<String> hashTagToBeDisplayed = FXCollections
 			.observableArrayList();
 
+	private List<TaskGrid> task;
 	private TaskCatalyst tc;
 
 	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #";
@@ -106,7 +101,7 @@ public class UIController {
 					public void changed(ObservableValue<? extends String> ov,
 							String old_val, String new_val) {
 						logic.processCommand(new_val);
-						displayTask();
+						displayTasks();
 					}
 				});
 	}
@@ -122,7 +117,7 @@ public class UIController {
 				commandBar.requestFocus();
 			}
 		});
-		displayTask();
+		// displayTask();
 		displayHashTags();
 	}
 
@@ -130,8 +125,8 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				taskTable.scrollTo(index);
-				taskTable.getSelectionModel().select(index);
+				// taskTable.scrollTo(index);
+				// taskTable.getSelectionModel().select(index);
 			}
 		});
 	}
@@ -154,8 +149,8 @@ public class UIController {
 
 	private void initializeTable() {
 		// Enable multiple selection for the table
-		taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		taskTable.setPlaceholder(new Text(EMPTY_TASKVIEW_MESSAGE));
+		// taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+		// taskTable.setPlaceholder(new Text(EMPTY_TASKVIEW_MESSAGE));
 	}
 
 	/**
@@ -181,7 +176,7 @@ public class UIController {
 			setFocusForHashTable(logic.getHashtagSelected());
 			setFocusForTaskTableList(logic.getTasksSelected());
 			displayHashTags();
-			displayTask();
+			// displayTask();
 			clearForm();
 			break;
 		case Message.TYPE_AUTOCOMPLETE:
@@ -244,77 +239,48 @@ public class UIController {
 		}
 	}
 
+	private void displayTasks1() {
+		// taskPane tp = new taskPane("Meet Boss at 1pm","Priority");
+		HBox box = new HBox();
+		GridPane taskGridPane = new GridPane();
+
+		Text time = new Text("Time");
+		taskGridPane.add(time, 0, 0);
+
+		// Place the Text control in column 1, row 1
+		Text desc = new Text("desc");
+		taskGridPane.add(desc, 1, 0);
+
+		// Place the Text control in column 1, row 2
+		Text icon = new Text("type");
+		taskGridPane.add(icon, 1, 1);
+		taskGridPane.setPrefWidth(497);
+		taskGridPane.setPrefHeight(44);
+		taskGridPane.setGridLinesVisible(true);
+		taskGridPane.getStyleClass().add("grid");
+
+		box.getChildren().addAll(taskGridPane);
+		taskScrollPane.setContent(taskGridPane);
+	}
+
+	private void displayTasks() {
+		VBox taskContainer = new VBox();
+		taskContainer.setSpacing(10);
+		taskContainer.getStyleClass().add("vbox");
+		List<Task> task = logic.getList();
+		for (int i = 0; i < task.size(); i++) {
+			taskContainer.getChildren().add(new Label(task.get(i).getDateStart().toString()));
+			taskContainer.getChildren().add(new TaskGrid(task.get(i)));
+			taskScrollPane.setContent(taskContainer);
+		}
+	}
+
 	private void displayHashTags() {
 		hashTagList.setItems(getHashTagFromList());
 	}
 
 	private void clearForm() {
 		commandBar.clear();
-	}
-
-	private void displayTask() {
-		if (logic.getList() != null) {
-			idColumn.setCellValueFactory(new Callback<CellDataFeatures<Task, Integer>, ObservableValue<Integer>>() {
-				@Override
-				public ObservableValue<Integer> call(
-						CellDataFeatures<Task, Integer> p) {
-					return new ReadOnlyObjectWrapper<Integer>(
-							(Integer) taskTable.getItems()
-									.indexOf(p.getValue()) + 1);
-				}
-			});
-
-			taskColumn
-					.setCellValueFactory(new PropertyValueFactory<Task, String>(
-							"description"));
-
-			taskColumn
-					.setCellFactory(new Callback<TableColumn<Task, String>, TableCell<Task, String>>() {
-						@Override
-						public TableCell<Task, String> call(
-								TableColumn<Task, String> arg0) {
-							return new TableCell<Task, String>() {
-								private Text text;
-
-								@Override
-								public void updateItem(String item,
-										boolean empty) {
-									super.updateItem(item, empty);
-
-									// This will allows text wrapping in a cell
-									if (!isEmpty()) {
-										text = new Text(item.toString());
-										text.setWrappingWidth(taskColumn
-												.getWidth());
-										this.setWrapText(true);
-
-										setGraphic(text);
-									}
-									// This will handle highlight of task
-									// background colour
-									if (item != null) {
-										String cssSelector = null;
-										Task task = logic.getList().get(
-												this.getIndex());
-
-										cssSelector = getHighlightType(task);
-										ObservableList<String> currentStyleList = this
-												.getTableRow().getStyleClass();
-										// Clear all additional styles other
-										// than the default.
-										while (currentStyleList.size() > 3) {
-											currentStyleList.remove(3);
-										}
-										currentStyleList.add(cssSelector);
-									}
-								}
-							};
-						}
-					});
-			idColumn.setSortable(false);
-			taskColumn.setSortable(false);
-			taskTable.setItems(getTaskFromList());
-		}
 	}
 
 	private String getHighlightType(Task task) {
@@ -361,10 +327,8 @@ public class UIController {
 
 	private void testInterface() {
 		assert rootBorderPane != null : "fx:id=\"rootBorderPane\" was not injected: check your FXML file 'interface.fxml'.";
+		assert taskScrollPane != null : "fx:id=\"taskScrollPane\" was not injected: check your FXML file 'interface.fxml'.";
 		assert programTitle != null : "fx:id=\"rootBorderPane\" was not injected: check your FXML file 'interface.fxml'.";
-		assert taskTable != null : "fx:id=\"taskTable\" was not injected: check your FXML file 'interface.fxml'.";
-		assert idColumn != null : "fx:id=\"idColumn\" was not injected: check your FXML file 'interface.fxml'.";
-		assert taskColumn != null : "fx:id=\"taskColumn\" was not injected: check your FXML file 'interface.fxml'.";
 		assert hashTagList != null : "fx:id=\"hashTagList\" was not injected: check your FXML file 'interface.fxml'.";
 		assert statusMessage != null : "fx:id=\"statusMessage\" was not injected: check your FXML file 'interface.fxml'.";
 		assert commandBar != null : "fx:id=\"commandBar\" was not injected: check your FXML file 'interface.fxml'.";
