@@ -30,21 +30,19 @@ public class Done extends Action {
 		taskManager = TaskManagerActual.getInstance();
 		listProcessor = new ListProcessorActual();
 
-		String taskNumberString = TaskCatalystCommons
-				.removeFirstWord(userCommand);
+		String parameter = TaskCatalystCommons.removeFirstWord(userCommand);
 
 		String containsNonNumbers = ".*[^0-9^,^\\s]+.*";
-		boolean isContainsWords = taskNumberString.matches(containsNonNumbers);
+		boolean isContainsWords = parameter.matches(containsNonNumbers);
 
-		if (taskNumberString.equalsIgnoreCase("all")) {
-			tasks = new ArrayList<Task>(taskManager.getList());
+		if (parameter.equalsIgnoreCase("all")) {
+			tasks = new ArrayList<Task>(taskManager.getDisplayList());
 		} else if (isContainsWords) {
-			List<Task> displayList = taskManager.getList();
-			tasks = listProcessor
-					.searchByKeyword(displayList, taskNumberString);
+			List<Task> displayList = taskManager.getDisplayList();
+			tasks = listProcessor.searchByKeyword(displayList, parameter);
 		} else {
 			List<Integer> taskNumbers = TaskCatalystCommons
-					.parsePositiveIntList(taskNumberString);
+					.parsePositiveIntList(parameter);
 
 			tasks = new ArrayList<Task>();
 
@@ -103,7 +101,7 @@ public class Done extends Action {
 	}
 
 	private String generateExecuteMessage(boolean isSingleTask,
-			int numberRemoved, boolean isSuccess) {
+			int numberCompleted, boolean isSuccess) {
 
 		String message = String.format(EXECUTE_ERROR);
 
@@ -112,14 +110,14 @@ public class Done extends Action {
 			String taskDescription = task.getDescription();
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else if (isSuccess && !isSingleTask) {
-			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberRemoved);
+			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberCompleted);
 		}
 
 		return message;
 	}
 
-	private String generateUndoMessage(boolean isSingleTask, int numberAdded,
-			boolean isSuccess) {
+	private String generateUndoMessage(boolean isSingleTask,
+			int numberRestored, boolean isSuccess) {
 
 		String message = String.format(UNDO_ERROR);
 
@@ -128,7 +126,7 @@ public class Done extends Action {
 			String taskDescription = task.getDescription();
 			message = String.format(UNDO_SUCCESS, taskDescription);
 		} else if (isSuccess && !isSingleTask) {
-			message = String.format(UNDO_SUCCESS_MULTIPLE, numberAdded);
+			message = String.format(UNDO_SUCCESS_MULTIPLE, numberRestored);
 		}
 
 		return message;

@@ -191,12 +191,14 @@ public class TaskManagerActual implements TaskManager {
 
 		boolean isCompleted = false;
 		for (Task task : tasks) {
-			task.setDone(true);
-			isCompleted = task.isDone();
-			if (!isCompleted) {
-				break;
+			if (!task.isDone()) {
+				task.setDone(true);
+				isCompleted = task.isDone();
+				if (!isCompleted) {
+					break;
+				}
+				numberCompleted++;
 			}
-			numberCompleted++;
 		}
 
 		boolean isSaved = false;
@@ -230,12 +232,14 @@ public class TaskManagerActual implements TaskManager {
 
 		boolean isUndone = false;
 		for (Task task : tasks) {
-			task.setDone(false);
-			isUndone = !task.isDone();
-			if (!isUndone) {
-				break;
+			if (task.isDone()) {
+				task.setDone(false);
+				isUndone = !task.isDone();
+				if (!isUndone) {
+					break;
+				}
+				numberUncomplete++;
 			}
-			numberUncomplete++;
 		}
 
 		boolean isSaved = false;

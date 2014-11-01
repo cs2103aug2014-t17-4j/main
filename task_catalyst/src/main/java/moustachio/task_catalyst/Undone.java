@@ -4,28 +4,29 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class Delete extends Action {
+public class Undone extends Action {
 
-	private static final String[] DICTIONARY = { "delete", "rm", "del" };
+	private static final String[] DICTIONARY = { "undone", "uncomplete",
+			"restore" };
 
-	private static final String EXECUTE_SUCCESS = "Task successfully deleted: %s";
-	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
+	private static final String EXECUTE_SUCCESS = "Task successfully restored: %s";
+	private static final String UNDO_SUCCESS = "Task successfully completed: %s";
 
-	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to delete.";
-	private static final String UNDO_ERROR = "There was an error restoring the task(s).";
+	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to uncomplete.";
+	private static final String UNDO_ERROR = "There was an error completing the task(s).";
 
-	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully deleted %d tasks.";
-	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
+	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
+	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully completed %d tasks.";
 
-	private static final String HINT_MESSAGE = "Delete: Hit enter after typing the task numbers or keyword."
-			+ "\nExamples: delete 1 2 3 4, delete all, delete apple"
-			+ "\nAlternatives: rm, del, delete";
+	private static final String HINT_MESSAGE = "Restore: Hit enter after typing the task numbers or keyword."
+			+ "\nExamples: undone 1 2 3 4, undone all, undone apple"
+			+ "\nAlternatives: undone, uncomplete, restore";
 
 	private TaskManager taskManager;
 	private ListProcessor listProcessor;
 	private List<Task> tasks;
 
-	public Delete(String userCommand) {
+	public Undone(String userCommand) {
 
 		taskManager = TaskManagerActual.getInstance();
 		listProcessor = new ListProcessorActual();
@@ -36,9 +37,9 @@ public class Delete extends Action {
 		boolean isContainsWords = parameter.matches(containsNonNumbers);
 
 		if (parameter.equalsIgnoreCase("all")) {
-			tasks = new ArrayList<Task>(taskManager.getDisplayList());
+			tasks = new ArrayList<Task>(taskManager.getList());
 		} else if (isContainsWords) {
-			List<Task> displayList = taskManager.getDisplayList();
+			List<Task> displayList = taskManager.getList();
 			tasks = listProcessor.searchByKeyword(displayList, parameter);
 		} else {
 			List<Integer> taskNumbers = TaskCatalystCommons
@@ -59,15 +60,15 @@ public class Delete extends Action {
 			return new Message(type, message);
 		}
 
-		int numberRemoved = taskManager.removeTasks(tasks);
+		int numberRestored = taskManager.uncompleteTasks(tasks);
 
 		boolean isSingleTask = tasks.size() == 1;
-		boolean isRemoved = numberRemoved > 0;
-		boolean isAllRemoved = numberRemoved == tasks.size();
-		boolean isSuccess = isRemoved && isAllRemoved;
+		boolean isRestored = numberRestored > 0;
+		boolean isAllRestored = numberRestored == tasks.size();
+		boolean isSuccess = isRestored && isAllRestored;
 
 		int type = generateType(isSuccess);
-		String message = generateExecuteMessage(isSingleTask, numberRemoved,
+		String message = generateExecuteMessage(isSingleTask, numberRestored,
 				isSuccess);
 
 		return new Message(type, message);
@@ -76,15 +77,15 @@ public class Delete extends Action {
 	@Override
 	public Message undo() {
 
-		int numberAdded = taskManager.addTasks(tasks);
+		int numberCompleted = taskManager.completeTasks(tasks);
 
 		boolean isSingleTask = tasks.size() == 1;
-		boolean isAdded = numberAdded > 0;
-		boolean isAllAdded = numberAdded == tasks.size();
-		boolean isSuccess = isAdded && isAllAdded;
+		boolean isCompleted = numberCompleted > 0;
+		boolean isAllCompleted = numberCompleted == tasks.size();
+		boolean isSuccess = isCompleted && isAllCompleted;
 
 		int type = generateType(isSuccess);
-		String message = generateUndoMessage(isSingleTask, numberAdded,
+		String message = generateUndoMessage(isSingleTask, numberCompleted,
 				isSuccess);
 
 		return new Message(type, message);
@@ -101,7 +102,7 @@ public class Delete extends Action {
 	}
 
 	private String generateExecuteMessage(boolean isSingleTask,
-			int numberRemoved, boolean isSuccess) {
+			int numberRestored, boolean isSuccess) {
 
 		String message = String.format(EXECUTE_ERROR);
 
@@ -110,14 +111,14 @@ public class Delete extends Action {
 			String taskDescription = task.getDescription();
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else if (isSuccess && !isSingleTask) {
-			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberRemoved);
+			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberRestored);
 		}
 
 		return message;
 	}
 
-	private String generateUndoMessage(boolean isSingleTask, int numberAdded,
-			boolean isSuccess) {
+	private String generateUndoMessage(boolean isSingleTask,
+			int numberCompleted, boolean isSuccess) {
 
 		String message = String.format(UNDO_ERROR);
 
@@ -126,7 +127,7 @@ public class Delete extends Action {
 			String taskDescription = task.getDescription();
 			message = String.format(UNDO_SUCCESS, taskDescription);
 		} else if (isSuccess && !isSingleTask) {
-			message = String.format(UNDO_SUCCESS_MULTIPLE, numberAdded);
+			message = String.format(UNDO_SUCCESS_MULTIPLE, numberCompleted);
 		}
 
 		return message;

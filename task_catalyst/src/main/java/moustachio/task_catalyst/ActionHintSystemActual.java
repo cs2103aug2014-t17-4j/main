@@ -61,6 +61,9 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		case UNDO:
 			message = Undo.getHint(userCommand);
 			break;
+		case UNDONE:
+			message = Undone.getHint(userCommand);
+			break;
 		default:
 			message = getHintDefault();
 			break;
@@ -98,6 +101,9 @@ public class ActionHintSystemActual implements ActionHintSystem {
 			break;
 		case UNDO:
 			action = new Undo(userCommand);
+			break;
+		case UNDONE:
+			action = new Undone(userCommand);
 			break;
 		default:
 			action = null;
@@ -150,6 +156,7 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		dictionaries.add(Redo.getDictionary());
 		dictionaries.add(Search.getDictionary());
 		dictionaries.add(Undo.getDictionary());
+		dictionaries.add(Undone.getDictionary());
 
 		String matchingCommands = getPartialString(firstWord, dictionaries);
 		matchingCommands = matchingCommands.replaceAll(", $", "");

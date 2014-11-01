@@ -105,6 +105,8 @@ public class TaskCatalystCommons {
 			return CommandType.SEARCH;
 		} else if (Undo.isThisAction(commandLowerCase) && noParameters) {
 			return CommandType.UNDO;
+		} else if (Undone.isThisAction(commandLowerCase)) {
+			return CommandType.UNDONE;
 		} else {
 			return CommandType.ADD;
 		}
