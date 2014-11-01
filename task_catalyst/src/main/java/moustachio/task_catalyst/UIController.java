@@ -26,15 +26,9 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
-import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class UIController {
@@ -57,12 +51,9 @@ public class UIController {
 
 	private static LogicActual logic;
 
-	private static ObservableList<Task> taskToBeDisplayed = FXCollections
-			.observableArrayList();
 	private static ObservableList<String> hashTagToBeDisplayed = FXCollections
 			.observableArrayList();
 
-	private List<TaskGrid> task;
 	private TaskCatalyst tc;
 
 	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #";
@@ -242,30 +233,6 @@ public class UIController {
 		}
 	}
 
-	private void displayTasks1() {
-		// taskPane tp = new taskPane("Meet Boss at 1pm","Priority");
-		HBox box = new HBox();
-		GridPane taskGridPane = new GridPane();
-
-		Text time = new Text("Time");
-		taskGridPane.add(time, 0, 0);
-
-		// Place the Text control in column 1, row 1
-		Text desc = new Text("desc");
-		taskGridPane.add(desc, 1, 0);
-
-		// Place the Text control in column 1, row 2
-		Text icon = new Text("type");
-		taskGridPane.add(icon, 1, 1);
-		taskGridPane.setPrefWidth(497);
-		taskGridPane.setPrefHeight(44);
-		taskGridPane.setGridLinesVisible(true);
-		taskGridPane.getStyleClass().add("grid");
-
-		box.getChildren().addAll(taskGridPane);
-		taskScrollPane.setContent(taskGridPane);
-	}
-
 	private void displayTasks() {
 		VBox taskContainer = new VBox();
 		String dateCategory;
@@ -279,14 +246,18 @@ public class UIController {
 			taskScrollPane.setContent(taskContainer);
 		}else{
 			for (int i = 0; i < task.size(); i++) {
-				/*
-				if(task.get(i).isRange() == false){
-					dateCategory = task.get(i).getNextDate().toString();
+				Date startDate;
+				
+				if(task.get(i).getDateStart() != null){
+					if(task.get(i).isRange() == false){
+						startDate = task.get(i).getNextDate();
+					}else{
+						startDate = task.get(i).getDateStart();
+					}
+					dateCategory = new SimpleDateFormat("MMMM dd").format(startDate);
 				}else{
-					dateCategory = task.get(i).getDateStart().toString();
-				}*/
-				Date startDate = task.get(i).getDateStart();
-				dateCategory = new SimpleDateFormat("MMMM dd").format(startDate);
+					dateCategory = "Someday";
+				}
 				taskContainer.getChildren().add(new Label(dateCategory));
 				taskContainer.getChildren().add(new TaskGrid(i,task.get(i)));
 				taskScrollPane.setContent(taskContainer);
@@ -301,39 +272,6 @@ public class UIController {
 
 	private void clearForm() {
 		commandBar.clear();
-	}
-
-	private String getHighlightType(Task task) {
-		String cssSelector;
-		switch (task.getHighlightType()) {
-		case NORMAL:
-			cssSelector = "isNormal";
-			break;
-		case PRIORITY:
-			cssSelector = "isPriority";
-			break;
-		case OVERLAP:
-			cssSelector = "isOverlapStatic";
-			break;
-		case PRIORITY_OVERLAP:
-			cssSelector = "isPriorityOverlapStatic";
-			break;
-		case OVERDUE:
-			cssSelector = "isOverdue";
-			break;
-		default:
-			cssSelector = "isNormal";
-			break;
-		}
-		return cssSelector;
-	}
-
-	private ObservableList<Task> getTaskFromList() {
-		List<Task> task = logic.getList();
-
-		taskToBeDisplayed.clear();
-		taskToBeDisplayed.addAll(task);
-		return taskToBeDisplayed;
 	}
 
 	private ObservableList<String> getHashTagFromList() {

@@ -4,12 +4,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javafx.fxml.FXML;
-import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
-import javafx.scene.text.Text;
 
 public class TaskGrid extends GridPane {
 	// Image location in DarkTheme.css
@@ -53,17 +51,23 @@ public class TaskGrid extends GridPane {
 	}
 
 	private void displayTime(Task task) {
-		Date startDate = task.getDateStart();
-		Date endDate = task.getDateEnd();
-		
-		String startTime = new SimpleDateFormat("h:mm a").format(startDate);
-		String endTime = new SimpleDateFormat("h:mm a").format(endDate);
-		
-		Label startTimeLabel= new Label(startTime);
-		Label endTimeLabel = new Label(endTime);
+		if(task.getDateStart() != null){
+			Date startDate = task.getDateStart();
+			Date endDate = task.getDateEnd();
+			
+			String startTime = new SimpleDateFormat("h:mm a").format(startDate);
+			String endTime = new SimpleDateFormat("h:mm a").format(endDate);
+			
+			Label startTimeLabel= new Label(startTime);
+			Label endTimeLabel = new Label(endTime);
 
-		this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-		this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
+			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+			this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
+		}else{
+			Label startTimeLabel= new Label("All Day");
+			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+		}
+		
 	}
 
 	private void displayTaskDescription(Task task) {
