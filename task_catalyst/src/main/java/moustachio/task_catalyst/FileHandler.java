@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -28,7 +27,7 @@ import org.json.simple.parser.ParseException;
 public class FileHandler {
 
 	private static final String STRING_SPACE = " ";
-	private static final String STRING_COMMA = ",";
+	private static final String STRING_WRITE_SETTING = "%1$s,%2$s";
 	private static final String STRING_EMPTY = "";
 	private static final String VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
 	private static final String VALID_PATTERN = "(?i)^\\w+|\\d+$";
@@ -110,6 +109,10 @@ public class FileHandler {
 		breader.close();
 	}
 
+	/**
+	 * This function is implemented for the purpose of storing setting in future. 
+	 * 
+	 */
 	public boolean writeSetting(String name, String fileName, String value) {
 		Boolean isSuccess = false;
 
@@ -138,19 +141,19 @@ public class FileHandler {
 			throws IOException {
 		assert (value != null && name != null);
 		Boolean isSuccess;
-		if (name != null && value != null && fileName != null) {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
+		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
 					true));
-			writer.write(name + STRING_COMMA + value);
+			writer.write(String.format(STRING_WRITE_SETTING,name,value));
 			writer.newLine();
 			writer.close();
 			isSuccess = true;
-		} else {
-			isSuccess = false;
-		}
 		return isSuccess;
 	}
-
+	
+	/**
+	 * This function is implemented for the purpose of reading setting in future. 
+	 * 
+	 */
 	public String readSetting(String name, String fileName) {
 		assert (name != null);
 
