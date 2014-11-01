@@ -30,10 +30,8 @@ public class FileHandler {
 	private static final String STRING_SPACE = " ";
 	private static final String STRING_COMMA = ",";
 	private static final String STRING_EMPTY = "";
-	private static final String REGEX = "\\.";
-	private static final String PATTERN_DOT = ".";
-	private static final String EXTENSION = "txt";
-	private static final String INVALID_PATTERN = "^[^/./\\:*?\"<>|]+$";
+	private static final String VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
+	private static final String VALID_PATTERN = "(?i)^\\w+|\\d+$";
 	
 	private static final String MESSAGE_NOT_FOUND = "The file is not found!";
 	private static final String MESSAGE_INCORRECT_FORMAT = "Incorrect format has been found";
@@ -129,8 +127,8 @@ public class FileHandler {
 
 	private void checkWriteSettingParameters(String name, String fileName,
 			String value) throws Error {
-		if (isInvalidFileFormat(fileName) || !isValidName(name)
-				|| !isValidName(value)) {
+		if (isInvalidFileFormat(fileName) || isInvalidName(name)
+				|| isInvalidName(value)) {
 			blackBox.info(MESSAGE_INVALID_FILE_FORMAT);
 			throw new Error(MESSAGE_INVALID_FILE_FORMAT);
 		}
@@ -181,7 +179,7 @@ public class FileHandler {
 
 	private void checkReadSettingParameters(String name, String fileName)
 			throws Error {
-		if (isInvalidFileFormat(fileName) || !isValidName(name)) {
+		if (isInvalidFileFormat(fileName) || isInvalidName(name)) {
 			blackBox.info(MESSAGE_INVALID_FILE_FORMAT);
 			throw new Error(MESSAGE_INVALID_FILE_FORMAT);
 		}
@@ -224,19 +222,16 @@ public class FileHandler {
 	}
 
 	public boolean isInvalidFileFormat(String fileName) {
-		if (fileName.contains(PATTERN_DOT)) {
-			String[] name = fileName.split(REGEX);
-			return (!(isValidName(name[0]) && isValidName(name[1])
-					&& name[1].equals(EXTENSION) && name[1] != null));
-		} else {
-			return true;
-		}
+		Pattern pattern = Pattern.compile(VALID_FILE_FORMAT);
+		Matcher matcher = pattern.matcher(fileName);
+		boolean isMatch = matcher.matches();
+		return !isMatch;
 	}
 
-	public boolean isValidName(String name) {
-		Pattern pattern = Pattern.compile(INVALID_PATTERN);
+	public boolean isInvalidName(String name) {
+		Pattern pattern = Pattern.compile(VALID_PATTERN);
 		Matcher matcher = pattern.matcher(name);
 		boolean isMatch = matcher.matches();
-		return isMatch;
+		return !isMatch;
 	}
 }
