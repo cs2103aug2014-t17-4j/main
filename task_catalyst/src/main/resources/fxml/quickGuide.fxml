@@ -13,14 +13,9 @@
    <children>
       <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ImageView fitHeight="32.0" fitWidth="152.0" layoutX="43.0" layoutY="12.0">
+            <ImageView fitHeight="32.0" fitWidth="152.0" layoutX="40.0" layoutY="10.0">
                <image>
                   <Image url="@../images/title.png" />
-               </image>
-            </ImageView>
-            <ImageView fitHeight="26.0" fitWidth="23.0" layoutX="459.0" layoutY="11.0">
-               <image>
-                  <Image url="@../images/close24.png" />
                </image>
             </ImageView>
             <ImageView fitHeight="42.0" fitWidth="46.0" layoutX="4.0" layoutY="5.0">
@@ -28,26 +23,27 @@
                   <Image url="@../images/info.png" />
                </image>
             </ImageView>
+            <Button fx:id="exitButton" layoutX="461.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" stylesheets="@../css/DarkTheme.css" />
          </children>
       </Pane>
-      <TabPane fx:id="exitButton" layoutX="6.0" layoutY="50.0" prefHeight="346.0" prefWidth="490.0" tabClosingPolicy="UNAVAILABLE" tabMinWidth="104.0">
+      <TabPane fx:id="helpPane" layoutX="6.0" layoutY="50.0" prefHeight="346.0" prefWidth="490.0" tabClosingPolicy="UNAVAILABLE" tabMinWidth="104.0">
         <tabs>
-          <Tab text="Hashtags">
+          <Tab fx:id="hashtagTab" text="Hashtags">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
           </Tab>
-          <Tab text="Basic Features">
+          <Tab fx:id="basicFeaturesTab" text="Basic Features">
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
             </content>
           </Tab>
-            <Tab text="Special Features">
+            <Tab fx:id="specialFeaturesTab" text="Special Features">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                </content>
             </Tab>
-            <Tab text="HotKeys">
+            <Tab fx:id="hotKeysTab" text="HotKeys">
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
                </content>

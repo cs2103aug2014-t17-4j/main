@@ -43,7 +43,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 	private UIController controller;
 	private Stage primaryStage;
-	private HelpViewController helpController;
+	private HelpViewController helpController = new HelpViewController();
 
 	private static Provider hotKeys = null;
 	private static String toggleLaunchHK = "control M";
@@ -166,7 +166,6 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 							stop();
 						} else if(helpHotKey.match(event)){
 							helpController.openHelpWindow();
-							
 						}
 					}
 				});
