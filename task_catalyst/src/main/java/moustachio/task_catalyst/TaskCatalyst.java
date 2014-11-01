@@ -43,6 +43,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 	private UIController controller;
 	private Stage primaryStage;
+	private HelpViewController helpController;
 
 	private static Provider hotKeys = null;
 	private static String toggleLaunchHK = "control M";
@@ -150,6 +151,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.E,
 				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination helpHotKey = new KeyCodeCombination(KeyCode.H,
+				KeyCodeCombination.CONTROL_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED,
 				new EventHandler<KeyEvent>() {
 
@@ -161,6 +164,9 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 							controller.handleHotKeys("redo");
 						} else if (exitHotKey.match(event)) {
 							stop();
+						} else if(helpHotKey.match(event)){
+							helpController.openHelpWindow();
+							
 						}
 					}
 				});
