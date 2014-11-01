@@ -262,7 +262,7 @@ public class LogicActualTest {
 	public void deleteTc1() {
 		Message message = logic.processCommand("rm -1");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error deleting the task(s).",
+		assertEquals("There was/were no matching task(s) to delete.",
 				message.getMessage());
 	}
 
@@ -272,7 +272,7 @@ public class LogicActualTest {
 		logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("rm 2");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error deleting the task(s).",
+		assertEquals("There was/were no matching task(s) to delete.",
 				message.getMessage());
 	}
 
@@ -281,7 +281,7 @@ public class LogicActualTest {
 	public void deleteTc3() {
 		Message message = logic.processCommand("rm");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error deleting the task(s).",
+		assertEquals("There was/were no matching task(s) to delete.",
 				message.getMessage());
 	}
 
@@ -885,7 +885,7 @@ public class LogicActualTest {
 		logic.processCommand("item tomorrow 1PM to 2PM #pri");
 		logic.processCommand("item tomorrow 1PM to 2PM");
 		logic.processCommand("item tomorrow 1PM to 2PM");
-		logic.processCommand("item 1PM to 2PM");
+		logic.processCommand("item yesterday 1PM to 2PM");
 		List<Task> tasks = logic.getList();
 		Task task1 = tasks.get(0);
 		Task task2 = tasks.get(1);

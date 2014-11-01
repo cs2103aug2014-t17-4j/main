@@ -11,32 +11,40 @@ public class Delete extends Action {
 	private static final String EXECUTE_SUCCESS = "Task successfully deleted: %s";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
 
-	private static final String EXECUTE_ERROR = "There was an error deleting the task(s).";
+	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to delete.";
 	private static final String UNDO_ERROR = "There was an error restoring the task(s).";
 
 	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully deleted %d tasks.";
 	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
 
-	private static final String HINT_MESSAGE = "Delete: Hit enter after typing a valid task number to delete it."
-			+ "\nSyntax: delete {<task number> [task number] ... | all}"
+	private static final String HINT_MESSAGE = "Delete: Hit enter after typing the task numbers or keyword."
+			+ "\nExamples: delete 1 2 3 4, delete all, delete apple"
 			+ "\nAlternatives: rm, del, delete";
 
 	private TaskManager taskManager;
+	private ListProcessor listProcessor;
 	private List<Task> tasks;
 
 	public Delete(String userCommand) {
 
 		taskManager = TaskManagerActual.getInstance();
+		listProcessor = new ListProcessorActual();
 
 		String taskNumberString = TaskCatalystCommons
 				.removeFirstWord(userCommand);
 
+		String containsNonNumbers = ".*[^0-9^,^\\s]+.*";
+		boolean isContainsWords = taskNumberString.matches(containsNonNumbers);
+
+		System.out.println(isContainsWords);
+
 		if (taskNumberString.equalsIgnoreCase("all")) {
-
 			tasks = new ArrayList<Task>(taskManager.getList());
-
+		} else if (isContainsWords) {
+			List<Task> displayList = taskManager.getList();
+			tasks = listProcessor
+					.searchByKeyword(displayList, taskNumberString);
 		} else {
-
 			List<Integer> taskNumbers = TaskCatalystCommons
 					.parsePositiveIntList(taskNumberString);
 
