@@ -355,7 +355,7 @@ public class LogicActualTest {
 	public void doneTc1() {
 		Message message = logic.processCommand("done -1");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error completing the task.",
+		assertEquals("There was/were no matching task(s) to complete.",
 				message.getMessage());
 	}
 
@@ -365,7 +365,7 @@ public class LogicActualTest {
 		logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("done 2");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error completing the task.",
+		assertEquals("There was/were no matching task(s) to complete.",
 				message.getMessage());
 	}
 
@@ -374,7 +374,7 @@ public class LogicActualTest {
 	public void doneTc3() {
 		Message message = logic.processCommand("done");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("There was an error completing the task.",
+		assertEquals("There was/were no matching task(s) to complete.",
 				message.getMessage());
 	}
 

@@ -185,15 +185,76 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
-	public boolean completeTask(Task task) {
-		task.setDone(true);
-		boolean isSaved = saveTasks();
-		boolean isDone = task.isDone();
-		boolean isSuccess = isDone && isSaved;
+	public int completeTasks(List<Task> tasks) {
+
+		int numberCompleted = 0;
+
+		boolean isCompleted = false;
+		for (Task task : tasks) {
+			task.setDone(true);
+			isCompleted = task.isDone();
+			if (!isCompleted) {
+				break;
+			}
+			numberCompleted++;
+		}
+
+		boolean isSaved = false;
+		if (isCompleted) {
+			isSaved = saveTasks();
+		} else {
+			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+		}
+
+		boolean isSuccess = isCompleted && isSaved;
 		if (isSuccess) {
 			refreshLists();
+			displayAutoswitchToTask(null);
 		}
+
+		return numberCompleted;
+	}
+
+	@Override
+	public boolean completeTask(Task task) {
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+		int tasksCompleted = completeTasks(tasks);
+		boolean isSuccess = tasksCompleted == 1;
 		return isSuccess;
+	}
+
+	@Override
+	public int uncompleteTasks(List<Task> tasks) {
+		int numberUncomplete = 0;
+
+		boolean isUndone = false;
+		for (Task task : tasks) {
+			task.setDone(false);
+			isUndone = !task.isDone();
+			if (!isUndone) {
+				break;
+			}
+			numberUncomplete++;
+		}
+
+		boolean isSaved = false;
+		if (isUndone) {
+			isSaved = saveTasks();
+		} else {
+			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+		}
+
+		boolean isSuccess = isUndone && isSaved;
+		if (isSuccess) {
+			refreshLists();
+			for (Task task : tasks) {
+				displayAutoswitchToTask(task);
+				tasksSelected.add(0, displayList.indexOf(task));
+			}
+		}
+
+		return numberUncomplete;
 	}
 
 	@Override

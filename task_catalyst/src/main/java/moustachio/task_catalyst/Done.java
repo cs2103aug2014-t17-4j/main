@@ -1,67 +1,146 @@
 package moustachio.task_catalyst;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Done extends Action {
 
 	private static final String[] DICTIONARY = { "done", "complete" };
 
-	private static final String EXECUTE_ERROR = "There was an error completing the task.";
 	private static final String EXECUTE_SUCCESS = "Task successfully completed: %s";
-	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
 
-	private static final String HINT_MESSAGE = "Complete: Hit enter after typing a valid task number to complete it."
-			+ "\nSyntax: done <task number>" + "\nAlternatives: done, complete";
+	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to complete.";
+	private static final String UNDO_ERROR = "There was an error restoring the task(s).";
+
+	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully completed %d tasks.";
+	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
+
+	private static final String HINT_MESSAGE = "Complete: Hit enter after typing the task numbers or keyword."
+			+ "\nExamples: done 1 2 3 4, done all, done apple"
+			+ "\nAlternatives: done, complete";
 
 	private TaskManager taskManager;
-	private Task task;
+	private ListProcessor listProcessor;
+	private List<Task> tasks;
 
 	public Done(String userCommand) {
+
 		taskManager = TaskManagerActual.getInstance();
+		listProcessor = new ListProcessorActual();
+
 		String taskNumberString = TaskCatalystCommons
 				.removeFirstWord(userCommand);
-		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
-		task = taskManager.getDisplayTask(taskNumber);
+
+		String containsNonNumbers = ".*[^0-9^,^\\s]+.*";
+		boolean isContainsWords = taskNumberString.matches(containsNonNumbers);
+
+		if (taskNumberString.equalsIgnoreCase("all")) {
+			tasks = new ArrayList<Task>(taskManager.getList());
+		} else if (isContainsWords) {
+			List<Task> displayList = taskManager.getList();
+			tasks = listProcessor
+					.searchByKeyword(displayList, taskNumberString);
+		} else {
+			List<Integer> taskNumbers = TaskCatalystCommons
+					.parsePositiveIntList(taskNumberString);
+
+			tasks = new ArrayList<Task>();
+
+			getTasks(taskNumbers);
+		}
 	}
 
 	@Override
 	public Message execute() {
-		if (task == null) {
+
+		if (tasks == null) {
 			int type = Message.TYPE_ERROR;
 			String message = String.format(EXECUTE_ERROR);
-
 			return new Message(type, message);
 		}
 
-		boolean isSuccess = taskManager.completeTask(task);
-		int type;
-		String message;
-		if (isSuccess) {
-			String taskDescription = task.getDescription();
-			type = Message.TYPE_SUCCESS;
-			message = String.format(EXECUTE_SUCCESS, taskDescription);
-		} else {
-			type = Message.TYPE_ERROR;
-			message = String.format(EXECUTE_ERROR);
-		}
+		int numberCompleted = taskManager.completeTasks(tasks);
+
+		boolean isSingleTask = tasks.size() == 1;
+		boolean isCompleted = numberCompleted > 0;
+		boolean isAllCompleted = numberCompleted == tasks.size();
+		boolean isSuccess = isCompleted && isAllCompleted;
+
+		int type = generateType(isSuccess);
+		String message = generateExecuteMessage(isSingleTask, numberCompleted,
+				isSuccess);
+
 		return new Message(type, message);
 	}
 
 	@Override
 	public Message undo() {
-		boolean isSuccess = taskManager.uncompleteTask(task);
+
+		int numberRestored = taskManager.uncompleteTasks(tasks);
+
+		boolean isSingleTask = tasks.size() == 1;
+		boolean isRestored = numberRestored > 0;
+		boolean isAllRestored = numberRestored == tasks.size();
+		boolean isSuccess = isRestored && isAllRestored;
+
+		int type = generateType(isSuccess);
+		String message = generateUndoMessage(isSingleTask, numberRestored,
+				isSuccess);
+
+		return new Message(type, message);
+	}
+
+	private int generateType(boolean isSuccess) {
 		int type;
-		String message;
 		if (isSuccess) {
-			String taskDescription = task.getDescription();
 			type = Message.TYPE_SUCCESS;
-			message = String.format(UNDO_SUCCESS, taskDescription);
 		} else {
 			type = Message.TYPE_ERROR;
-			message = String.format(UNDO_ERROR);
 		}
-		return new Message(type, message);
+		return type;
+	}
+
+	private String generateExecuteMessage(boolean isSingleTask,
+			int numberRemoved, boolean isSuccess) {
+
+		String message = String.format(EXECUTE_ERROR);
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+			message = String.format(EXECUTE_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberRemoved);
+		}
+
+		return message;
+	}
+
+	private String generateUndoMessage(boolean isSingleTask, int numberAdded,
+			boolean isSuccess) {
+
+		String message = String.format(UNDO_ERROR);
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+			message = String.format(UNDO_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(UNDO_SUCCESS_MULTIPLE, numberAdded);
+		}
+
+		return message;
+	}
+
+	private void getTasks(List<Integer> taskNumbers) {
+		for (int taskNumber : taskNumbers) {
+			Task displayTask = taskManager.getDisplayTask(taskNumber);
+			if (displayTask != null) {
+				tasks.add(displayTask);
+			}
+		}
 	}
 
 	public static Message getHint(String userCommand) {

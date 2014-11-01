@@ -5,7 +5,7 @@ import java.util.List;
 public interface TaskManager {
 
 	public List<String> getHashtags();
-	
+
 	public String[] getDefaultHashtags();
 
 	public List<Task> getDisplayList();
@@ -14,7 +14,11 @@ public interface TaskManager {
 
 	public boolean completeTask(Task task);
 
+	public int completeTasks(List<Task> tasks);
+
 	public boolean uncompleteTask(Task task);
+
+	public int uncompleteTasks(List<Task> task);
 
 	public boolean addTask(Task task);
 
@@ -35,7 +39,7 @@ public interface TaskManager {
 	public void setDisplayKeyword(String keyword);
 
 	public int getHashtagSelected();
-	
+
 	public List<Integer> getTasksSelected();
 
 	public void testMode();

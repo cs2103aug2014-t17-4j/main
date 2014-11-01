@@ -36,8 +36,6 @@ public class Delete extends Action {
 		String containsNonNumbers = ".*[^0-9^,^\\s]+.*";
 		boolean isContainsWords = taskNumberString.matches(containsNonNumbers);
 
-		System.out.println(isContainsWords);
-
 		if (taskNumberString.equalsIgnoreCase("all")) {
 			tasks = new ArrayList<Task>(taskManager.getList());
 		} else if (isContainsWords) {
