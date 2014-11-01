@@ -9,7 +9,6 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ScrollPane?>
 
 <BorderPane fx:id="rootBorderPane" prefHeight="513.0" prefWidth="619.0" styleClass="theme" stylesheets="@../css/DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.UIController">
 	<top>
