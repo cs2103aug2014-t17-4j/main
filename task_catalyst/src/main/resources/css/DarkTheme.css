@@ -13,6 +13,13 @@
 	-fx-image: url("../images/title.png");
 }
 
+#priorityIcon{
+	-fx-image: url("../images/priority.png");
+}
+#overlapIcon{
+	-fx-image: url("../images/overlap.png");
+}
+
 #settingsButton {          
     -fx-background-image: url("../images/settings24.png");
     -fx-background-size: 24.0 24.0;
@@ -112,6 +119,5 @@
     -fx-padding: 10;
 }
 .vbox{
-	-fx-background-color: white;
 	-fx-padding:10;
 }

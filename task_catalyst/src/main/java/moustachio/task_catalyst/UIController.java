@@ -32,6 +32,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 
 public class UIController {
@@ -268,11 +269,17 @@ public class UIController {
 		taskContainer.setSpacing(10);
 		taskContainer.getStyleClass().add("vbox");
 		List<Task> task = logic.getList();
-		for (int i = 0; i < task.size(); i++) {
-			taskContainer.getChildren().add(new Label(task.get(i).getDateStart().toString()));
-			taskContainer.getChildren().add(new TaskGrid(task.get(i)));
+		if(task.isEmpty()){
+			taskContainer.getChildren().add(new Label(EMPTY_TASKVIEW_MESSAGE));
 			taskScrollPane.setContent(taskContainer);
+		}else{
+			for (int i = 0; i < task.size(); i++) {
+				taskContainer.getChildren().add(new Label(task.get(i).getDateStart().toString()));
+				taskContainer.getChildren().add(new TaskGrid(i,task.get(i)));
+				taskScrollPane.setContent(taskContainer);
+			}
 		}
+		
 	}
 
 	private void displayHashTags() {
