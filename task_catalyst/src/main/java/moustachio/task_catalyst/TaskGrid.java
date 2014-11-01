@@ -39,7 +39,7 @@ public class TaskGrid extends GridPane {
 		ColumnConstraints idColumn = new ColumnConstraints();
 		ColumnConstraints timeColumn = new ColumnConstraints();
 		
-		idColumn.setPercentWidth(5);
+		idColumn.setPercentWidth(10);
 		timeColumn.setPercentWidth(17);
 		this.setPrefWidth(460);
 		this.setHgap(10);
