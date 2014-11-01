@@ -5,6 +5,8 @@
 package moustachio.task_catalyst;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javafx.application.Platform;
@@ -118,7 +120,7 @@ public class UIController {
 				commandBar.requestFocus();
 			}
 		});
-		// displayTask();
+		displayTasks();
 		displayHashTags();
 	}
 
@@ -177,7 +179,7 @@ public class UIController {
 			setFocusForHashTable(logic.getHashtagSelected());
 			setFocusForTaskTableList(logic.getTasksSelected());
 			displayHashTags();
-			// displayTask();
+			displayTasks();
 			clearForm();
 			break;
 		case Message.TYPE_AUTOCOMPLETE:
@@ -266,15 +268,26 @@ public class UIController {
 
 	private void displayTasks() {
 		VBox taskContainer = new VBox();
+		String dateCategory;
+		List<Task> task = logic.getList();
+		
 		taskContainer.setSpacing(10);
 		taskContainer.getStyleClass().add("vbox");
-		List<Task> task = logic.getList();
+		
 		if(task.isEmpty()){
 			taskContainer.getChildren().add(new Label(EMPTY_TASKVIEW_MESSAGE));
 			taskScrollPane.setContent(taskContainer);
 		}else{
 			for (int i = 0; i < task.size(); i++) {
-				taskContainer.getChildren().add(new Label(task.get(i).getDateStart().toString()));
+				/*
+				if(task.get(i).isRange() == false){
+					dateCategory = task.get(i).getNextDate().toString();
+				}else{
+					dateCategory = task.get(i).getDateStart().toString();
+				}*/
+				Date startDate = task.get(i).getDateStart();
+				dateCategory = new SimpleDateFormat("MMMM dd").format(startDate);
+				taskContainer.getChildren().add(new Label(dateCategory));
 				taskContainer.getChildren().add(new TaskGrid(i,task.get(i)));
 				taskScrollPane.setContent(taskContainer);
 			}
