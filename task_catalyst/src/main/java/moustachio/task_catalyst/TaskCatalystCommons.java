@@ -733,7 +733,7 @@ public class TaskCatalystCommons {
 	}
 
 	public static boolean isThisWeek(Date date) {
-		return daysFromToday(date) <= 6 && daysFromToday(date) > 0;
+		return daysFromToday(date) <= 7 && daysFromToday(date) > 0;
 	}
 
 	public static int daysFromToday(Date date) {
