@@ -62,7 +62,7 @@ public class TaskGrid extends GridPane {
 		return new SimpleDateFormat("h:mm a").format(date);
 	}
 	private String getAllDayTimeFormat(Date date) {
-		return new SimpleDateFormat("HH:mm:ss a").format(date);
+		return new SimpleDateFormat("HH:mm:ss").format(date);
 	}
 
 	private void displayTime(Task task) {
@@ -76,8 +76,6 @@ public class TaskGrid extends GridPane {
 
 		List<Date> allDate = task.getAllDates();
 		
-		System.out.println("dateend: " + endDate + " nextdate: " + nextDate
-				+ " datestart: " + startDate);
 		// For displaying task that is eg. 5pm or 6pm or 7pm
 		if (task.isBlocking()) {
 			if (nextDate != null) {
@@ -114,7 +112,6 @@ public class TaskGrid extends GridPane {
 		}else{
 			if (startDate != null) {
 				String checkAllDay = getAllDayTimeFormat(startDate);
-				System.out.println(checkAllDay);
 				if(checkAllDay.equals(allDayTimeFormat)){
 					Label startTimeLabel = new Label("All Day");
 					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
