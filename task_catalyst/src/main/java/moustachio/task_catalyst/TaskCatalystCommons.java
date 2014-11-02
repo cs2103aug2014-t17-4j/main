@@ -332,7 +332,6 @@ public class TaskCatalystCommons {
 		processingString = processingString
 				.replaceAll(spacesAfterBraces, "\\}");
 		processingString = processingString.replaceAll(consecutiveCurly, "");
-		System.out.println(processingString);
 		boolean isMultipleChunk = processingString.matches(textBetweenCurly);
 		if (isMultipleChunk) {
 			throw new UnsupportedOperationException(ERROR_MULTIPLE_CHUNKS);
@@ -698,9 +697,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static String getPrettyStringWithoutDate(String prettyString) {
-		String toPrepositions = "(to) \\{";
-		String emptyAndOrPrepositions = "\\} (and|or) \\{";
-		String spacesAfterBraces = "\\}(,)?(\\s)?";
+		String toPrepositions = " (from|before|after|either) \\{";
+		String emptyAndOrPrepositions = "\\}(\\s)?(,|to|and|or) \\{";
 		String spaceBeforeCommas = " ,";
 		String spaceBeforeFullstops = " \\.";
 		String friendlyString = prettyString;
@@ -708,11 +706,11 @@ public class TaskCatalystCommons {
 		friendlyString = friendlyString.replaceAll(toPrepositions, "\\{");
 		friendlyString = friendlyString.replaceAll(emptyAndOrPrepositions,
 				"\\}\\{");
-		friendlyString = friendlyString.replaceAll(spacesAfterBraces, "\\}");
 		friendlyString = removeWordsInCurlyBraces(friendlyString);
 		friendlyString = removeSquareBrackets(friendlyString);
 		friendlyString = friendlyString.replaceAll(spaceBeforeCommas, ",");
 		friendlyString = friendlyString.replaceAll(spaceBeforeFullstops, "\\.");
+		friendlyString = friendlyString.trim();
 		return friendlyString;
 	}
 
