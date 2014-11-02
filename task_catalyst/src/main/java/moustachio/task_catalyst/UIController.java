@@ -245,7 +245,7 @@ public class UIController {
 		List<Task> task = logic.getList();
 		
 		taskContainer.setSpacing(10);
-		taskContainer.getStyleClass().add("vbox");
+		//taskContainer.getStyleClass().add("vbox");
 		
 		if(task.isEmpty()){
 			taskContainer.getChildren().add(new Label(EMPTY_TASKVIEW_MESSAGE));

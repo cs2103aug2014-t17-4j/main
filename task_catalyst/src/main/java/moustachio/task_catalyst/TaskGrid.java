@@ -50,12 +50,13 @@ public class TaskGrid extends GridPane {
 		// idColumn.setPercentWidth(10);
 		// timeColumn.setPercentWidth(17);
 		this.setPrefWidth(460);
+		//this.setPrefHeight(value)
 		this.setHgap(10);
 		this.setVgap(5);
 		this.setPadding(new Insets(5));
 
 		this.getStyleClass().add("grid");
-		//this.getColumnConstraints().addAll(idColumn, timeColumn);
+		// this.getColumnConstraints().addAll(idColumn, timeColumn);
 		this.setGridLinesVisible(true);
 	}
 
@@ -68,6 +69,7 @@ public class TaskGrid extends GridPane {
 	private String getTimeFormat(Date date) {
 		return new SimpleDateFormat("h:mm a").format(date);
 	}
+
 	private String getAllDayFormat(Date date) {
 		return new SimpleDateFormat("HH:mm:ss").format(date);
 	}
@@ -76,20 +78,19 @@ public class TaskGrid extends GridPane {
 		String startTime, endTime, nextTiming, lastTiming;
 		String alternateTiming = "Alternate timing(s): ";
 		String allDay = "00:00:01";
-		String checkForAllDay = getAllDayFormat(task.getDateStart());
-		
+
 		Date startDate = task.getDateStart();
 		Date endDate = task.getDateEnd();
 		Date nextDate = task.getNextDate();
-		
+
 		List<Date> allDate = task.getAllDates();
-		
+
 		// For displaying task that is eg. 5pm or 6pm or 7pm
 		if (task.isBlocking()) {
 			if (task.getNextDate() != null) {
 				nextTiming = getTimeFormat(nextDate);
 				Label nextTimeLabel = new Label(nextTiming);
-
+				nextTimeLabel.getStyleClass().add("withborder");
 				this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				for (int i = 0; i < allDate.size(); i++) {
 					if (allDate.get(i).after(nextDate)) {
@@ -101,7 +102,7 @@ public class TaskGrid extends GridPane {
 				// if there's no next date, get the last date to be displayed
 				lastTiming = getTimeFormat(endDate);
 				Label lastTimingLabel = new Label(lastTiming);
-
+				lastTimingLabel.getStyleClass().add("withborder");
 				this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
 			}
 		} else {
@@ -111,18 +112,19 @@ public class TaskGrid extends GridPane {
 				if (task.isRange()) {
 					endTime = getTimeFormat(endDate);
 					Label endTimeLabel = new Label(endTime);
-
+					endTimeLabel.getStyleClass().add("withborder");
 					this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
 				}
 				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-			} else if (checkForAllDay.equals(allDay)){
-				Label startTimeLabel = new Label("All Day");
-				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-			} else{
+			} else if (task.getNextDate() == null && task.getDateEnd() != null) {
 				lastTiming = getTimeFormat(endDate);
 				Label lastTimingLabel = new Label(lastTiming);
-
+				lastTimingLabel.getStyleClass().add("withborder");
 				this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
+			} else {
+				Label startTimeLabel = new Label("All Day");
+				startTimeLabel.getStyleClass().add("withborder");
+				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			}
 		}
 	}
@@ -130,7 +132,7 @@ public class TaskGrid extends GridPane {
 	private void displayTaskDescription(Task task) {
 		Label description = new Label(task.getDescription());
 		description.setWrapText(true);
-
+		description.getStyleClass().add("withborder");
 		this.add(description, THIRD_COLUMN, FIRST_ROW, COLUMN_SPAN, ROW_SPAN);
 	}
 

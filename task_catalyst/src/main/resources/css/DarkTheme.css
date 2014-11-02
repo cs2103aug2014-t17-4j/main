@@ -117,3 +117,6 @@
     -fx-background-color: orange;
 	-fx-background-radius: 5;
 }
+.withborder{
+	-fx-background-color: orange;
+}
