@@ -4,20 +4,14 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
+import javafx.scene.text.Text;
 
 public class TaskGrid extends GridPane {
-
-	private static LogicActual logic;
 
 	private static final int FIRST_COLUMN = 0;
 	private static final int SECOND_COLUMN = 1;
@@ -29,6 +23,8 @@ public class TaskGrid extends GridPane {
 
 	private static final int COLUMN_SPAN = 5;
 	private static final int ROW_SPAN = 1;
+
+	private static final int DESCRIPTION_WRAPPING_WIDTH = 350;
 
 	private static final String PRIORITY_ICON_IMAGE_PATH = "/images/priority.png";
 	private static final String OVERLAP_ICON_IMAGE_PATH = "/images/overlap.png";
@@ -44,20 +40,12 @@ public class TaskGrid extends GridPane {
 	}
 
 	private void configureTaskGrid() {
-		ColumnConstraints idColumn = new ColumnConstraints();
-		ColumnConstraints timeColumn = new ColumnConstraints();
-
-		// idColumn.setPercentWidth(10);
-		// timeColumn.setPercentWidth(17);
 		this.setPrefWidth(460);
-		//this.setPrefHeight(value)
 		this.setHgap(10);
 		this.setVgap(5);
 		this.setPadding(new Insets(5));
-
 		this.getStyleClass().add("grid");
-		// this.getColumnConstraints().addAll(idColumn, timeColumn);
-		this.setGridLinesVisible(true);
+		// this.setGridLinesVisible(true);
 	}
 
 	private void displayID(int id) {
@@ -87,53 +75,56 @@ public class TaskGrid extends GridPane {
 
 		// For displaying task that is eg. 5pm or 6pm or 7pm
 		if (task.isBlocking()) {
-			if (task.getNextDate() != null) {
+			if (nextDate != null) {
 				nextTiming = getTimeFormat(nextDate);
 				Label nextTimeLabel = new Label(nextTiming);
-				nextTimeLabel.getStyleClass().add("withborder");
-				this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
+
 				for (int i = 0; i < allDate.size(); i++) {
 					if (allDate.get(i).after(nextDate)) {
 						alternateTiming += getTimeFormat(allDate.get(i)) + " ";
 					}
 				}
-				this.add(new Label(alternateTiming), THIRD_COLUMN, SECOND_ROW);
+				if (!alternateTiming.equals("Alternate timing(s): ")) {
+					this.add(new Label(alternateTiming), THIRD_COLUMN,
+							SECOND_ROW);
+				}
+
+				this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
+
 			} else {
 				// if there's no next date, get the last date to be displayed
 				lastTiming = getTimeFormat(endDate);
 				Label lastTimingLabel = new Label(lastTiming);
-				lastTimingLabel.getStyleClass().add("withborder");
 				this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
 			}
 		} else {
-			if (task.getNextDate() != null) {
-				startTime = getTimeFormat(startDate);
-				Label startTimeLabel = new Label(startTime);
+			// task with start time and end time
+			if (nextDate != null) {
+				String checkAllDay = getAllDayFormat(startDate);
+				if (checkAllDay.equals(allDay)) {
+					Label startTimeLabel = new Label("All Day");
+					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+				} else {
+					startTime = getTimeFormat(startDate);
+					Label startTimeLabel = new Label(startTime);
+					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+				}
+
 				if (task.isRange()) {
 					endTime = getTimeFormat(endDate);
 					Label endTimeLabel = new Label(endTime);
-					endTimeLabel.getStyleClass().add("withborder");
 					this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
 				}
-				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-			} else if (task.getNextDate() == null && task.getDateEnd() != null) {
-				lastTiming = getTimeFormat(endDate);
-				Label lastTimingLabel = new Label(lastTiming);
-				lastTimingLabel.getStyleClass().add("withborder");
-				this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
 			} else {
-				Label startTimeLabel = new Label("All Day");
-				startTimeLabel.getStyleClass().add("withborder");
+				Label startTimeLabel = new Label("Someday");
 				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			}
 		}
 	}
 
 	private void displayTaskDescription(Task task) {
-		javafx.scene.text.Text description = new javafx.scene.text.Text(task.getDescription());
-		//description.setWrapText(true);
-		description.setWrappingWidth(400);
-		description.getStyleClass().add("withborder");
+		Text description = new Text(task.getDescription());
+		description.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH);
 		this.add(description, THIRD_COLUMN, FIRST_ROW, COLUMN_SPAN, ROW_SPAN);
 		this.setPrefHeight(0);
 	}
