@@ -320,7 +320,7 @@ public class TaskCatalystCommons {
 			String interpretedStringNextPass)
 			throws UnsupportedOperationException {
 
-		String prepositions = "(,|and|or) \\{";
+		String prepositions = "(,|and|or|to) \\{";
 		String spacesAfterBraces = "\\}(,)?(\\s)?";
 		String consecutiveCurly = "\\}\\{";
 		String textBetweenCurly = ".*\\}(.*?)\\{.*";
@@ -330,6 +330,7 @@ public class TaskCatalystCommons {
 		processingString = processingString
 				.replaceAll(spacesAfterBraces, "\\}");
 		processingString = processingString.replaceAll(consecutiveCurly, "");
+		System.out.println(processingString);
 		boolean isMultipleChunk = processingString.matches(textBetweenCurly);
 		if (isMultipleChunk) {
 			throw new UnsupportedOperationException(ERROR_MULTIPLE_CHUNKS);
