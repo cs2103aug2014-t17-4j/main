@@ -1,16 +1,21 @@
 package moustachio.task_catalyst;
 
+
 import java.io.IOException;
 
+import javax.swing.JEditorPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.control.TextArea;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -28,17 +33,25 @@ public class HelpViewController {
 	private Tab hotKeysTab;
 	@FXML
 	private Button exitButton;
+	@FXML
+	private TextArea hashTagArea;
 
 	private Stage helpStage;
 
 	private static final String QUICKGUIDE_FXML_PATH = "/fxml/quickGuide.fxml";
+	
+	private HelpViewController controller;
 
 	public HelpViewController() {
-
+		
 	}
 
-	public void setHelpStage(Stage helpStage) {
+	public void setStage(Stage helpStage) {
 		this.helpStage = helpStage;
+	}
+	
+	Stage getStage() {
+		return this.helpStage;
 	}
 
 	@FXML
@@ -50,35 +63,41 @@ public class HelpViewController {
 		assert specialFeaturesTab != null : "fx:id=\"specialFeaturesTab\" was not injected: check your FXML file 'interface.fxml'.";
 		assert hotKeysTab != null : "fx:id=\"hotKeysTab\" was not injected: check your FXML file 'interface.fxml'.";
 		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'interface.fxml'.";
-
-		exitButton.setOnMouseClicked(new EventHandler<MouseEvent>() {
-
+	}
+	
+	@FXML
+	public void handleExit() {
+		Platform.runLater(new Runnable() {
 			@Override
-			public void handle(MouseEvent event) {
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						System.exit(0);
-					}
-				});
+			public void run() {
+				helpStage.hide();
 			}
 		});
 	}
-
+	
 	public void openHelpWindow() {
-		Pane helpPane;
-		try {
-			helpPane = FXMLLoader.load(getClass().getResource(
-					QUICKGUIDE_FXML_PATH));
-			Stage stage = new Stage();
-			//this.helpStage.setScene(new Scene(helpPane));
-			//this.helpStage.initStyle(StageStyle.UNDECORATED);
-			//this.helpStage.showAndWait();
-			stage.setScene(new Scene(helpPane));
-			stage.initStyle(StageStyle.UNDECORATED);
-			stage.show();
-		} catch (IOException e) {
-			e.printStackTrace();
+		AnchorPane helpPane;
+		if (helpStage != null) {
+			helpStage.show();
+			helpStage.toFront();
+		}
+		else {
+			try {
+				helpStage = new Stage();
+				FXMLLoader loader = new FXMLLoader(getClass().getResource(
+						QUICKGUIDE_FXML_PATH));
+				helpPane = loader.load();
+				
+				controller = loader.getController();
+				controller.setStage(helpStage);
+				helpStage.setScene(new Scene(helpPane));
+				helpStage.initStyle(StageStyle.UNDECORATED);
+				helpStage.setX(0);
+				helpStage.setY(30);
+				helpStage.showAndWait();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }
