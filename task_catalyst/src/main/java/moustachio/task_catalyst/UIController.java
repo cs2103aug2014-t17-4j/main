@@ -109,6 +109,7 @@ public class UIController {
 	private void initializeForms() {
 		initializeTable();
 		statusMessage.setWrapText(true);
+		taskScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -154,11 +155,10 @@ public class UIController {
 					setFocusForTaskTable(index);
 					return;
 				}
-				y = y + ((y / height) - 0.5) * taskScrollPane.getHeight();
+				y = y + ((y / height) - 0.5) * taskScrollPane.getHeight()
+						- taskGrid.getHeight() / 2;
 
 				taskScrollPane.setVvalue(y / height);
-
-				System.out.println(y);
 
 				// taskScrollPane.getChildrenUnmodifiable().get(index);
 				// System.out.println();
@@ -294,15 +294,33 @@ public class UIController {
 			for (int i = 0; i < task.size(); i++) {
 				Task currentTask = task.get(i);
 
-				if (currentTask.getNextDate() != null) {
+				if (currentTask.getDateStart() != null) {
+
 					// is it StartTime to endTime?
-					if (currentTask.isRange() == false) {
+					if (currentTask.isRange()) {
+						startDate = currentTask.getDateStart();
+					} else if (currentTask.isBlocking()) {
 						startDate = currentTask.getNextDate();
+						if (startDate == null) {
+							startDate = currentTask.getDateEnd();
+						}
 					} else {
 						startDate = currentTask.getDateStart();
 					}
 
-					dateCategory = new SimpleDateFormat("MMMM dd")
+					String formatString = "MMMM dd";
+
+					if (TaskCatalystCommons.isYesterday(startDate)) {
+						formatString += "' (Yesterday)'";
+					} else if (TaskCatalystCommons.isToday(startDate)) {
+						formatString += "' (Today)'";
+					} else if (TaskCatalystCommons.isTomorrow(startDate)) {
+						formatString += "' (Tomorrow)'";
+					} else if (TaskCatalystCommons.isThisWeek(startDate)) {
+						formatString += " (E)";
+					}
+
+					dateCategory = new SimpleDateFormat(formatString)
 							.format(startDate);
 
 				} else {
@@ -317,6 +335,8 @@ public class UIController {
 
 				prevDate = currentDate;
 				taskContainer.getChildren().add(new TaskGrid(i, task.get(i)));
+				taskContainer.getStyleClass().add("vbox");
+				// taskContainer.setAlignment(javafx.geometry.Pos.CENTER);
 				taskScrollPane.setContent(taskContainer);
 			}
 		}

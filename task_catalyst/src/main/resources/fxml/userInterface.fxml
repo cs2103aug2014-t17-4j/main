@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<BorderPane fx:id="rootBorderPane" prefHeight="513.0" prefWidth="619.0" styleClass="theme" stylesheets="@../css/DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.UIController">
+<BorderPane fx:id="rootBorderPane" prefHeight="520.0" prefWidth="620.0" styleClass="theme" stylesheets="@../css/DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.UIController">
 	<top>
 		<HBox alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
 			<children>
@@ -26,7 +26,7 @@
 	<bottom>
       <AnchorPane maxHeight="1.7976931348623157E308" prefWidth="617.0">
          <children>
-      		<VBox id="statusMessageLabel" prefWidth="617.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
+      		<VBox id="statusMessageLabel" prefWidth="618.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
       			<children>
       				<TextField id="cmdTextField" fx:id="commandBar" onAction="#handleTextFieldOnAction" onKeyReleased="#handleTextFieldWhileUserTyping" prefHeight="0.0" prefWidth="617.0" />
       				<Label fx:id="statusMessage" />
@@ -36,10 +36,10 @@
       </AnchorPane>
 	</bottom>
 	<center>
-		<SplitPane dividerPositions="0.18152350081037277" prefWidth="345.0" styleClass="theme" BorderPane.alignment="CENTER">
+		<SplitPane dividerPositions="0.2" prefWidth="345.0" styleClass="theme" BorderPane.alignment="CENTER">
 			<items>
 				<ListView fx:id="hashTagList" prefHeight="200.0" prefWidth="200.0" styleClass="lightList" />
-            <ScrollPane fx:id="taskScrollPane" prefHeight="409.0" prefWidth="472.0" />
+            <ScrollPane fx:id="taskScrollPane" prefHeight="410.0" prefWidth="470.0" />
 			</items>
 		</SplitPane>
 	</center>

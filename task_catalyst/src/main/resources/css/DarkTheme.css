@@ -105,10 +105,12 @@
 .grid {
 	-fx-border-color: black;
     -fx-border-width: 1px;
-    -fx-border-radius: 4;
+    -fx-border-radius: 5;
     -fx-background-radius: 5.0;
+    -fx-margin:0;
 }
 .vbox{
+	-fx-padding: 7px;
 }
 .idLabel{
 	-fx-padding: 4;

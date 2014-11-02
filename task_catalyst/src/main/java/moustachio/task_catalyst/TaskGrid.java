@@ -10,6 +10,8 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 
 public class TaskGrid extends GridPane {
 
@@ -30,14 +32,15 @@ public class TaskGrid extends GridPane {
 	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
 
-	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): ";
+	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): \n";
 
 	private int id;
 	Label idContainer;
+
 	public TaskGrid(int id, Task task) {
 		this.id = id;
 		configureTaskGrid();
-		displayID(id,task);
+		displayID(id, task);
 		displayTime(task);
 		displayTaskDescription(task);
 		checkAndDisplayTaskIcon(task);
@@ -57,13 +60,21 @@ public class TaskGrid extends GridPane {
 		idContainer.getStyleClass().add("idLabel");
 		this.add(idContainer, FIRST_COLUMN, FIRST_ROW);
 	}
-	
+
 	public void highlight() {
 		idContainer.getStyleClass().add("isSelected");
 	}
 
 	private String getTimeFormat(Date date) {
 		return new SimpleDateFormat("h:mm a").format(date);
+	}
+
+	private String getDateTimeFormat(Date date) {
+		return new SimpleDateFormat("dd MMM h:mm a").format(date);
+	}
+
+	private String getDateFormat(Date date) {
+		return new SimpleDateFormat("dd MMM").format(date);
 	}
 
 	private String getAllDayTimeFormat(Date date) {
@@ -89,12 +100,17 @@ public class TaskGrid extends GridPane {
 
 				for (int i = 0; i < allDate.size(); i++) {
 					if (allDate.get(i).after(nextDate)) {
-						alternateTiming += getTimeFormat(allDate.get(i)) + " ";
+						alternateTiming += getDateTimeFormat(allDate.get(i));
+						if (i != allDate.size() - 1) {
+							alternateTiming += ", ";
+						}
 					}
 				}
 				if (!alternateTiming.equals(ALTERNATE_TIMING_TEXT)) {
-					this.add(new Label(alternateTiming), THIRD_COLUMN,
-							SECOND_ROW);
+					Text text = new Text(10, 20, alternateTiming);
+					text.setFont(Font.font("System", FontWeight.BOLD, 12));
+					text.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH - 50);
+					this.add(text, THIRD_COLUMN, SECOND_ROW);
 				}
 
 				this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
@@ -107,10 +123,15 @@ public class TaskGrid extends GridPane {
 			}
 		} else if (task.isRange()) {
 			startTime = getTimeFormat(startDate);
-			endTime = getTimeFormat(endDate);
+			if (TaskCatalystCommons.isSameDate(startDate, endDate)) {
+				endTime = getTimeFormat(endDate);
+			} else {
+				endTime = getTimeFormat(endDate) + "\n("
+						+ getDateFormat(endDate) + ")";
+			}
 
-			Label startTimeLabel = new Label(startTime);
-			Label endTimeLabel = new Label(endTime);
+			Text startTimeLabel = new Text(startTime);
+			Text endTimeLabel = new Text(endTime);
 
 			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
@@ -125,9 +146,6 @@ public class TaskGrid extends GridPane {
 					Label startTimeLabel = new Label(startTime);
 					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				}
-			} else {
-				Label startTimeLabel = new Label("Someday");
-				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			}
 		}
 	}
@@ -183,5 +201,5 @@ public class TaskGrid extends GridPane {
 	public int getTaskGridID() {
 		return id;
 	}
-	
+
 }
