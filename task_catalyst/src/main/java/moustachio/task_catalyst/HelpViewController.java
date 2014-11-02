@@ -1,17 +1,22 @@
 package moustachio.task_catalyst;
 
 
+import java.awt.event.KeyEvent;
 import java.io.IOException;
 
 import javafx.application.Platform;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -45,6 +50,9 @@ public class HelpViewController {
 	private static final String QUICKGUIDE_FXML_PATH = "/fxml/quickGuide.fxml";
 	
 	private HelpViewController controller;
+	
+	private double initialY;
+	private double initialX;
 
 	public HelpViewController() {
 		
@@ -96,6 +104,8 @@ public class HelpViewController {
 				controller.setStage(helpStage);
 				helpStage.setScene(new Scene(helpPane));
 				helpStage.initStyle(StageStyle.UNDECORATED);
+				helpPane.setFocusTraversable(true);
+				addDragListeners(helpPane);
 				helpStage.setX(0);
 				helpStage.setY(30);
 				helpStage.showAndWait();
@@ -103,5 +113,35 @@ public class HelpViewController {
 				e.printStackTrace();
 			}
 		}
+	}
+	private void addDragListeners(final Node helpUI) {
+
+		helpUI.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent me) {
+
+				if (me.getButton() != MouseButton.MIDDLE) {
+					initialX = me.getSceneX();
+					initialY = me.getSceneY();
+				} else {
+					helpUI.getScene().getWindow().centerOnScreen();
+					initialX = helpUI.getScene().getWindow().getX();
+					initialY = helpUI.getScene().getWindow().getY();
+				}
+
+			}
+		});
+
+		helpUI.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent me) {
+				if (me.getButton() != MouseButton.MIDDLE) {
+					helpUI.getScene().getWindow()
+					.setX(me.getScreenX() - initialX);
+					helpUI.getScene().getWindow()
+					.setY(me.getScreenY() - initialY);
+				}
+			}
+		});
 	}
 }
