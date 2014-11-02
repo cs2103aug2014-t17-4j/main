@@ -333,42 +333,20 @@ public class TaskManagerActual implements TaskManager {
 		}
 		displayList = listProcessor.sortByDate(displayList);
 		tasksSelected.clear();
-		clearHighlights(displayList);
-		highlightAllPriority(displayList);
-		highlightAllOverlap(taskList);
-		highlightAllOverdue(displayList);
+		clearOverlapping(displayList);
+		setOverlapping(taskList);
 	}
 
-	private void clearHighlights(List<Task> tasks) {
+	private void clearOverlapping(List<Task> tasks) {
 		for (Task task : tasks) {
-			task.setHighlightType(HighlightType.NORMAL);
+			task.setOverlapping(false);
 		}
 	}
 
-	private void highlightAllPriority(List<Task> tasks) {
-		for (Task task : tasks) {
-			if (task.isPriority()) {
-				task.setHighlightType(HighlightType.PRIORITY);
-			}
-		}
-	}
-
-	private void highlightAllOverdue(List<Task> tasks) {
-		for (Task task : tasks) {
-			if (task.isOverdue()) {
-				task.setHighlightType(HighlightType.OVERDUE);
-			}
-		}
-	}
-
-	private void highlightAllOverlap(List<Task> tasks) {
+	private void setOverlapping(List<Task> tasks) {
 		List<Task> overlapList = listProcessor.getOverlapping(tasks);
 		for (Task task : overlapList) {
-			if (task.isPriority()) {
-				task.setHighlightType(HighlightType.PRIORITY_OVERLAP);
-			} else {
-				task.setHighlightType(HighlightType.OVERLAP);
-			}
+			task.setOverlapping(true);
 		}
 	}
 

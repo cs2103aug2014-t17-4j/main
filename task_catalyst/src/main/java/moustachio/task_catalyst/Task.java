@@ -24,9 +24,9 @@ public interface Task extends Comparable<Task> {
 	public List<String> getHashtags();
 
 	public boolean isRange();
-	
+
 	public boolean isBlocking();
-	
+
 	public boolean isMultiple();
 
 	public boolean isDone();
@@ -35,11 +35,11 @@ public interface Task extends Comparable<Task> {
 
 	public boolean isOverdue();
 
+	public boolean isOverlapping();
+
 	public void setDone(boolean done);
 
-	public void setHighlightType(HighlightType highlightType);
-
-	public HighlightType getHighlightType();
+	public void setOverlapping(boolean overlapping);
 
 	public boolean hasHashtag(String hashtag);
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 public class TaskAdvanced implements Task {
 
+	boolean isOverlapping;
 	boolean isDone;
 	String description;
 	HighlightType highlightType;
@@ -114,6 +115,16 @@ public class TaskAdvanced implements Task {
 		}
 	}
 
+	@Override
+	public boolean isOverlapping() {
+		return isOverlapping;
+	}
+
+	@Override
+	public void setOverlapping(boolean overlapping) {
+		this.isOverlapping = overlapping;
+	}
+
 	// Date Methods
 
 	@Override
@@ -199,15 +210,5 @@ public class TaskAdvanced implements Task {
 		} else {
 			return thisDateTime.compareTo(otherDateTime);
 		}
-	}
-
-	@Override
-	public HighlightType getHighlightType() {
-		return highlightType;
-	}
-
-	@Override
-	public void setHighlightType(HighlightType highlightType) {
-		this.highlightType = highlightType;
 	}
 }
