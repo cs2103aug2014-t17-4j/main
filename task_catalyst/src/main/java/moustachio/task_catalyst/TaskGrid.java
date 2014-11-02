@@ -130,10 +130,12 @@ public class TaskGrid extends GridPane {
 	}
 
 	private void displayTaskDescription(Task task) {
-		Label description = new Label(task.getDescription());
-		description.setWrapText(true);
+		javafx.scene.text.Text description = new javafx.scene.text.Text(task.getDescription());
+		//description.setWrapText(true);
+		description.setWrappingWidth(400);
 		description.getStyleClass().add("withborder");
 		this.add(description, THIRD_COLUMN, FIRST_ROW, COLUMN_SPAN, ROW_SPAN);
+		this.setPrefHeight(0);
 	}
 
 	private void checkAndDisplayTaskIcon(Task task) {

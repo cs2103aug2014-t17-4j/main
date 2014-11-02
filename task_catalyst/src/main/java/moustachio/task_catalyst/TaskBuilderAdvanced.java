@@ -14,7 +14,10 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 			return null;
 		}
 		Task task = createOneTask(userInput);
-		List<Task> tasks = splitMultipleTasks(task);
+		List<Task> tasks = null;
+		if (task != null) {
+			tasks = splitMultipleTasks(task);
+		}
 		return tasks;
 	}
 
@@ -47,7 +50,6 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 			for (Date date : dates) {
 				Task splitTask = createOneTask(descriptionModified.replaceAll(
 						"\\{\\}", "{" + formatter.format(date) + "}"));
-				System.out.println(splitTask);
 				tasks.add(splitTask);
 			}
 		} else {
