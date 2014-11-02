@@ -505,7 +505,7 @@ public class TaskCatalystCommons {
 	}
 
 	private static String replaceYesterday(String interpretedInput) {
-		return interpretedInput.replace("[yesterday]", "yesterday");
+		return interpretedInput.replaceAll("\\[(yesterday|Yesterday)\\]", "yesterday");
 	}
 
 	private static String replaceSpacesWithWildcard(String matchingExpression) {
