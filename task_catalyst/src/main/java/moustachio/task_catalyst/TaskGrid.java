@@ -29,11 +29,11 @@ public class TaskGrid extends GridPane {
 	private static final String OVERLAP_ICON_IMAGE_PATH = "/images/overlap.png";
 	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
-	
+
 	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): ";
-	
+
 	private int id;
-	
+
 	public TaskGrid(int id, Task task) {
 		this.id = id;
 		configureTaskGrid();
@@ -61,6 +61,7 @@ public class TaskGrid extends GridPane {
 	private String getTimeFormat(Date date) {
 		return new SimpleDateFormat("h:mm a").format(date);
 	}
+
 	private String getAllDayTimeFormat(Date date) {
 		return new SimpleDateFormat("HH:mm:ss").format(date);
 	}
@@ -69,13 +70,13 @@ public class TaskGrid extends GridPane {
 		String startTime, endTime, nextTiming, lastTiming;
 		String alternateTiming = ALTERNATE_TIMING_TEXT;
 		String allDayTimeFormat = "00:00:01";
-		
+
 		Date startDate = task.getDateStart();
 		Date endDate = task.getDateEnd();
 		Date nextDate = task.getNextDate();
 
 		List<Date> allDate = task.getAllDates();
-		
+
 		// For displaying task that is eg. 5pm or 6pm or 7pm
 		if (task.isBlocking()) {
 			if (nextDate != null) {
@@ -100,22 +101,22 @@ public class TaskGrid extends GridPane {
 				Label lastTimingLabel = new Label(lastTiming);
 				this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
 			}
-		} else if(task.isRange()){
+		} else if (task.isRange()) {
 			startTime = getTimeFormat(startDate);
 			endTime = getTimeFormat(endDate);
-			
+
 			Label startTimeLabel = new Label(startTime);
 			Label endTimeLabel = new Label(endTime);
-			
+
 			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
-		}else{
+		} else {
 			if (startDate != null) {
 				String checkAllDay = getAllDayTimeFormat(startDate);
-				if(checkAllDay.equals(allDayTimeFormat)){
+				if (checkAllDay.equals(allDayTimeFormat)) {
 					Label startTimeLabel = new Label("All Day");
 					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-				}else{
+				} else {
 					startTime = getTimeFormat(startDate);
 					Label startTimeLabel = new Label(startTime);
 					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
@@ -174,8 +175,8 @@ public class TaskGrid extends GridPane {
 			this.add(overlapIcon, iconColumn, iconRow);
 		}
 	}
-	
-	public int getTaskGridID(){
+
+	public int getTaskGridID() {
 		return id;
 	}
 }
