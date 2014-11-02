@@ -24,6 +24,10 @@ public interface Task extends Comparable<Task> {
 	public List<String> getHashtags();
 
 	public boolean isRange();
+	
+	public boolean isBlocking();
+	
+	public boolean isMultiple();
 
 	public boolean isDone();
 

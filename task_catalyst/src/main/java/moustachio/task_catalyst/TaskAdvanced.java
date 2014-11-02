@@ -44,11 +44,6 @@ public class TaskAdvanced implements Task {
 	public String getDescription() {
 		String interpretedString = this.description;
 
-		boolean isAlwaysShowTime = false;
-
-		String prettyString = TaskCatalystCommons.getPrettyString(
-				interpretedString, isAlwaysShowTime);
-
 		String friendlyString = TaskCatalystCommons
 				.getPrettyStringWithoutDate(interpretedString);
 
@@ -80,6 +75,18 @@ public class TaskAdvanced implements Task {
 	public boolean isRange() {
 		return description
 				.matches(".*\\}.*(\\bto\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
+	}
+
+	@Override
+	public boolean isBlocking() {
+		return description
+				.matches(".*\\}.*(\\bor\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
+	}
+
+	@Override
+	public boolean isMultiple() {
+		return description
+				.matches(".*\\}.*(\\band\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
 	}
 
 	@Override
