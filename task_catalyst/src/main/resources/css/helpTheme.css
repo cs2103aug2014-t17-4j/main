@@ -9,17 +9,29 @@
     -fx-background-position:left;   
     -fx-background-color: transparent;  
 }
+.basicFeatures {          
+    -fx-background-image: url("../images/basic.png");
+}
+.hotkeys {          
+    -fx-background-image: url("../images/hotkeys.png");
+}
+.hashtags {          
+    -fx-background-image: url("../images/hashtag.png");
+}
+.specialFeatures {          
+    -fx-background-image: url("../images/special.png");
+}
 #programTitle{
 	-fx-image: url("../images/title.png");
 }
 
-#rootBorderPane {
-	-fx-border-color: black;
+.rootAnchorPane {
+	
 }
 
 /* GUI Interface background colour */
 .theme {
     master-color: gray;
-    -fx-background-color: orange;
+    -fx-background-color: skyblue;
     -fx-font-size: 14.0px;
 }

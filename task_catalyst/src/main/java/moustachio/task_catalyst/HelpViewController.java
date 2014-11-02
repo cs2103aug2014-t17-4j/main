@@ -2,6 +2,7 @@ package moustachio.task_catalyst;
 
 
 import java.io.IOException;
+
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -10,6 +11,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -29,6 +31,14 @@ public class HelpViewController {
 	private Button exitButton;
 	@FXML
 	private TextArea hashTagArea;
+	@FXML
+	private ImageView basicFeatures;
+	@FXML
+	private ImageView specialFeatures;
+	@FXML
+	private ImageView hashtags;
+	@FXML
+	private ImageView hotkeys;
 
 	private Stage helpStage;
 
