@@ -119,6 +119,9 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
+				
+				// taskScrollPane.getChildrenUnmodifiable().get(index);
+				// System.out.println();
 				// taskTable.scrollTo(index);
 				// taskTable.getSelectionModel().select(index);
 			}
@@ -248,10 +251,11 @@ public class UIController {
 			taskContainer.getChildren().add(new Label(EMPTY_TASKVIEW_MESSAGE));
 			taskScrollPane.setContent(taskContainer);
 		}else{
-			for (int i = 0; i < task.size(); i++) {	
+			for (int i = 0; i < task.size(); i++) {
 				Task currentTask = task.get(i);
-
+							
 				if(currentTask.getNextDate() != null){
+					//is it StartTime to endTime?
 					if(currentTask.isRange() == false){
 						startDate = currentTask.getNextDate();
 					}else{
@@ -261,6 +265,7 @@ public class UIController {
 					dateCategory = new SimpleDateFormat("MMMM dd").format(startDate);
 					
 				}else{
+					//Floating task
 					dateCategory = "Someday";
 				}
 				currentDate = dateCategory;
