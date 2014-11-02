@@ -14,6 +14,7 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class TaskCatalystCommons {
 
+	private static final String ERROR_MULTIPLE_CHUNKS = "Please keep all date information together.";
 	private static final String ERROR_DEFAULT_HASHTAGS = "Please remove default hashtags from your task description.";
 	private static final String ERROR_MIX_TYPES = "Please only specify one pair of date ranges per task and do not mix date types.";
 	private static final int INVALID_INTEGER = -1;
@@ -125,6 +126,7 @@ public class TaskCatalystCommons {
 		exceptionIfInvalidRange(interpretedString);
 		exceptionIfOverlappingDates(interpretedString);
 		exceptionIfContainsDefaultHashtag(interpretedString);
+		exceptionIfMultipleChunks(interpretedString);
 		return interpretedString;
 	}
 
@@ -311,6 +313,26 @@ public class TaskCatalystCommons {
 		}
 		if (isContainsDefaultHashtag) {
 			throw new UnsupportedOperationException(ERROR_DEFAULT_HASHTAGS);
+		}
+	}
+
+	private static void exceptionIfMultipleChunks(
+			String interpretedStringNextPass)
+			throws UnsupportedOperationException {
+
+		String prepositions = "(,|and|or) \\{";
+		String spacesAfterBraces = "\\}(,)?(\\s)?";
+		String consecutiveCurly = "\\}\\{";
+		String textBetweenCurly = ".*\\}(.*?)\\{.*";
+
+		String processingString = interpretedStringNextPass;
+		processingString = processingString.replaceAll(prepositions, "\\{");
+		processingString = processingString
+				.replaceAll(spacesAfterBraces, "\\}");
+		processingString = processingString.replaceAll(consecutiveCurly, "");
+		boolean isMultipleChunk = processingString.matches(textBetweenCurly);
+		if (isMultipleChunk) {
+			throw new UnsupportedOperationException(ERROR_MULTIPLE_CHUNKS);
 		}
 	}
 
@@ -665,21 +687,15 @@ public class TaskCatalystCommons {
 		String spaceBeforeCommas = " ,";
 		String spaceBeforeFullstops = " \\.";
 		String friendlyString = prettyString;
-		System.out.println(friendlyString);
+
 		friendlyString = friendlyString.replaceAll(toPrepositions, "\\{");
-		System.out.println(friendlyString);
-		friendlyString = friendlyString.replaceAll(emptyAndOrPrepositions, "\\{");
-		System.out.println(friendlyString);
+		friendlyString = friendlyString.replaceAll(emptyAndOrPrepositions,
+				"\\}\\{");
 		friendlyString = friendlyString.replaceAll(spacesAfterBraces, "\\}");
-		System.out.println(friendlyString);
 		friendlyString = removeWordsInCurlyBraces(friendlyString);
-		System.out.println(friendlyString);
 		friendlyString = removeSquareBrackets(friendlyString);
-		System.out.println(friendlyString);
 		friendlyString = friendlyString.replaceAll(spaceBeforeCommas, ",");
-		System.out.println(friendlyString);
 		friendlyString = friendlyString.replaceAll(spaceBeforeFullstops, "\\.");
-		System.out.println(friendlyString);
 		return friendlyString;
 	}
 
