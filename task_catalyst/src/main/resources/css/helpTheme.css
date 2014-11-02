@@ -1,0 +1,25 @@
+/**
+ * @author Lin XiuQing (A0112764J)
+ */
+ 
+#exitButton {          
+    -fx-background-image: url("../images/close24.png");
+    -fx-background-size: 24.0 24.0;
+    -fx-background-repeat: no-repeat;
+    -fx-background-position:left;   
+    -fx-background-color: transparent;  
+}
+#programTitle{
+	-fx-image: url("../images/title.png");
+}
+
+#rootBorderPane {
+	-fx-border-color: black;
+}
+
+/* GUI Interface background colour */
+.theme {
+    master-color: gray;
+    -fx-background-color: orange;
+    -fx-font-size: 14.0px;
+}

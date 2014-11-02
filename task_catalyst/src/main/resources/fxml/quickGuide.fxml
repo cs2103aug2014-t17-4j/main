@@ -13,7 +13,7 @@
    <children>
       <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <ImageView fitHeight="32.0" fitWidth="152.0" layoutX="40.0" layoutY="10.0">
+            <ImageView fitHeight="32.0" fitWidth="152.0" layoutX="40.0" layoutY="10.0" styleClass="helpTheme.css">
                <image>
                   <Image url="@../images/title.png" />
                </image>
@@ -23,7 +23,7 @@
                   <Image url="@../images/info.png" />
                </image>
             </ImageView>
-            <Button fx:id="exitButton" layoutX="461.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="25.0" stylesheets="@../css/DarkTheme.css" />
+            <Button fx:id="exitButton" layoutX="461.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleExit" onMouseClicked="#handleExit" prefHeight="25.0" prefWidth="25.0" stylesheets="@../css/DarkTheme.css" />
          </children>
       </Pane>
       <TabPane fx:id="helpPane" layoutX="6.0" layoutY="50.0" prefHeight="346.0" prefWidth="490.0" tabClosingPolicy="UNAVAILABLE" tabMinWidth="104.0">
@@ -35,17 +35,26 @@
           </Tab>
           <Tab fx:id="basicFeaturesTab" text="Basic Features">
             <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Pane fx:id="basicPane" layoutX="6.0" layoutY="7.0" prefHeight="310.0" prefWidth="484.0" />
+                     </children></AnchorPane>
             </content>
           </Tab>
             <Tab fx:id="specialFeaturesTab" text="Special Features">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Pane fx:id="specialPane" layoutX="8.0" layoutY="14.0" prefHeight="301.0" prefWidth="483.0" />
+                     </children></AnchorPane>
                </content>
             </Tab>
             <Tab fx:id="hotKeysTab" text="HotKeys">
                <content>
-                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                     <children>
+                        <Pane fx:id="hotKeysPane" layoutX="7.0" prefHeight="316.0" prefWidth="483.0" />
+                     </children></AnchorPane>
                </content>
             </Tab>
         </tabs>
