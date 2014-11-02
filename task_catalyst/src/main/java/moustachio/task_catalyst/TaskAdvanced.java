@@ -203,10 +203,12 @@ public class TaskAdvanced implements Task {
 	public int compareTo(Task o) {
 		Date thisDateTime = this.getDateStart();
 		Date otherDateTime = o.getDateStart();
-		if (thisDateTime == null) {
+		if (thisDateTime == null && otherDateTime != null) {
 			return 1;
-		} else if (otherDateTime == null) {
+		} else if (otherDateTime == null && thisDateTime != null) {
 			return -1;
+		} else if (thisDateTime == null && otherDateTime == null) {
+			return 0;
 		} else {
 			return thisDateTime.compareTo(otherDateTime);
 		}

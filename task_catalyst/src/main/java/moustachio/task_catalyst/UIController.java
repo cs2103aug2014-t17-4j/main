@@ -4,6 +4,7 @@
 
 package moustachio.task_catalyst;
 
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,7 +70,7 @@ public class UIController {
 		logic = new LogicActual();
 		testInterface();
 		initializeForms();
-		listChangeListener();
+		listChangeListener(null);
 	}
 
 	@FXML
@@ -89,13 +90,18 @@ public class UIController {
 	 * 
 	 * @author A0111921W
 	 */
-	private void listChangeListener() {
+	private void listChangeListener(MouseEvent e) {
+
 		hashTagList.getSelectionModel().selectedItemProperty()
 				.addListener(new ChangeListener<String>() {
 					public void changed(ObservableValue<? extends String> ov,
 							String old_val, String new_val) {
-						logic.processCommand(new_val);
-						displayTasks();
+						if (old_val != null && new_val != null
+								&& !old_val.equals(new_val)) {
+							logic.processCommand(new_val);
+							System.out.println("Change Listener");
+							displayTasks();
+						}
 					}
 				});
 	}
@@ -119,7 +125,41 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				
+				if (index == -1) {
+					return;
+				}
+
+				VBox vbox = (VBox) taskScrollPane.getContent();
+
+				TaskGrid taskGrid = null;
+
+				for (int i = index; i < vbox.getChildren().size(); i++) {
+					if (vbox.getChildren().get(i) instanceof TaskGrid) {
+						taskGrid = (TaskGrid) vbox.getChildren().get(i);
+						if (taskGrid.getTaskGridID() == index) {
+							break;
+						}
+					}
+				}
+
+				System.out.println("Highlight index: " + index);
+
+				taskGrid.highlight();
+
+				double height = taskScrollPane.getContent().getBoundsInLocal()
+						.getHeight();
+
+				double y = taskGrid.getBoundsInParent().getMaxY();
+				if (y < 10) {
+					setFocusForTaskTable(index);
+					return;
+				}
+				y = y + ((y / height) - 0.5) * taskScrollPane.getHeight();
+
+				taskScrollPane.setVvalue(y / height);
+
+				System.out.println(y);
+
 				// taskScrollPane.getChildrenUnmodifiable().get(index);
 				// System.out.println();
 				// taskTable.scrollTo(index);
@@ -243,39 +283,40 @@ public class UIController {
 		String currentDate = null;
 		Date startDate;
 		List<Task> task = logic.getList();
-		
+
 		taskContainer.setSpacing(10);
-		//taskContainer.getStyleClass().add("vbox");
-		
-		if(task.isEmpty()){
+		// taskContainer.getStyleClass().add("vbox");
+
+		if (task.isEmpty()) {
 			taskContainer.getChildren().add(new Label(EMPTY_TASKVIEW_MESSAGE));
 			taskScrollPane.setContent(taskContainer);
-		}else{
+		} else {
 			for (int i = 0; i < task.size(); i++) {
 				Task currentTask = task.get(i);
-							
-				if(currentTask.getNextDate() != null){
-					//is it StartTime to endTime?
-					if(currentTask.isRange() == false){
+
+				if (currentTask.getNextDate() != null) {
+					// is it StartTime to endTime?
+					if (currentTask.isRange() == false) {
 						startDate = currentTask.getNextDate();
-					}else{
+					} else {
 						startDate = currentTask.getDateStart();
 					}
-					
-					dateCategory = new SimpleDateFormat("MMMM dd").format(startDate);
-					
-				}else{
-					//Floating task
+
+					dateCategory = new SimpleDateFormat("MMMM dd")
+							.format(startDate);
+
+				} else {
+					// Floating task
 					dateCategory = "Someday";
 				}
 				currentDate = dateCategory;
-				
-				if(!currentDate.equals(prevDate)){
+
+				if (!currentDate.equals(prevDate)) {
 					taskContainer.getChildren().add(new Label(dateCategory));
 				}
-				
+
 				prevDate = currentDate;
-				taskContainer.getChildren().add(new TaskGrid(i,task.get(i)));
+				taskContainer.getChildren().add(new TaskGrid(i, task.get(i)));
 				taskScrollPane.setContent(taskContainer);
 			}
 		}
