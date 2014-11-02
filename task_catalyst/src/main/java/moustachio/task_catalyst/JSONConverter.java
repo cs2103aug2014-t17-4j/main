@@ -1,5 +1,7 @@
 package moustachio.task_catalyst;
 
+import java.util.List;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -32,20 +34,22 @@ public class JSONConverter {
 		return jsonObject;
 	}
 
-	public Task decode(JSONObject obj) {
-		Task task;
+	public List<Task> decode(JSONObject obj) {
+		List<Task> tasks;
 		String description;
 		boolean isDone;
 		description = (String) obj.get(DESCRIPTION);
 		isDone = (Boolean) obj.get(IS_DONE);
-		task = new TaskBuilderAdvanced().createTask(description);
-		if (task != null) {
-			task.setDone(isDone);
+		tasks = new TaskBuilderAdvanced().createTask(description);
+		if (tasks != null) {
+			for (Task task : tasks) {
+				task.setDone(isDone);
+			}
 		}
-		return task;
+		return tasks;
 	}
 
-	public Task decodeToString(String str) throws ParseException {
+	public List<Task> decodeToString(String str) throws ParseException {
 		JSONObject obj = (JSONObject) JSONValue.parseWithException(str);
 		return decode(obj);
 	}

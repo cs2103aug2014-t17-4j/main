@@ -34,22 +34,22 @@ public class ListProcessorActualTest {
 	/*This is a boundary case for the case 'list with task' partition*/
 	@Test
 	public void testSearchByHashtag2() {
-		tasks.add(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
 		assertEquals(listProcessor.searchByHashtag(tasks, "boss").get(0), tasks.get(0));
 	}
 	
 	@Test
 	public void testSearchByHashtag3() {
-		tasks.add(taskBuilder.createTask("meet #boss at 5pm"));
-		tasks.add(taskBuilder.createTask("meet #KaiYao at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #KaiYao at 5pm"));
 		assertEquals(listProcessor.searchByHashtag(tasks, "boss").get(0), tasks.get(0));
 	}
 	
 	@Test
 	public void testSearchByHashtag4() {
-		tasks.add(taskBuilder.createTask("meet #boss at 5pm"));
-		tasks.add(taskBuilder.createTask("meet #KaiYao at 5pm"));
-		tasks.add(taskBuilder.createTask("ask KaiYao CS2103 project questions"));
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #KaiYao at 5pm"));
+		tasks.addAll(taskBuilder.createTask("ask KaiYao CS2103 project questions"));
 		assertEquals(listProcessor.searchByHashtag(tasks, "KaiYao").size(), 1);
 		assertEquals(listProcessor.searchByHashtag(tasks, "KaiYao").get(0), tasks.get(1));
 	}
@@ -61,21 +61,21 @@ public class ListProcessorActualTest {
 	
 	@Test
 	public void testSearchByKeyword2() {
-		tasks.add(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
 		assertEquals(listProcessor.searchByKeyword(tasks, "boss").get(0), tasks.get(0));
 	}
 	
 	@Test
 	public void testSearchByKeyword3() {
-		tasks.add(taskBuilder.createTask("meet boss at 6pm today"));
+		tasks.addAll(taskBuilder.createTask("meet boss at 6pm today"));
 		assertEquals(listProcessor.searchByKeyword(tasks, "5pm").size(), 0);
 	}
 	
 	@Test
 	public void testSearchByKeyword4() {
-		tasks.add(taskBuilder.createTask("meet #boss at 5pm"));
-		tasks.add(taskBuilder.createTask("meet #KaiYao at 5pm"));
-		tasks.add(taskBuilder.createTask("ask KaiYao CS2103 project questions"));
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #KaiYao at 5pm"));
+		tasks.addAll(taskBuilder.createTask("ask KaiYao CS2103 project questions"));
 		assertEquals(listProcessor.searchByKeyword(tasks, "KaiYao").size(), 2);
 		assertEquals(listProcessor.searchByKeyword(tasks, "KaiYao").get(0), tasks.get(1));
 		assertEquals(listProcessor.searchByKeyword(tasks, "KaiYao").get(1), tasks.get(2));
@@ -83,9 +83,9 @@ public class ListProcessorActualTest {
 
 	@Test
 	public void testSortByDate() {
-		tasks.add(taskBuilder.createTask("meet #boss at 5pm"));
-		tasks.add(taskBuilder.createTask("meet #KaiYao at 5pm"));
-		tasks.add(taskBuilder.createTask("ask KaiYao CS2103 project questions"));
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #KaiYao at 5pm"));
+		tasks.addAll(taskBuilder.createTask("ask KaiYao CS2103 project questions"));
 		assertEquals(listProcessor.sortByDate(tasks).get(0), tasks.get(0));
 		assertEquals(listProcessor.sortByDate(tasks).get(1), tasks.get(1));
 		assertEquals(listProcessor.sortByDate(tasks).get(2), tasks.get(2));

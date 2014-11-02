@@ -1,5 +1,7 @@
 package moustachio.task_catalyst;
 
+import java.util.List;
+
 public class Add extends Action {
 
 	private static final String HINT_MESSAGE = "\nAdd: You can include date information. Use []s to ignore processing.";
@@ -11,28 +13,32 @@ public class Add extends Action {
 
 	private TaskBuilder taskBuilder;
 	private TaskManager taskManager;
-	private Task task;
+	private List<Task> tasks;
+	private String userCommand;
 
 	public Add(String userCommand) {
 		taskBuilder = new TaskBuilderAdvanced();
 		taskManager = TaskManagerActual.getInstance();
-		task = taskBuilder.createTask(userCommand);
+		tasks = taskBuilder.createTask(userCommand);
+		this.userCommand = userCommand;
 	}
 
 	@Override
 	public Message execute() {
-		if (task == null) {
+		if (tasks == null) {
 			int type = Message.TYPE_ERROR;
 			String message = String.format(EXECUTE_ERROR) + HINT_MESSAGE;
 
 			return new Message(type, message);
 		}
 
-		boolean addSuccess = taskManager.addTask(task);
+		int tasksAdded = taskManager.addTasks(tasks);
+		boolean addSuccess = tasksAdded > 0;
 		int type;
 		String message;
 		if (addSuccess) {
-			String taskDescription = task.getDescription();
+			String taskDescription = TaskCatalystCommons
+					.getFriendlyString(userCommand);
 			type = Message.TYPE_SUCCESS;
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else {
@@ -44,11 +50,13 @@ public class Add extends Action {
 
 	@Override
 	public Message undo() {
-		boolean isSuccess = taskManager.removeTask(task);
+		int tasksRemoved = taskManager.removeTasks(tasks);
+		boolean isSuccess = tasksRemoved > 0;
 		int type;
 		String message;
 		if (isSuccess) {
-			String taskDescription = task.getDescription();
+			String taskDescription = TaskCatalystCommons
+					.getFriendlyString(userCommand);
 			type = Message.TYPE_SUCCESS;
 			message = String.format(UNDO_SUCCESS, taskDescription);
 		} else {

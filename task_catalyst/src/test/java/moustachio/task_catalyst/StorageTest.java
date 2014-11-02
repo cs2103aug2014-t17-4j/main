@@ -21,8 +21,8 @@ public class StorageTest {
 	TaskBuilder taskBuilder = new TaskBuilderAdvanced();
 	
 	String fileName;
-	Task task1 = taskBuilder.createTask("meet boss at 5pm tmr");
-	Task task2 = taskBuilder.createTask("go school tmr 9am");
+	Task task1 = taskBuilder.createTask("meet boss at 5pm tmr").get(0);
+	Task task2 = taskBuilder.createTask("go school tmr 9am").get(0);
 	
 	String font1 = "font";
 	String size1 = "10";

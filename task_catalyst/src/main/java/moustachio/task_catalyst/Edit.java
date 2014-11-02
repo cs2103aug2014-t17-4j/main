@@ -1,6 +1,8 @@
 package moustachio.task_catalyst;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class Edit extends Action {
 
@@ -27,14 +29,18 @@ public class Edit extends Action {
 	private TaskBuilder taskBuilder;
 	private static TaskManager taskManager = TaskManagerActual.getInstance();
 
-	private Task targetTask;
-	private Task replacementTask;
+	private List<Task> targetTasks;
+	private List<Task> replacementTasks;
 
 	private int taskNumber;
 
+	private String descriptionEdit;
+
+	private String originalDescription;
+	private String newDescription;
+
 	public Edit(String userCommand) {
 		taskBuilder = new TaskBuilderAdvanced();
-		targetTask = taskBuilder.createTask(userCommand);
 
 		String taskNumberAndContent = TaskCatalystCommons
 				.removeFirstWord(userCommand);
@@ -42,38 +48,85 @@ public class Edit extends Action {
 				.getFirstWord(taskNumberAndContent);
 		taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
 
-		targetTask = taskManager.getDisplayTask(taskNumber);
+		Task targetTask = taskManager.getDisplayTask(taskNumber);
+		if (targetTask != null) {
+			descriptionEdit = targetTask.getDescriptionEdit();
+			originalDescription = targetTask.getDescription();
+			targetTasks = new ArrayList<Task>();
+			targetTasks.add(targetTask);
+		}
 
 		String userInput = TaskCatalystCommons
 				.removeFirstWord(taskNumberAndContent);
 
-		replacementTask = taskBuilder.createTask(userInput);
+		try {
+			replacementTasks = taskBuilder.createTask(userInput);
+			newDescription = TaskCatalystCommons.getFriendlyString(userInput);
+		} catch (UnsupportedOperationException e) {
+			replacementTasks = null;
+			newDescription = null;
+		}
 	}
 
 	@Override
 	public Message execute() {
 
-		if (targetTask != null && replacementTask == null) {
+		if (targetTasks != null && replacementTasks == null) {
 			int type = Message.TYPE_AUTOCOMPLETE;
 			String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
-					targetTask.getDescriptionEdit());
+					descriptionEdit);
 
 			return new Message(type, message);
 		}
 
-		if (targetTask == null && replacementTask == null) {
+		if (targetTasks == null) {
 			int type = Message.TYPE_ERROR;
 			String message = String.format(EXECUTE_ERROR) + HINT_SYNTAX;
 
 			return new Message(type, message);
 		}
-		return replace(targetTask, replacementTask, EXECUTE_SUCCESS,
-				EXECUTE_ERROR);
+		String taskDescription = TaskCatalystCommons
+				.getFriendlyString(newDescription);
+		for (Task task : this.targetTasks) {
+			System.out.println("Giving Removing: " + task.getDescription());
+		}
+		for (Task task : this.replacementTasks) {
+			System.out.println("Giving Adding: " + task.getDescription());
+		}
+		return replace(this.targetTasks, this.replacementTasks,
+				taskDescription, EXECUTE_SUCCESS, EXECUTE_ERROR);
 	}
 
 	@Override
 	public Message undo() {
-		return replace(replacementTask, targetTask, UNDO_SUCCESS, UNDO_ERROR);
+		String taskDescription = TaskCatalystCommons
+				.getFriendlyString(originalDescription);
+
+		return replace(this.replacementTasks, this.targetTasks,
+				taskDescription, UNDO_SUCCESS, UNDO_ERROR);
+	}
+
+	private Message replace(List<Task> targetTasks,
+			List<Task> replacementTasks, String taskDescription,
+			String successFormat, String errorFormat) {
+
+		int tasksDeleted = taskManager.removeTasks(targetTasks);
+		boolean isDeleteSuccess = tasksDeleted > 0;
+		int tasksAdded = taskManager.addTasks(replacementTasks);
+		boolean isAddSuccess = tasksAdded > 0;
+
+		int type;
+		String message;
+
+		if (isDeleteSuccess && isAddSuccess) {
+			type = Message.TYPE_SUCCESS;
+			message = String.format(successFormat, taskDescription);
+		} else {
+			type = Message.TYPE_ERROR;
+			message = String.format(errorFormat);
+		}
+
+		return new Message(type, message);
 	}
 
 	public static Message getHint(String userCommand) {
@@ -127,27 +180,6 @@ public class Edit extends Action {
 
 			type = Message.TYPE_HINT;
 			message += HINT_VALID_TASK;
-		}
-
-		return new Message(type, message);
-	}
-
-	private Message replace(Task targetTask, Task replacementTask,
-			String successFormat, String errorFormat) {
-
-		boolean isDeleteSuccess = taskManager.removeTask(targetTask);
-		boolean isAddSuccess = taskManager.addTask(replacementTask);
-
-		int type;
-		String message;
-
-		if (isDeleteSuccess && isAddSuccess) {
-			type = Message.TYPE_SUCCESS;
-			String taskDescription = replacementTask.getDescription();
-			message = String.format(successFormat, taskDescription);
-		} else {
-			type = Message.TYPE_ERROR;
-			message = String.format(errorFormat);
 		}
 
 		return new Message(type, message);

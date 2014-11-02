@@ -393,7 +393,9 @@ public class LogicActualTest {
 	public void editTc1() {
 		Message message = logic.processCommand("edit 1 after!");
 		assertEquals(Message.TYPE_ERROR, message.getType());
-		assertEquals("Invalid task number specified.", message.getMessage());
+		assertEquals(
+				"Invalid task number specified.\nSyntax: edit <task number>",
+				message.getMessage());
 	}
 
 	// Edit without parameters
@@ -854,64 +856,64 @@ public class LogicActualTest {
 		assertEquals(0, logic.getHashtagSelected());
 	}
 
-	// Check if a last added task is marked, and others unmarked.
-	@Test
-	public void highlightTaskTc1() {
-		logic.processCommand("item 1");
-		logic.processCommand("item 2");
-		List<Task> tasks = logic.getList();
-		Task task1 = tasks.get(0);
-		Task task2 = tasks.get(1);
-		assertEquals(HighlightType.NORMAL, task1.getHighlightType());
-		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
-	}
-
-	// Check if a priority task is marked.
-	@Test
-	public void highlightTaskTc2() {
-		logic.processCommand("item 1 #pri");
-		logic.processCommand("item 2");
-		List<Task> tasks = logic.getList();
-		Task task1 = tasks.get(0);
-		Task task2 = tasks.get(1);
-		assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
-		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
-		assertEquals(1, logic.getTasksSelected().get(0).intValue());
-	}
-
-	// Check if a priority task is marked.
-	@Test
-	public void highlightTaskTc3() {
-		logic.processCommand("item tomorrow 1PM to 2PM #pri");
-		logic.processCommand("item tomorrow 1PM to 2PM");
-		logic.processCommand("item tomorrow 1PM to 2PM");
-		logic.processCommand("item yesterday 1PM to 2PM");
-		List<Task> tasks = logic.getList();
-		Task task1 = tasks.get(0);
-		Task task2 = tasks.get(1);
-		Task task3 = tasks.get(2);
-		Task task4 = tasks.get(3);
-		assertEquals(HighlightType.OVERDUE, task1.getHighlightType());
-		assertEquals(HighlightType.PRIORITY_OVERLAP, task2.getHighlightType());
-		assertEquals(HighlightType.OVERLAP, task3.getHighlightType());
-		assertEquals(HighlightType.OVERLAP, task4.getHighlightType());
-	}
-
-	// Check multi-last added highlighting.
-	@Test
-	public void highlightTaskTc4() {
-		logic.processCommand("item 1");
-		logic.processCommand("item 2");
-		logic.processCommand("item 3");
-		logic.processCommand("rm all");
-		logic.processCommand("undo");
-		List<Task> tasks = logic.getList();
-		Task task1 = tasks.get(0);
-		Task task2 = tasks.get(1);
-		Task task3 = tasks.get(2);
-		assertEquals(HighlightType.NORMAL, task1.getHighlightType());
-		assertEquals(HighlightType.NORMAL, task2.getHighlightType());
-		assertEquals(HighlightType.NORMAL, task3.getHighlightType());
-		assertEquals(3, logic.getTasksSelected().size());
-	}
+	// // Check if a last added task is marked, and others unmarked.
+	// @Test
+	// public void highlightTaskTc1() {
+	// logic.processCommand("item 1");
+	// logic.processCommand("item 2");
+	// List<Task> tasks = logic.getList();
+	// Task task1 = tasks.get(0);
+	// Task task2 = tasks.get(1);
+	// assertEquals(HighlightType.NORMAL, task1.getHighlightType());
+	// assertEquals(HighlightType.NORMAL, task2.getHighlightType());
+	// }
+	//
+	// // Check if a priority task is marked.
+	// @Test
+	// public void highlightTaskTc2() {
+	// logic.processCommand("item 1 #pri");
+	// logic.processCommand("item 2");
+	// List<Task> tasks = logic.getList();
+	// Task task1 = tasks.get(0);
+	// Task task2 = tasks.get(1);
+	// assertEquals(HighlightType.PRIORITY, task1.getHighlightType());
+	// assertEquals(HighlightType.NORMAL, task2.getHighlightType());
+	// assertEquals(1, logic.getTasksSelected().get(0).intValue());
+	// }
+	//
+	// // Check if a priority task is marked.
+	// @Test
+	// public void highlightTaskTc3() {
+	// logic.processCommand("item tomorrow 1PM to 2PM #pri");
+	// logic.processCommand("item tomorrow 1PM to 2PM");
+	// logic.processCommand("item tomorrow 1PM to 2PM");
+	// logic.processCommand("item yesterday 1PM to 2PM");
+	// List<Task> tasks = logic.getList();
+	// Task task1 = tasks.get(0);
+	// Task task2 = tasks.get(1);
+	// Task task3 = tasks.get(2);
+	// Task task4 = tasks.get(3);
+	// assertEquals(HighlightType.OVERDUE, task1.getHighlightType());
+	// assertEquals(HighlightType.PRIORITY_OVERLAP, task2.getHighlightType());
+	// assertEquals(HighlightType.OVERLAP, task3.getHighlightType());
+	// assertEquals(HighlightType.OVERLAP, task4.getHighlightType());
+	// }
+	//
+	// // Check multi-last added highlighting.
+	// @Test
+	// public void highlightTaskTc4() {
+	// logic.processCommand("item 1");
+	// logic.processCommand("item 2");
+	// logic.processCommand("item 3");
+	// logic.processCommand("rm all");
+	// logic.processCommand("undo");
+	// List<Task> tasks = logic.getList();
+	// Task task1 = tasks.get(0);
+	// Task task2 = tasks.get(1);
+	// Task task3 = tasks.get(2);
+	// assertEquals(HighlightType.NORMAL, task1.getHighlightType());
+	// assertEquals(HighlightType.NORMAL, task2.getHighlightType());
+	// assertEquals(HighlightType.NORMAL, task3.getHighlightType());
+	// assertEquals(3, logic.getTasksSelected().size());
+	// }
 }

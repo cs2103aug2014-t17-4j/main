@@ -31,7 +31,7 @@ public class FileHandler {
 	private static final String STRING_EMPTY = "";
 	private static final String VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
 	private static final String VALID_PATTERN = "(?i)^\\w+|\\d+$";
-	
+
 	private static final String MESSAGE_NOT_FOUND = "The file is not found!";
 	private static final String MESSAGE_INCORRECT_FORMAT = "Incorrect format has been found";
 	private static final String MESSAGE_EMPTY_FILE = "The file is empty.";
@@ -101,16 +101,17 @@ public class FileHandler {
 		BufferedReader breader = getReader(fileName);
 		JSONConverter objCodec = new JSONConverter();
 		while ((stringLine = breader.readLine()) != null) {
-			Task task = objCodec.decodeToString(stringLine);
-			if (task != null) {
-				list.add(task);
+			List<Task> tasks = objCodec.decodeToString(stringLine);
+			if (tasks != null) {
+				list.addAll(tasks);
 			}
 		}
 		breader.close();
 	}
 
 	/**
-	 * This function is implemented for the purpose of storing setting in future. 
+	 * This function is implemented for the purpose of storing setting in
+	 * future.
 	 * 
 	 */
 	public boolean writeSetting(String name, String fileName, String value) {
@@ -137,21 +138,22 @@ public class FileHandler {
 		}
 	}
 
-	private Boolean writeSettingTofile(String name, String fileName, String value)
-			throws IOException {
+	private Boolean writeSettingTofile(String name, String fileName,
+			String value) throws IOException {
 		assert (value != null && name != null);
 		Boolean isSuccess;
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
-					true));
-			writer.write(String.format(STRING_WRITE_SETTING,name,value));
-			writer.newLine();
-			writer.close();
-			isSuccess = true;
+				true));
+		writer.write(String.format(STRING_WRITE_SETTING, name, value));
+		writer.newLine();
+		writer.close();
+		isSuccess = true;
 		return isSuccess;
 	}
-	
+
 	/**
-	 * This function is implemented for the purpose of reading setting in future. 
+	 * This function is implemented for the purpose of reading setting in
+	 * future.
 	 * 
 	 */
 	public String readSetting(String name, String fileName) {

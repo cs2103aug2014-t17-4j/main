@@ -14,6 +14,7 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 public class TaskCatalystCommons {
 
+	private static final String ERROR_NO_DESCRIPTION = "Please type in some descriptions for the task.";
 	private static final String ERROR_MULTIPLE_CHUNKS = "Please keep all date information together.";
 	private static final String ERROR_DEFAULT_HASHTAGS = "Please remove default hashtags from your task description.";
 	private static final String ERROR_MIX_TYPES = "Please only specify one pair of date ranges per task and do not mix date types.";
@@ -127,6 +128,7 @@ public class TaskCatalystCommons {
 		exceptionIfOverlappingDates(interpretedString);
 		exceptionIfContainsDefaultHashtag(interpretedString);
 		exceptionIfMultipleChunks(interpretedString);
+		exceptionIfDescriptionEmpty(interpretedString);
 		return interpretedString;
 	}
 
@@ -334,6 +336,20 @@ public class TaskCatalystCommons {
 		boolean isMultipleChunk = processingString.matches(textBetweenCurly);
 		if (isMultipleChunk) {
 			throw new UnsupportedOperationException(ERROR_MULTIPLE_CHUNKS);
+		}
+	}
+
+	private static void exceptionIfDescriptionEmpty(
+			String interpretedStringNextPass)
+			throws UnsupportedOperationException {
+
+		boolean isAlwaysShowTime = false;
+		String prettyString = getPrettyString(interpretedStringNextPass,
+				isAlwaysShowTime);
+		String withoutDates = getPrettyStringWithoutDate(prettyString);
+		withoutDates = withoutDates.trim();
+		if (withoutDates.isEmpty()) {
+			throw new UnsupportedOperationException(ERROR_NO_DESCRIPTION);
 		}
 	}
 

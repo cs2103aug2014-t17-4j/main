@@ -1,8 +1,11 @@
 package moustachio.task_catalyst;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TaskBuilderAdvanced implements TaskBuilder {
 
-	public Task createTask(String userInput) {
+	public List<Task> createTask(String userInput) {
 
 		if (userInput == null || userInput.trim().isEmpty()) {
 			return null;
@@ -17,7 +20,11 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 		} catch (UnsupportedOperationException e) {
 			task = null;
 		}
-
-		return task;
+		List<Task> tasks = null;
+		if (task != null) {
+			tasks = new ArrayList<Task>();
+			tasks.add(task);
+		}
+		return tasks;
 	}
 }

@@ -1,7 +1,9 @@
 package moustachio.task_catalyst;
 
+import java.util.List;
+
 public interface TaskBuilder {
-	
-	public Task createTask(String userInput);
-	
+
+	public List<Task> createTask(String userInput);
+
 }
