@@ -447,7 +447,11 @@ public class TaskCatalystCommons {
 	}
 
 	private static String removeWordsInBrackets(String interpretedInput) {
-		return interpretedInput.replaceAll("(\\[|\\{)(.*)(\\]|\\})", "");
+		return interpretedInput.replaceAll("(\\[|\\{)(.*?)(\\]|\\})", "");
+	}
+
+	private static String removeWordsInCurlyBraces(String interpretedInput) {
+		return interpretedInput.replaceAll("(\\{)(.*?)(\\})", "");
 	}
 
 	private static String removeConsecutiveWhitespaces(String interpretedInput) {
@@ -651,6 +655,31 @@ public class TaskCatalystCommons {
 		String friendlyString = TaskCatalystCommons
 				.removeSquareBrackets(prettyString);
 		friendlyString = TaskCatalystCommons.removeCurlyBraces(friendlyString);
+		return friendlyString;
+	}
+
+	public static String getPrettyStringWithoutDate(String prettyString) {
+		String toPrepositions = "(to) \\{";
+		String emptyAndOrPrepositions = "\\} (and|or) \\{";
+		String spacesAfterBraces = "\\}(,)?(\\s)?";
+		String spaceBeforeCommas = " ,";
+		String spaceBeforeFullstops = " \\.";
+		String friendlyString = prettyString;
+		System.out.println(friendlyString);
+		friendlyString = friendlyString.replaceAll(toPrepositions, "\\{");
+		System.out.println(friendlyString);
+		friendlyString = friendlyString.replaceAll(emptyAndOrPrepositions, "\\{");
+		System.out.println(friendlyString);
+		friendlyString = friendlyString.replaceAll(spacesAfterBraces, "\\}");
+		System.out.println(friendlyString);
+		friendlyString = removeWordsInCurlyBraces(friendlyString);
+		System.out.println(friendlyString);
+		friendlyString = removeSquareBrackets(friendlyString);
+		System.out.println(friendlyString);
+		friendlyString = friendlyString.replaceAll(spaceBeforeCommas, ",");
+		System.out.println(friendlyString);
+		friendlyString = friendlyString.replaceAll(spaceBeforeFullstops, "\\.");
+		System.out.println(friendlyString);
 		return friendlyString;
 	}
 

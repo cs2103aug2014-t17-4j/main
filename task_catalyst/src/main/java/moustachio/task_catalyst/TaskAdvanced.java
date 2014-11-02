@@ -45,14 +45,12 @@ public class TaskAdvanced implements Task {
 		String interpretedString = this.description;
 
 		boolean isAlwaysShowTime = false;
+
 		String prettyString = TaskCatalystCommons.getPrettyString(
 				interpretedString, isAlwaysShowTime);
 
-		String noCurlyBracesString = TaskCatalystCommons
-				.removeCurlyBraces(prettyString);
-
 		String friendlyString = TaskCatalystCommons
-				.removeSquareBrackets(noCurlyBracesString);
+				.getPrettyStringWithoutDate(interpretedString);
 
 		return friendlyString;
 	}
