@@ -33,11 +33,11 @@ public class TaskGrid extends GridPane {
 	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): ";
 
 	private int id;
-
+	Label idContainer;
 	public TaskGrid(int id, Task task) {
 		this.id = id;
 		configureTaskGrid();
-		displayID(id);
+		displayID(id,task);
 		displayTime(task);
 		displayTaskDescription(task);
 		checkAndDisplayTaskIcon(task);
@@ -52,10 +52,14 @@ public class TaskGrid extends GridPane {
 		// this.setGridLinesVisible(true);
 	}
 
-	private void displayID(int id) {
-		Label idContainer = new Label(Integer.toString(id + 1));
+	private void displayID(int id, Task task) {
+		idContainer = new Label(Integer.toString(id + 1));
 		idContainer.getStyleClass().add("idLabel");
 		this.add(idContainer, FIRST_COLUMN, FIRST_ROW);
+	}
+	
+	public void highlight() {
+		idContainer.getStyleClass().add("isSelected");
 	}
 
 	private String getTimeFormat(Date date) {
@@ -179,4 +183,5 @@ public class TaskGrid extends GridPane {
 	public int getTaskGridID() {
 		return id;
 	}
+	
 }
