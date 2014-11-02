@@ -86,22 +86,7 @@
     -fx-background-insets: 1.0,1.0,1.0,1.0;
 }
 
-/* Different highlight type for task*/
-.isNormal { 
-	-fx-background-color: #ffffff;
-}
-.isOverlapStatic { 
-	-fx-background-color: #EB77A6;
-}
-.isPriority { 
-	-fx-background-color: #BDD8DA;
-}
-.isPriorityOverlapStatic { 
-	-fx-background-color: #E23D80;
-}
-.isOverdue { 
-	-fx-background-color: skyblue;
-}
+/* TaskGrid style */
 .grid {
 	-fx-border-color: black;
     -fx-border-width: 1px;
@@ -109,9 +94,11 @@
     -fx-background-radius: 5.0;
     -fx-margin:0;
 }
+/* TaskGrid Container style */
 .vbox{
 	-fx-padding: 7px;
 }
+/* TaskGrid ID label style */
 .idLabel{
 	-fx-padding: 4;
     -fx-border-width: 1px;
@@ -119,13 +106,20 @@
     -fx-background-color: orange;
 	-fx-background-radius: 5;
 }
-.withborder{
-	-fx-background-color: orange;
-}
+/* TaskGrid selected id style */
 .isSelected{
 	-fx-padding: 4;
     -fx-border-width: 1px;
     -fx-border-radius: 5;
     -fx-background-color: turquoise;
+	-fx-background-radius: 5;
+}
+/* Date category style */
+.dateCategoryStyle{
+	-fx-padding: 4;
+	-fx-text-fill: white;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5;
+    -fx-background-color: derive(master-color, -60.0%);
 	-fx-background-radius: 5;
 }

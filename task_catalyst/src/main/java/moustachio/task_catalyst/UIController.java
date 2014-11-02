@@ -330,7 +330,10 @@ public class UIController {
 				currentDate = dateCategory;
 
 				if (!currentDate.equals(prevDate)) {
-					taskContainer.getChildren().add(new Label(dateCategory));
+					Label dateCategoryLabel = new Label(dateCategory);
+					dateCategoryLabel.setPrefWidth(460);
+					dateCategoryLabel.getStyleClass().add("dateCategoryStyle");
+					taskContainer.getChildren().add(dateCategoryLabel);
 				}
 
 				prevDate = currentDate;
