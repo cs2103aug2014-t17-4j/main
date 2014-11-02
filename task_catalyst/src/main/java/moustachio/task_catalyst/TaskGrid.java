@@ -30,6 +30,8 @@ public class TaskGrid extends GridPane {
 	private static final String OVERLAP_ICON_IMAGE_PATH = "/images/overlap.png";
 	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
+	
+	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): ";
 
 	public TaskGrid(int id, Task task) {
 		configureTaskGrid();
@@ -58,21 +60,18 @@ public class TaskGrid extends GridPane {
 		return new SimpleDateFormat("h:mm a").format(date);
 	}
 
-	private String getAllDayFormat(Date date) {
-		return new SimpleDateFormat("HH:mm:ss").format(date);
-	}
-
 	private void displayTime(Task task) {
 		String startTime, endTime, nextTiming, lastTiming;
-		String alternateTiming = "Alternate timing(s): ";
-		String allDay = "00:00:01";
-
+		String alternateTiming = ALTERNATE_TIMING_TEXT;
+		
 		Date startDate = task.getDateStart();
 		Date endDate = task.getDateEnd();
 		Date nextDate = task.getNextDate();
 
 		List<Date> allDate = task.getAllDates();
-
+		
+		System.out.println("dateend: " + endDate + " nextdate: " + nextDate
+				+ " datestart: " + startDate);
 		// For displaying task that is eg. 5pm or 6pm or 7pm
 		if (task.isBlocking()) {
 			if (nextDate != null) {
@@ -84,7 +83,7 @@ public class TaskGrid extends GridPane {
 						alternateTiming += getTimeFormat(allDate.get(i)) + " ";
 					}
 				}
-				if (!alternateTiming.equals("Alternate timing(s): ")) {
+				if (!alternateTiming.equals(ALTERNATE_TIMING_TEXT)) {
 					this.add(new Label(alternateTiming), THIRD_COLUMN,
 							SECOND_ROW);
 				}
@@ -97,24 +96,19 @@ public class TaskGrid extends GridPane {
 				Label lastTimingLabel = new Label(lastTiming);
 				this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
 			}
-		} else {
-			// task with start time and end time
-			if (nextDate != null) {
-				String checkAllDay = getAllDayFormat(startDate);
-				if (checkAllDay.equals(allDay)) {
-					Label startTimeLabel = new Label("All Day");
-					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-				} else {
-					startTime = getTimeFormat(startDate);
-					Label startTimeLabel = new Label(startTime);
-					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-				}
-
-				if (task.isRange()) {
-					endTime = getTimeFormat(endDate);
-					Label endTimeLabel = new Label(endTime);
-					this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
-				}
+		} else if(task.isRange()){
+			startTime = getTimeFormat(startDate);
+			endTime = getTimeFormat(endDate);
+			
+			Label startTimeLabel = new Label(startTime);
+			Label endTimeLabel = new Label(endTime);
+			
+			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+			this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
+		}else{
+			if (endDate != null) {
+				Label startTimeLabel = new Label("All Day");
+				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			} else {
 				Label startTimeLabel = new Label("Someday");
 				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
