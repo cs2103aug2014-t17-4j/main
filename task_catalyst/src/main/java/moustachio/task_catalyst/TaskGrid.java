@@ -23,7 +23,6 @@ public class TaskGrid extends GridPane {
 
 	private static final int COLUMN_SPAN = 5;
 	private static final int ROW_SPAN = 1;
-
 	private static final int DESCRIPTION_WRAPPING_WIDTH = 350;
 
 	private static final String PRIORITY_ICON_IMAGE_PATH = "/images/priority.png";
@@ -32,8 +31,11 @@ public class TaskGrid extends GridPane {
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
 	
 	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): ";
-
+	
+	private int id;
+	
 	public TaskGrid(int id, Task task) {
+		this.id = id;
 		configureTaskGrid();
 		displayID(id);
 		displayTime(task);
@@ -59,10 +61,14 @@ public class TaskGrid extends GridPane {
 	private String getTimeFormat(Date date) {
 		return new SimpleDateFormat("h:mm a").format(date);
 	}
+	private String getAllDayTimeFormat(Date date) {
+		return new SimpleDateFormat("HH:mm:ss a").format(date);
+	}
 
 	private void displayTime(Task task) {
 		String startTime, endTime, nextTiming, lastTiming;
 		String alternateTiming = ALTERNATE_TIMING_TEXT;
+		String allDayTimeFormat = "00:00:01";
 		
 		Date startDate = task.getDateStart();
 		Date endDate = task.getDateEnd();
@@ -106,9 +112,17 @@ public class TaskGrid extends GridPane {
 			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
 		}else{
-			if (endDate != null) {
-				Label startTimeLabel = new Label("All Day");
-				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+			if (startDate != null) {
+				String checkAllDay = getAllDayTimeFormat(startDate);
+				System.out.println(checkAllDay);
+				if(checkAllDay.equals(allDayTimeFormat)){
+					Label startTimeLabel = new Label("All Day");
+					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+				}else{
+					startTime = getTimeFormat(startDate);
+					Label startTimeLabel = new Label(startTime);
+					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+				}
 			} else {
 				Label startTimeLabel = new Label("Someday");
 				this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
@@ -162,5 +176,9 @@ public class TaskGrid extends GridPane {
 			overlapIcon.setImage(overlapImage);
 			this.add(overlapIcon, iconColumn, iconRow);
 		}
+	}
+	
+	public int getTaskGridID(){
+		return id;
 	}
 }
