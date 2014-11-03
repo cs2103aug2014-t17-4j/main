@@ -32,6 +32,7 @@ public class TaskGrid extends GridPane {
 	private static final String OVERLAP_ICON_IMAGE_PATH = "/images/overlap.png";
 	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
+	private static final String BLOCKING_ICON_IMAGE_PATH = "/images/blocking.png";
 
 	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): \n";
 
@@ -131,9 +132,9 @@ public class TaskGrid extends GridPane {
 						+ getDateFormat(endDate) + ")";
 			}
 
-			Text startTimeLabel = new Text(startTime);
+			Text startTimeLabel = new Text(startTime + "\nto");
 			Text endTimeLabel = new Text(endTime);
-
+			
 			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 			this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
 		} else {
@@ -166,6 +167,8 @@ public class TaskGrid extends GridPane {
 
 		if (task.isBlocking()) {
 			iconRow = THIRD_ROW;
+			iconContainer = createIconWithText(iconContainer,
+					BLOCKING_ICON_IMAGE_PATH, "Reserved");
 		} else {
 			iconRow = SECOND_ROW;
 		}
