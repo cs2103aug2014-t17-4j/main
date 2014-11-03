@@ -314,6 +314,17 @@ public class UIController {
 			}
 		});
 	}
+	
+	public void setCommandBar(String pasted) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				commandBar.setText(pasted);
+				commandBar.requestFocus();
+				commandBar.positionCaret(commandBar.getText().length());
+			}
+		});
+	}
 
 	/**
 	 * This function handles the status message to display and provide
