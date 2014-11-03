@@ -108,12 +108,14 @@ public class UIController {
 	}
 	
 	private void labelChangeListener() {
-
-		statusMessage.textProperty().addListener(new ChangeListener<String>() {
+		
+		statusMessage.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
-            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
-            	//System.out.println(statusMessage.getHeight());
-            	//tc.setStageHeight(520+statusMessage.getHeight());
+            public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
+            	//container.setPrefHeight(160);
+            	System.out.println(container.getHeight());
+            	System.out.println(tc.getStage().getHeight());
+            	tc.setStageHeight(530+container.getHeight());
             }
         }); 
 	}
