@@ -6,6 +6,7 @@ public class ActionInvoker {
 
 	Stack<Action> undos;
 	Stack<Action> redos;
+	String defaultMessage;
 
 	private static ActionInvoker instance;
 
@@ -27,9 +28,7 @@ public class ActionInvoker {
 	}
 
 	public Message doAction(Action action) {
-		Message message = new Message(Message.TYPE_ERROR,
-				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #");
+		Message message = new Message(Message.TYPE_ERROR, defaultMessage);
 		if (action != null) {
 			message = action.execute();
 			boolean isSuccess = message.getType() == Message.TYPE_SUCCESS;
@@ -60,5 +59,9 @@ public class ActionInvoker {
 		} catch (Exception e) {
 			return null;
 		}
+	}
+
+	public void setDefaultMessage(String defaultMessage) {
+		this.defaultMessage = defaultMessage;
 	}
 }

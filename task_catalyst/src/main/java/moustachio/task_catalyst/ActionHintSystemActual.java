@@ -6,11 +6,12 @@ public class ActionHintSystemActual implements ActionHintSystem {
 
 	private static final String FORMAT_PARTIAL_SUGGESTIONS = "Do you mean %s?";
 	private static final String HINT_MESSAGE_DEFAULT = "Type something to begin adding a task."
-			+ "\nOther Commands: delete, edit, done, redo, undo, #";
+			+ "\nOther Commands: delete, edit, done, redo, undo, # [CTRL+H for more details]";
 	ActionInvoker actionInvoker;
 
 	public ActionHintSystemActual() {
 		actionInvoker = ActionInvoker.getInstance();
+		actionInvoker.setDefaultMessage(HINT_MESSAGE_DEFAULT);
 	}
 
 	public void testMode() {
