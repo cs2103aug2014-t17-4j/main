@@ -19,6 +19,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.Clipboard;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
@@ -38,8 +39,11 @@ import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
 public class TaskCatalyst extends Application implements HotKeyListener {
+
+	Clipboard clipboard = Clipboard.getSystemClipboard();
+
 	private boolean helpFlag = false;
-	
+
 	private double initialY;
 	private double initialX;
 
@@ -49,6 +53,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 	private static Provider hotKeys = null;
 	private static String toggleLaunchHK = "control M";
+	private static String pasteHK = "control D";
 
 	private static final String MULTIPLE_INSTANCE_EXCEPTION_MESSAGE = "This application is single instance!";
 	private static final String SYSTEM_TRAY_ERROR_MESSAGE = "System tray is not supported!";
@@ -71,18 +76,20 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	Stage getStage() {
 		return this.primaryStage;
 	}
-	
+
 	public void setStageHeight(double height) {
 		primaryStage.setHeight(height);
 	}
-	
+
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-		javafx.scene.image.Image applicationIcon = new javafx.scene.image.Image(getClass().getResourceAsStream(SYSTEM_TRAY_IMAGE_PATH));
+		javafx.scene.image.Image applicationIcon = new javafx.scene.image.Image(
+				getClass().getResourceAsStream(SYSTEM_TRAY_IMAGE_PATH));
 		this.primaryStage.getIcons().add(applicationIcon);
-		//this.setIconImage(Toolkit.getDefaultToolkit().getImage("images\\mylogo.png")); 
-		//primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource(SYSTEM_TRAY_IMAGE_PATH).toExternalForm()));
+		// this.setIconImage(Toolkit.getDefaultToolkit().getImage("images\\mylogo.png"));
+		// primaryStage.getIcons().add(new
+		// javafx.scene.image.Image(this.getClass().getResource(SYSTEM_TRAY_IMAGE_PATH).toExternalForm()));
 		try {
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
@@ -102,7 +109,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			Platform.setImplicitExit(false);
 			this.primaryStage.setScene(scene);
 			this.primaryStage.initStyle(StageStyle.UNDECORATED);
-			this.primaryStage.setAlwaysOnTop(true);
+			// this.primaryStage.setAlwaysOnTop(true);
 			this.primaryStage.show();
 
 		} catch (IOException e) {
@@ -125,6 +132,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				}
 				hotKeys.reset();
 				hotKeys.register(KeyStroke.getKeyStroke(toggleLaunchHK), tc);
+				hotKeys.register(KeyStroke.getKeyStroke(pasteHK), tc);
 			}
 		}).start();
 	}
@@ -162,8 +170,10 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination helpHotKey = new KeyCodeCombination(KeyCode.H,
 				KeyCodeCombination.CONTROL_DOWN);
-		final KeyCombination scrollTaskUpHotKey = new KeyCodeCombination(KeyCode.UP, KeyCodeCombination.SHIFT_DOWN);
-		final KeyCombination scrollTaskDownHotKey = new KeyCodeCombination(KeyCode.DOWN, KeyCodeCombination.SHIFT_DOWN);
+		final KeyCombination scrollTaskUpHotKey = new KeyCodeCombination(
+				KeyCode.UP, KeyCodeCombination.SHIFT_DOWN);
+		final KeyCombination scrollTaskDownHotKey = new KeyCodeCombination(
+				KeyCode.DOWN, KeyCodeCombination.SHIFT_DOWN);
 		final KeyCombination scrollHashtagUpHotKey = new KeyCodeCombination(
 				KeyCode.UP, KeyCodeCombination.ALT_DOWN);
 		final KeyCombination scrollHashtagDownHotKey = new KeyCodeCombination(
@@ -180,15 +190,15 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 						} else if (exitHotKey.match(event)) {
 							stop();
 						} else if (helpHotKey.match(event)) {
-							if(helpFlag){
+							if (helpFlag) {
 								helpController.getStage().close();
 								helpFlag = false;
-							}else{
+							} else {
 								helpController.openHelpWindow();
 								primaryStage.requestFocus();
 								helpFlag = true;
 							}
-							
+
 						} else if (scrollTaskUpHotKey.match(event)) {
 							controller.scrollTaskUp();
 						} else if (scrollTaskDownHotKey.match(event)) {
@@ -431,6 +441,20 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 					}
 				});
 			}
+			break;
+		case java.awt.event.KeyEvent.VK_D:
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					if (clipboard.hasString()) {
+						if (!primaryStage.isShowing()) {
+							primaryStage.show();
+						}
+						primaryStage.toFront();
+						controller.setCommandBar(clipboard.getString());
+					}
+				}
+			});
 			break;
 		}
 
