@@ -309,7 +309,7 @@ public class UIController {
 			@Override
 			public void run() {
 				int now = hashTagList.getSelectionModel().getSelectedIndex();
-				hashTagList.getSelectionModel().select(Math.max(0,now+1));
+				hashTagList.getSelectionModel().select(now+1);
 			}
 		});
 	}
