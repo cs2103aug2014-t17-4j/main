@@ -59,7 +59,7 @@ public class UIController {
 
 	private TaskCatalyst tc;
 
-	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #";
+	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, # [Ctrl + H for more details]";
 	private static final String EMPTY_TASKVIEW_MESSAGE = "No tasks to display in this view!";
 	private static final int INITIAL_INDEX = 0;
 

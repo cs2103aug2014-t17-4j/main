@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="400.0" prefWidth="500.0" stylesheets="@../css/helpTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.HelpViewController">
+<AnchorPane prefHeight="457.0" prefWidth="505.0" stylesheets="@../css/helpTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.HelpViewController">
    <children>
       <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
@@ -26,15 +26,15 @@
             <Button fx:id="exitButton" layoutX="461.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleExit" onMouseClicked="#handleExit" prefHeight="25.0" prefWidth="25.0" stylesheets="@../css/DarkTheme.css" />
          </children>
       </Pane>
-      <TabPane fx:id="helpPane" layoutX="6.0" layoutY="50.0" prefHeight="346.0" prefWidth="494.0" tabClosingPolicy="UNAVAILABLE" tabMinWidth="104.0">
+      <TabPane fx:id="helpPane" layoutX="6.0" layoutY="50.0" prefHeight="409.0" prefWidth="491.0" tabClosingPolicy="UNAVAILABLE" tabMinWidth="104.0">
         <tabs>
           <Tab fx:id="hashtagTab" text="Hashtags">
             <content>
-              <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="317.0" prefWidth="486.0" stylesheets="@../css/helpTheme.css">
+              <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="379.0" prefWidth="484.0" stylesheets="@../css/helpTheme.css">
                      <children>
-                        <ImageView fx:id="hashtags" fitHeight="310.0" fitWidth="416.0" layoutX="44.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" styleClass="hashtags" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="44.0" AnchorPane.rightAnchor="34.0" AnchorPane.topAnchor="2.0">
+                        <ImageView fx:id="hashtags" fitHeight="369.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" styleClass="hashtags" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../images/hashtag.jpg" />
+                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/hashtag.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
             </content>
@@ -45,7 +45,7 @@
                      <children>
                         <ImageView fx:id="basicFeatures" fitHeight="311.0" fitWidth="415.0" layoutX="38.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="2.0">
                            <image>
-                              <Image url="@../images/basic.jpg" />
+                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/basic.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
             </content>
@@ -56,7 +56,7 @@
                      <children>
                         <ImageView fx:id="specialFeatures" fitHeight="310.0" fitWidth="427.0" layoutX="40.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="2.0">
                            <image>
-                              <Image url="@../images/special.jpg" />
+                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/special.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
                </content>
@@ -67,7 +67,7 @@
                      <children>
                         <ImageView fx:id="hotkeys" fitHeight="309.0" fitWidth="447.0" layoutX="40.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/hotkeys.jpg" />
+                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/hotkeys.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
                </content>
