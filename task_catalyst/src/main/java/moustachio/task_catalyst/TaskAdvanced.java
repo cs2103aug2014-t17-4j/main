@@ -221,7 +221,7 @@ public class TaskAdvanced implements Task {
 		} else if (thisDateTime == null && otherDateTime == null) {
 			return 0;
 		} else {
-			if (isAllDay()) {
+			if (isAllDay() && !o.isAllDay()) {
 				return -1;
 			}
 			return thisDateTime.compareTo(otherDateTime);
