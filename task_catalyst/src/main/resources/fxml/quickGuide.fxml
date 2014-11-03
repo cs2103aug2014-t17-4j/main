@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.layout.AnchorPane?>
 
-<AnchorPane prefHeight="457.0" prefWidth="505.0" stylesheets="@../css/helpTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.HelpViewController">
+<AnchorPane prefHeight="457.0" prefWidth="505.0" styleClass="theme" stylesheets="@../css/helpTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.HelpViewController">
    <children>
-      <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" styleClass="theme" stylesheets="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/css/helpTheme.css" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fitHeight="32.0" fitWidth="152.0" layoutX="40.0" layoutY="10.0" styleClass="helpTheme.css">
                <image>
@@ -23,7 +23,7 @@
                   <Image url="@../images/info.png" />
                </image>
             </ImageView>
-            <Button fx:id="exitButton" layoutX="461.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleExit" onMouseClicked="#handleExit" prefHeight="25.0" prefWidth="25.0" stylesheets="@../css/DarkTheme.css" />
+            <Button fx:id="exitButton" layoutX="473.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleExit" onMouseClicked="#handleExit" prefHeight="25.0" prefWidth="25.0" stylesheets="@../css/DarkTheme.css" />
          </children>
       </Pane>
       <TabPane fx:id="helpPane" layoutX="6.0" layoutY="50.0" prefHeight="409.0" prefWidth="491.0" tabClosingPolicy="UNAVAILABLE" tabMinWidth="104.0">
@@ -32,9 +32,9 @@
             <content>
               <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="379.0" prefWidth="484.0" stylesheets="@../css/helpTheme.css">
                      <children>
-                        <ImageView fx:id="hashtags" fitHeight="369.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" styleClass="hashtags" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                        <ImageView fx:id="hashtags" fitHeight="369.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/hashtag.jpg" />
+                              <Image url="@../images/hashtag.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
             </content>
@@ -45,7 +45,7 @@
                      <children>
                         <ImageView fx:id="basicFeatures" fitHeight="402.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/basic.jpg" />
+                              <Image url="@../images/basic.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
             </content>
@@ -56,7 +56,7 @@
                      <children>
                         <ImageView fx:id="specialFeatures" fitHeight="395.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-19.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/special.jpg" />
+                              <Image url="@../images/special.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
                </content>
@@ -65,10 +65,11 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="317.0" prefWidth="456.0">
                      <children>
-                        <ImageView fx:id="hotkeys" fitHeight="369.0" fitWidth="505.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="377.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/hotkeys.jpg" />
-                           </image></ImageView>
+                              <Image url="@../images/hotkeys.jpg" />
+                           </image>
+                        </ImageView>
                      </children></AnchorPane>
                </content>
             </Tab>

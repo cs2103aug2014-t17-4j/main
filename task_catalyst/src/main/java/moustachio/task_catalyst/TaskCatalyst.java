@@ -77,7 +77,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
-
+		//primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource(SYSTEM_TRAY_IMAGE_PATH).toExternalForm()));
 		try {
 			loadSystemTray(this.primaryStage);
 			startHotKeys();

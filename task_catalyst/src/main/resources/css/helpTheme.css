@@ -3,23 +3,11 @@
  */
  
 #exitButton {          
-    -fx-background-image: url("../images/close24.png");
+   
     -fx-background-size: 24.0 24.0;
     -fx-background-repeat: no-repeat;
     -fx-background-position:left;   
     -fx-background-color: transparent;  
-}
-.basicFeatures {          
-    -fx-background-image: url("../images/basic.png");
-}
-.hotkeys {          
-    -fx-background-image: url("../images/hotkeys.png");
-}
-.hashtags {          
-    -fx-background-image: url("../images/hashtag.png");
-}
-.specialFeatures {          
-    -fx-background-image: url("../images/special.png");
 }
 #programTitle{
 	-fx-image: url("../images/title.png");
@@ -30,12 +18,12 @@
 }
 
 .tab-header-background{
-	-fx-background-color: black;
+	-fx-background-color: lightgray;
 }
 
 /* GUI Interface background colour */
 .theme {
     master-color: gray;
-    -fx-background-color: gold;
-    -fx-font-size: 14.0px;
+    -fx-background-color: lightgray;
+    -fx-font-size: 12.0px;
 }
