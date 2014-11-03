@@ -107,6 +107,11 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isOverdue() {
+		if (isAllDay()) {
+			if (TaskCatalystCommons.isToday(getDateStart())) {
+				return false;
+			}
+		}
 		if (getDateEnd() == null) {
 			return false;
 		} else {
