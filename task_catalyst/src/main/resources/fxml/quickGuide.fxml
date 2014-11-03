@@ -43,7 +43,7 @@
             <content>
               <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
                      <children>
-                        <ImageView fx:id="basicFeatures" fitHeight="311.0" fitWidth="415.0" layoutX="38.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="38.0" AnchorPane.rightAnchor="41.0" AnchorPane.topAnchor="2.0">
+                        <ImageView fx:id="basicFeatures" fitHeight="402.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
                               <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/basic.jpg" />
                            </image></ImageView>
@@ -54,7 +54,7 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="317.0" prefWidth="435.0">
                      <children>
-                        <ImageView fx:id="specialFeatures" fitHeight="310.0" fitWidth="427.0" layoutX="40.0" layoutY="2.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="27.0" AnchorPane.topAnchor="2.0">
+                        <ImageView fx:id="specialFeatures" fitHeight="395.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-19.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
                               <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/special.jpg" />
                            </image></ImageView>
@@ -65,7 +65,7 @@
                <content>
                   <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="317.0" prefWidth="456.0">
                      <children>
-                        <ImageView fx:id="hotkeys" fitHeight="309.0" fitWidth="447.0" layoutX="40.0" layoutY="4.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="hotkeys" fitHeight="369.0" fitWidth="505.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/images/hotkeys.jpg" />
                            </image></ImageView>
