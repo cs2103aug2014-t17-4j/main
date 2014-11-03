@@ -112,9 +112,6 @@ public class UIController {
 		statusMessage.heightProperty().addListener(new ChangeListener<Number>() {
             @Override
             public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
-            	//container.setPrefHeight(160);
-            	System.out.println(container.getHeight());
-            	System.out.println(tc.getStage().getHeight());
             	tc.setStageHeight(530+container.getHeight());
             }
         }); 
@@ -157,8 +154,6 @@ public class UIController {
 					}
 				}
 
-				System.out.println("Highlight index: " + index);
-
 				taskGrid.highlight();
 
 				double height = taskScrollPane.getContent().getBoundsInLocal()
@@ -173,11 +168,6 @@ public class UIController {
 						- taskGrid.getHeight() / 2;
 
 				taskScrollPane.setVvalue(y / height);
-
-				// taskScrollPane.getChildrenUnmodifiable().get(index);
-				// System.out.println();
-				// taskTable.scrollTo(index);
-				// taskTable.getSelectionModel().select(index);
 			}
 		});
 	}
