@@ -4,12 +4,16 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -26,7 +30,9 @@ public class TaskGrid extends GridPane {
 
 	private static final int COLUMN_SPAN = 5;
 	private static final int ROW_SPAN = 1;
-	private static final int DESCRIPTION_WRAPPING_WIDTH = 350;
+
+	private static final int DESCRIPTION_WRAPPING_WIDTH = 335;
+	private static final int ALT_TEXT_WRAPPING_WIDTH = 300;
 
 	private static final String PRIORITY_ICON_IMAGE_PATH = "/images/priority.png";
 	private static final String OVERLAP_ICON_IMAGE_PATH = "/images/overlap.png";
@@ -49,17 +55,25 @@ public class TaskGrid extends GridPane {
 	}
 
 	private void configureTaskGrid() {
-		this.setPrefWidth(460);
+		//this.setPrefWidth(460);
+		ColumnConstraints idColumn = new ColumnConstraints();
+		ColumnConstraints timeColumn = new ColumnConstraints();
+		idColumn.setPercentWidth(8);
+		timeColumn.setPercentWidth(15);
+		this.getColumnConstraints().addAll(idColumn,timeColumn);
 		this.setHgap(10);
 		this.setVgap(5);
 		this.setPadding(new Insets(5));
+		//this.setMaxWidth(440);
 		this.getStyleClass().add("grid");
-		//this.setGridLinesVisible(true);
+		this.setGridLinesVisible(true);
+		
 	}
 
 	private void displayID(int id, Task task) {
 		idContainer = new Label(Integer.toString(id + 1));
 		idContainer.getStyleClass().add("idLabel");
+		this.setHalignment(idContainer, HPos.CENTER);
 		this.add(idContainer, FIRST_COLUMN, FIRST_ROW);
 	}
 
@@ -98,7 +112,7 @@ public class TaskGrid extends GridPane {
 		if (task.isBlocking()) {
 			if (nextDate != null) {
 				nextTiming = getTimeFormat(nextDate);
-				Label nextTimeLabel = new Label(nextTiming);
+				//Label nextTimeLabel = new Label(nextTiming);
 
 				for (int i = 0; i < allDate.size(); i++) {
 					if (allDate.get(i).after(nextDate)) {
@@ -109,19 +123,23 @@ public class TaskGrid extends GridPane {
 					}
 				}
 				if (!alternateTiming.equals(ALTERNATE_TIMING_TEXT)) {
-					Text text = new Text(10, 20, alternateTiming);
+					Text text = new Text(alternateTiming);
 					text.setFont(Font.font("System", FontWeight.BOLD, 12));
-					text.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH - 50);
+					text.setWrappingWidth(ALT_TEXT_WRAPPING_WIDTH);
+					this.setHalignment(text, HPos.CENTER);
 					this.add(text, THIRD_COLUMN, SECOND_ROW);
 				}
 
-				this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
+				//this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
+				addStartTimeLabel(nextTiming);
 
 			} else {
 				// if there's no next date, get the last date to be displayed
 				lastTiming = getTimeFormat(endDate);
-				Label lastTimingLabel = new Label(lastTiming);
-				this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
+				addStartTimeLabel(lastTiming);
+				//Label lastTimingLabel = new Label(lastTiming);
+				//this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
+				
 			}
 		} else if (task.isRange()) {
 			startTime = getTimeFormat(startDate);
@@ -131,44 +149,65 @@ public class TaskGrid extends GridPane {
 				endTime = getTimeFormat(endDate) + "\n("
 						+ getDateFormat(endDate) + ")";
 			}
-
-			Text startTimeLabel = new Text(startTime + "\nto");
-			Text endTimeLabel = new Text(endTime);
+			addStartTimeText(startTime + "\n     to");
+			addEndTimeText(endTime);
 			
-			this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-			this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
+			//Text startTimeLabel = new Text(startTime + "\nto");
+			//Text endTimeLabel = new Text(endTime);
+			//this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+			//this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
 		} else {
 			if (startDate != null) {
 				String checkAllDay = getAllDayTimeFormat(startDate);
 				if (checkAllDay.equals(allDayTimeFormat)) {
-					Label startTimeLabel = new Label("All Day");
-					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+					addStartTimeLabel("All Day");
+					//Label startTimeLabel = new Label("All Day");
+					//this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				} else {
 					startTime = getTimeFormat(startDate);
-					Label startTimeLabel = new Label(startTime);
-					this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+					addStartTimeLabel(startTime);
+					//Label startTimeLabel = new Label(startTime);
+					//this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				}
 			}
 		}
 	}
+	
+	private void addStartTimeText(String text){
+		Text container = new Text(text);
+		this.setHalignment(container, HPos.CENTER);
+		this.add(container, SECOND_COLUMN, FIRST_ROW);
+	}
+	private void addEndTimeText(String text){
+		Text container = new Text(text);
+		this.setHalignment(container, HPos.CENTER);
+		this.add(container, SECOND_COLUMN, SECOND_ROW);
+	}
+	
+	private void addStartTimeLabel(String text){
+		Text container = new Text(text);
+		this.setHalignment(container, HPos.CENTER);
+		this.add(container, SECOND_COLUMN, FIRST_ROW);
+	}
 
 	private void displayTaskDescription(Task task) {
 		Text description = new Text(task.getDescription());
+		
 		description.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH);
 		description.getStyleClass().add("descTaskStyle");
+		
 		this.add(description, THIRD_COLUMN, FIRST_ROW);
-		this.setPrefHeight(0);
+		this.setPrefHeight(0);	//this fix unusual row height problems
 	}
 
 	private void checkAndDisplayTaskIcon(Task task) {
-		int iconColumn, iconRow;
+		int iconRow;
 		HBox iconContainer = new HBox();
-
-		iconColumn = THIRD_COLUMN;
 
 		if (task.isBlocking()) {
 			iconRow = THIRD_ROW;
-			iconContainer = createIconWithText(iconContainer,BLOCKING_ICON_IMAGE_PATH, "Reserved");
+			iconContainer = createIconWithText(iconContainer,
+					BLOCKING_ICON_IMAGE_PATH, "Reserved");
 		} else {
 			iconRow = SECOND_ROW;
 		}
@@ -194,14 +233,14 @@ public class TaskGrid extends GridPane {
 	}
 
 	private HBox createIconWithText(HBox container, String imagePath,
-			String labelText) {
+			String text) {
 		Image image = new Image(imagePath);
-		Label iconLabel = new Label(labelText);
+		Text iconText = new Text(text);
 		ImageView icon = new ImageView();
 
 		icon.setImage(image);
 		container.getChildren().add(icon);
-		container.getChildren().add(iconLabel);
+		container.getChildren().add(iconText);
 
 		return container;
 	}
