@@ -155,6 +155,7 @@ public class TaskGrid extends GridPane {
 	private void displayTaskDescription(Task task) {
 		Text description = new Text(task.getDescription());
 		description.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH);
+		description.getStyleClass().add("descTaskStyle");
 		this.add(description, THIRD_COLUMN, FIRST_ROW);
 		this.setPrefHeight(0);
 	}
@@ -167,7 +168,7 @@ public class TaskGrid extends GridPane {
 
 		if (task.isBlocking()) {
 			iconRow = THIRD_ROW;
-			//iconContainer = createIconWithText(iconContainer,BLOCKING_ICON_IMAGE_PATH, "Reserved");
+			iconContainer = createIconWithText(iconContainer,BLOCKING_ICON_IMAGE_PATH, "Reserved");
 		} else {
 			iconRow = SECOND_ROW;
 		}
