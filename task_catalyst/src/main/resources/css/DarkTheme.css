@@ -30,7 +30,7 @@
 /* GUI Interface background colour */
 .theme {
     master-color: gray;
-    -fx-background-color: orange;
+    -fx-background-color: gold;
     -fx-font-size: 14.0px;
 }
 
@@ -103,7 +103,7 @@
 	-fx-padding: 4;
     -fx-border-width: 1px;
     -fx-border-radius: 5;
-    -fx-background-color: orange;
+    -fx-background-color: gold;
 	-fx-background-radius: 5;
 }
 /* TaskGrid selected id style */
@@ -122,4 +122,9 @@
     -fx-border-radius: 5;
     -fx-background-color: derive(master-color, -60.0%);
 	-fx-background-radius: 5;
+}
+.iconLabelStyle{
+	-fx-alignment: center-right;
+    -fx-font-size: 12.0px;
+	-fx-spacing	: 5px;   
 }

@@ -49,6 +49,8 @@ public class UIController {
 	private Button settingsButton;
 	@FXML
 	private Button exitButton;
+	@FXML
+	private VBox container;
 
 	private static LogicActual logic;
 
@@ -70,7 +72,8 @@ public class UIController {
 		logic = new LogicActual();
 		testInterface();
 		initializeForms();
-		listChangeListener(null);
+		listChangeListener();
+		labelChangeListener();
 	}
 
 	@FXML
@@ -90,7 +93,7 @@ public class UIController {
 	 * 
 	 * @author A0111921W
 	 */
-	private void listChangeListener(MouseEvent e) {
+	private void listChangeListener() {
 
 		hashTagList.getSelectionModel().selectedItemProperty()
 				.addListener(new ChangeListener<String>() {
@@ -99,11 +102,21 @@ public class UIController {
 						if (old_val != null && new_val != null
 								&& !old_val.equals(new_val)) {
 							logic.processCommand(new_val);
-							System.out.println("Change Listener");
 							displayTasks();
 						}
 					}
 				});
+	}
+	
+	private void labelChangeListener() {
+
+		statusMessage.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> ov, String t, String t1) {
+            	//System.out.println(statusMessage.getHeight());
+            	//tc.setStageHeight(520+statusMessage.getHeight());
+            }
+        }); 
 	}
 
 	private void initializeForms() {
@@ -248,6 +261,55 @@ public class UIController {
 			public void run() {
 				Message message = logic.processCommand(associatedText);
 				handleMessage(message);
+			}
+		});
+	}
+
+	public void scrollTaskUp() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				double scrollAmt = taskScrollPane.getVvalue()
+						- taskScrollPane.getHeight()
+						/ 4
+						/ taskScrollPane.getContent().getBoundsInLocal()
+								.getHeight();
+				taskScrollPane.setVvalue(scrollAmt);
+			}
+		});
+	}
+
+	public void scrollTaskDown() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				double scrollAmt = taskScrollPane.getVvalue()
+						+ taskScrollPane.getHeight()
+						/ 4
+						/ taskScrollPane.getContent().getBoundsInLocal()
+								.getHeight();
+				;
+				taskScrollPane.setVvalue(scrollAmt);
+			}
+		});
+	}
+	
+	public void scrollHashtagUp() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				int now = hashTagList.getSelectionModel().getSelectedIndex();
+				hashTagList.getSelectionModel().select(Math.max(0,now-1));
+			}
+		});
+	}
+	
+	public void scrollHashtagDown() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				int now = hashTagList.getSelectionModel().getSelectedIndex();
+				hashTagList.getSelectionModel().select(Math.max(0,now+1));
 			}
 		});
 	}

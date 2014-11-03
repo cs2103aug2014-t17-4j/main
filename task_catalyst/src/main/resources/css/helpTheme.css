@@ -29,9 +29,13 @@
 	
 }
 
+.tab-header-background{
+	-fx-background-color: black;
+}
+
 /* GUI Interface background colour */
 .theme {
     master-color: gray;
-    -fx-background-color: skyblue;
+    -fx-background-color: gold;
     -fx-font-size: 14.0px;
 }

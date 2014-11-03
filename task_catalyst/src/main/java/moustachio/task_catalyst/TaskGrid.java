@@ -9,6 +9,7 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -52,7 +53,7 @@ public class TaskGrid extends GridPane {
 		this.setVgap(5);
 		this.setPadding(new Insets(5));
 		this.getStyleClass().add("grid");
-		// this.setGridLinesVisible(true);
+		//this.setGridLinesVisible(true);
 	}
 
 	private void displayID(int id, Task task) {
@@ -153,15 +154,15 @@ public class TaskGrid extends GridPane {
 	private void displayTaskDescription(Task task) {
 		Text description = new Text(task.getDescription());
 		description.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH);
-		this.add(description, THIRD_COLUMN, FIRST_ROW, COLUMN_SPAN, ROW_SPAN);
+		this.add(description, THIRD_COLUMN, FIRST_ROW);
 		this.setPrefHeight(0);
 	}
 
 	private void checkAndDisplayTaskIcon(Task task) {
-		ImageView icon = new ImageView();
 		int iconColumn, iconRow;
+		HBox iconContainer = new HBox();
 
-		iconColumn = SECOND_COLUMN;
+		iconColumn = THIRD_COLUMN;
 
 		if (task.isBlocking()) {
 			iconRow = THIRD_ROW;
@@ -170,32 +171,36 @@ public class TaskGrid extends GridPane {
 		}
 
 		if (task.isDone()) {
-			Image doneImage = new Image(DONE_ICON_IMAGE_PATH);
-			iconColumn++;
-			icon.setImage(doneImage);
-			this.add(icon, iconColumn, iconRow);
+			iconContainer = createIconWithText(iconContainer,
+					DONE_ICON_IMAGE_PATH, "Done");
 		}
 		if (task.isPriority()) {
-			Image priorityImage = new Image(PRIORITY_ICON_IMAGE_PATH);
-			iconColumn++;
-			ImageView priorityIcon = new ImageView();
-			priorityIcon.setImage(priorityImage);
-			this.add(priorityIcon, iconColumn, iconRow);
+			iconContainer = createIconWithText(iconContainer,
+					PRIORITY_ICON_IMAGE_PATH, "Priority");
 		}
 		if (task.isOverdue()) {
-			iconColumn++;
-			Image overdueImage = new Image(OVERDUE_ICON_IMAGE_PATH);
-			ImageView overdueIcon = new ImageView();
-			overdueIcon.setImage(overdueImage);
-			this.add(overdueIcon, iconColumn, iconRow);
+			iconContainer = createIconWithText(iconContainer,
+					OVERDUE_ICON_IMAGE_PATH, "Overdue");
 		}
 		if (task.isOverlapping()) {
-			iconColumn++;
-			Image overlapImage = new Image(OVERLAP_ICON_IMAGE_PATH);
-			ImageView overlapIcon = new ImageView();
-			overlapIcon.setImage(overlapImage);
-			this.add(overlapIcon, iconColumn, iconRow);
+			iconContainer = createIconWithText(iconContainer,
+					OVERLAP_ICON_IMAGE_PATH, "Overlapping");
 		}
+		iconContainer.getStyleClass().add("iconLabelStyle");
+		this.add(iconContainer, THIRD_COLUMN, iconRow);
+	}
+
+	private HBox createIconWithText(HBox container, String imagePath,
+			String labelText) {
+		Image image = new Image(imagePath);
+		Label iconLabel = new Label(labelText);
+		ImageView icon = new ImageView();
+
+		icon.setImage(image);
+		container.getChildren().add(icon);
+		container.getChildren().add(iconLabel);
+
+		return container;
 	}
 
 	public int getTaskGridID() {

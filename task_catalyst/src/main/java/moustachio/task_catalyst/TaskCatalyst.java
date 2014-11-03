@@ -69,7 +69,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	Stage getStage() {
 		return this.primaryStage;
 	}
-
+	
+	public void setStageHeight(double height) {
+		primaryStage.setHeight(height);
+	}
+	
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -153,6 +157,14 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination helpHotKey = new KeyCodeCombination(KeyCode.H,
 				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination scrollTaskUpHotKey = new KeyCodeCombination(
+				KeyCode.UP);
+		final KeyCombination scrollTaskDownHotKey = new KeyCodeCombination(
+				KeyCode.DOWN);
+		final KeyCombination scrollHashtagUpHotKey = new KeyCodeCombination(
+				KeyCode.UP, KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination scrollHashtagDownHotKey = new KeyCodeCombination(
+				KeyCode.DOWN, KeyCodeCombination.CONTROL_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED,
 				new EventHandler<KeyEvent>() {
 
@@ -164,8 +176,16 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 							controller.handleHotKeys("redo");
 						} else if (exitHotKey.match(event)) {
 							stop();
-						} else if(helpHotKey.match(event)){
+						} else if (helpHotKey.match(event)) {
 							helpController.openHelpWindow();
+						} else if (scrollTaskUpHotKey.match(event)) {
+							controller.scrollTaskUp();
+						} else if (scrollTaskDownHotKey.match(event)) {
+							controller.scrollTaskDown();
+						} else if (scrollHashtagUpHotKey.match(event)) {
+							controller.scrollHashtagUp();
+						} else if (scrollHashtagDownHotKey.match(event)) {
+							controller.scrollHashtagDown();
 						}
 					}
 				});
