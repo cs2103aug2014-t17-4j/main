@@ -51,7 +51,9 @@ public class TaskCatalystCommons {
 		for (String intString : splitIntStrings) {
 			int parsedPositiveInt = parsePositiveInt(intString);
 			if (parsedPositiveInt > 0) {
-				parsedIntegers.add(parsedPositiveInt);
+				if (!parsedIntegers.contains(parsedPositiveInt)) {
+					parsedIntegers.add(parsedPositiveInt);
+				}
 			}
 		}
 		return parsedIntegers;
@@ -157,13 +159,15 @@ public class TaskCatalystCommons {
 
 	private static String getInterpretedInput(String userInput) {
 
-		String fivePlusDigits = "\\d{5,}";
-		String endWithNumber = "[a-zA-Z-_$]+\\d+\\b";
-		String wordsContainingEst = "\\w*est\\w*";
-		String wordsContainingAted = "\\w*ated\\w*";
+		String notHashtagged = "(?<!#)";
+		String fivePlusDigits = notHashtagged + "\\d{5,}";
+		String endWithNumber = notHashtagged + "(?<!#)\\b[a-zA-Z-_$]+\\d+\\b";
+		String wordsContainingEst = notHashtagged + "(?<!#)\\w*est\\w*";
+		String wordsContainingAted = notHashtagged + "(?<!#)\\w*ated\\w*";
 
 		String interpretedInput = userInput;
 		interpretedInput = interpretedInput.replaceAll("\\} \\{", "\\}, \\{");
+		interpretedInput = interpretedInput.replaceAll(",", ", ");
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				wordsContainingEst);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
@@ -180,6 +184,12 @@ public class TaskCatalystCommons {
 
 		String parsingInput = interpretedInput;
 		parsingInput = removeWordsInBrackets(interpretedInput);
+		parsingInput = parsingInput.replaceAll(
+				"(\\d{1,2}(am|pm))(\\s|$)(?![a-zA-Z])", "$1,");
+		parsingInput = parsingInput.replaceAll(
+				"(?<!:)(\\d{2}:\\d{2}(am|pm)?)(?!:)", " $1,");
+		parsingInput = parsingInput.replaceAll(
+				"(\\d{4}(am|pm)?)(?!\\s\\d{1,2}(:|am|pm))", " $1,");
 		parsingInput = removeHashtaggedWords(parsingInput);
 		parsingInput = removeSensitiveParsingWords(parsingInput);
 		parsingInput = removeNumberWords(parsingInput);
@@ -505,7 +515,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String replaceYesterday(String interpretedInput) {
-		return interpretedInput.replaceAll("\\[(yesterday|Yesterday)\\]", "yesterday");
+		return interpretedInput.replaceAll("\\[(yesterday|Yesterday)\\]",
+				"yesterday");
 	}
 
 	private static String replaceSpacesWithWildcard(String matchingExpression) {
@@ -697,20 +708,20 @@ public class TaskCatalystCommons {
 	}
 
 	public static String getPrettyStringWithoutDate(String prettyString) {
-		String toPrepositions = " (from|before|after|either) \\{";
-		String emptyAndOrPrepositions = "\\}(\\s)?(,|to|and|or) \\{";
+		String prepositions = " (from|before|after|either|by) \\{";
+		String emptyPrepositions = "\\}(\\s)?(,|to|and|or) \\{";
 		String spaceBeforeCommas = " ,";
 		String spaceBeforeFullstops = " \\.";
 		String friendlyString = prettyString;
 
-		friendlyString = friendlyString.replaceAll(toPrepositions, "\\{");
-		friendlyString = friendlyString.replaceAll(emptyAndOrPrepositions,
-				"\\}\\{");
+		friendlyString = friendlyString.replaceAll(prepositions, "\\{");
+		friendlyString = friendlyString.replaceAll(emptyPrepositions, "\\}\\{");
 		friendlyString = removeWordsInCurlyBraces(friendlyString);
 		friendlyString = removeSquareBrackets(friendlyString);
 		friendlyString = friendlyString.replaceAll(spaceBeforeCommas, ",");
 		friendlyString = friendlyString.replaceAll(spaceBeforeFullstops, "\\.");
 		friendlyString = friendlyString.trim();
+		friendlyString = removeConsecutiveWhitespaces(friendlyString);
 		return friendlyString;
 	}
 

@@ -47,7 +47,6 @@ public class TaskManagerActual implements TaskManager {
 
 	public void testMode() {
 		storage = new StorageStub();
-		// listProcessor = new ListProcessorStub();
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
 		hashtagList = new ArrayList<String>();
