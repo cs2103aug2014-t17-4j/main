@@ -159,6 +159,17 @@ public class TaskAdvanced implements Task {
 		}
 	}
 
+	@Override
+	public boolean isAllDay() {
+		if (getDateStart() == null || isBlocking() || isRange()) {
+			return false;
+		}
+		boolean isOneSecond = TaskCatalystCommons.getSeconds(getDateStart()) == 1;
+		boolean isZeroMinutes = TaskCatalystCommons.getMinutes(getDateStart()) == 0;
+		boolean isZeroHours = TaskCatalystCommons.getHours(getDateStart()) == 0;
+		return isOneSecond && isZeroMinutes && isZeroHours;
+	}
+
 	// Comparison Methods
 
 	@Override
@@ -210,6 +221,9 @@ public class TaskAdvanced implements Task {
 		} else if (thisDateTime == null && otherDateTime == null) {
 			return 0;
 		} else {
+			if (isAllDay()) {
+				return -1;
+			}
 			return thisDateTime.compareTo(otherDateTime);
 		}
 	}
