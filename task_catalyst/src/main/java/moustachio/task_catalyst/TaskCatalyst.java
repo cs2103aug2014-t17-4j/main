@@ -157,10 +157,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination helpHotKey = new KeyCodeCombination(KeyCode.H,
 				KeyCodeCombination.CONTROL_DOWN);
-		final KeyCombination scrollTaskUpHotKey = new KeyCodeCombination(
-				KeyCode.UP);
-		final KeyCombination scrollTaskDownHotKey = new KeyCodeCombination(
-				KeyCode.DOWN);
+		final KeyCombination scrollTaskUpHotKey = new KeyCodeCombination(KeyCode.UP, KeyCodeCombination.SHIFT_DOWN);
+		final KeyCombination scrollTaskDownHotKey = new KeyCodeCombination(KeyCode.DOWN, KeyCodeCombination.SHIFT_DOWN);
 		final KeyCombination scrollHashtagUpHotKey = new KeyCodeCombination(
 				KeyCode.UP, KeyCodeCombination.CONTROL_DOWN);
 		final KeyCombination scrollHashtagDownHotKey = new KeyCodeCombination(

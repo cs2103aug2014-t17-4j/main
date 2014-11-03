@@ -98,6 +98,7 @@ public class HelpViewController {
 				helpStage.initStyle(StageStyle.UNDECORATED);
 				helpStage.setX(0);
 				helpStage.setY(30);
+				//if(helpStage.)
 				helpStage.showAndWait();
 			} catch (IOException e) {
 				e.printStackTrace();
