@@ -38,6 +38,8 @@ import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
 public class TaskCatalyst extends Application implements HotKeyListener {
+	private boolean helpFlag = false;
+	
 	private double initialY;
 	private double initialX;
 
@@ -77,6 +79,9 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
+		javafx.scene.image.Image applicationIcon = new javafx.scene.image.Image(getClass().getResourceAsStream(SYSTEM_TRAY_IMAGE_PATH));
+		this.primaryStage.getIcons().add(applicationIcon);
+		//this.setIconImage(Toolkit.getDefaultToolkit().getImage("images\\mylogo.png")); 
 		//primaryStage.getIcons().add(new javafx.scene.image.Image(this.getClass().getResource(SYSTEM_TRAY_IMAGE_PATH).toExternalForm()));
 		try {
 			loadSystemTray(this.primaryStage);
@@ -160,9 +165,9 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		final KeyCombination scrollTaskUpHotKey = new KeyCodeCombination(KeyCode.UP, KeyCodeCombination.SHIFT_DOWN);
 		final KeyCombination scrollTaskDownHotKey = new KeyCodeCombination(KeyCode.DOWN, KeyCodeCombination.SHIFT_DOWN);
 		final KeyCombination scrollHashtagUpHotKey = new KeyCodeCombination(
-				KeyCode.UP, KeyCodeCombination.CONTROL_DOWN);
+				KeyCode.UP, KeyCodeCombination.ALT_DOWN);
 		final KeyCombination scrollHashtagDownHotKey = new KeyCodeCombination(
-				KeyCode.DOWN, KeyCodeCombination.CONTROL_DOWN);
+				KeyCode.DOWN, KeyCodeCombination.ALT_DOWN);
 		scene.addEventHandler(KeyEvent.KEY_RELEASED,
 				new EventHandler<KeyEvent>() {
 
@@ -175,7 +180,15 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 						} else if (exitHotKey.match(event)) {
 							stop();
 						} else if (helpHotKey.match(event)) {
-							helpController.openHelpWindow();
+							if(helpFlag){
+								helpController.getStage().close();
+								helpFlag = false;
+							}else{
+								helpController.openHelpWindow();
+								primaryStage.requestFocus();
+								helpFlag = true;
+							}
+							
 						} else if (scrollTaskUpHotKey.match(event)) {
 							controller.scrollTaskUp();
 						} else if (scrollTaskDownHotKey.match(event)) {

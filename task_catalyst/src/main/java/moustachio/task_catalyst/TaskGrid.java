@@ -167,8 +167,7 @@ public class TaskGrid extends GridPane {
 
 		if (task.isBlocking()) {
 			iconRow = THIRD_ROW;
-			iconContainer = createIconWithText(iconContainer,
-					BLOCKING_ICON_IMAGE_PATH, "Reserved");
+			//iconContainer = createIconWithText(iconContainer,BLOCKING_ICON_IMAGE_PATH, "Reserved");
 		} else {
 			iconRow = SECOND_ROW;
 		}

@@ -58,6 +58,7 @@ public class HelpViewController {
 		return this.helpStage;
 	}
 
+	
 	@FXML
 	public void initialize() {
 
@@ -99,7 +100,7 @@ public class HelpViewController {
 				helpStage.setX(0);
 				helpStage.setY(30);
 				//if(helpStage.)
-				helpStage.showAndWait();
+				helpStage.show();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}

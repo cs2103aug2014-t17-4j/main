@@ -11,7 +11,7 @@
 
 <AnchorPane prefHeight="457.0" prefWidth="505.0" styleClass="theme" stylesheets="@../css/helpTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.HelpViewController">
    <children>
-      <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" styleClass="theme" stylesheets="@../../../../../../../../Desktop/TC/task_catalyst/src/main/resources/css/helpTheme.css" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" styleClass="theme" stylesheets="@../css/helpTheme.css" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <ImageView fitHeight="32.0" fitWidth="152.0" layoutX="40.0" layoutY="10.0" styleClass="helpTheme.css">
                <image>
