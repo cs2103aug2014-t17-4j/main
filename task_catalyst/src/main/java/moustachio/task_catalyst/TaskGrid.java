@@ -16,6 +16,7 @@ import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.text.Font;
@@ -58,17 +59,17 @@ public class TaskGrid extends GridPane {
 
 	private void configureTaskGrid() {
 		// this.setPrefWidth(460);
-		// ColumnConstraints idColumn = new ColumnConstraints();
-		// ColumnConstraints timeColumn = new ColumnConstraints();
-		// idColumn.setPercentWidth(8);
-		// timeColumn.setPercentWidth(15);
-		// this.getColumnConstraints().addAll(idColumn,timeColumn);
+		ColumnConstraints idColumn = new ColumnConstraints();
+		ColumnConstraints timeColumn = new ColumnConstraints();
+		idColumn.setPercentWidth(8);
+		timeColumn.setPercentWidth(15);
+		this.getColumnConstraints().addAll(idColumn,timeColumn);
 		// this.setMaxWidth(440);
 		this.setHgap(10);
 		this.setVgap(5);
 		this.setPadding(new Insets(5));
 		this.getStyleClass().add("grid");
-		// this.setGridLinesVisible(true);
+		//this.setGridLinesVisible(true);
 
 	}
 
@@ -128,7 +129,7 @@ public class TaskGrid extends GridPane {
 					Text text = new Text(alternateTiming);
 					text.setFont(Font.font("System", FontWeight.BOLD, 12));
 					text.setWrappingWidth(ALT_TEXT_WRAPPING_WIDTH);
-					this.setHalignment(text, HPos.CENTER);
+					//this.setHalignment(text, HPos.CENTER);
 					this.add(text, THIRD_COLUMN, SECOND_ROW);
 				}
 
@@ -171,6 +172,8 @@ public class TaskGrid extends GridPane {
 					// Label startTimeLabel = new Label(startTime);
 					// this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				}
+			}else{
+				addStartTimeLabel("--:--");
 			}
 		}
 	}
