@@ -25,7 +25,7 @@ public class Redo extends Action {
 					message.getMessage());
 			message.setMessage(appendedMessage);
 		} else {
-			int type = Message.TYPE_ERROR;
+			int type = Message.TYPE_SUCCESS;
 			message = new Message(type, EXECUTE_ERROR);
 		}
 		return message;

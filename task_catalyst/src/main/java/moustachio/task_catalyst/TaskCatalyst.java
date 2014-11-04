@@ -183,6 +183,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 					@Override
 					public void handle(KeyEvent event) {
+
 						if (undoHotKey.match(event)) {
 							controller.handleHotKeys("undo");
 						} else if (redoHotKey.match(event)) {
@@ -198,7 +199,6 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 								primaryStage.requestFocus();
 								helpFlag = true;
 							}
-
 						} else if (scrollTaskUpHotKey.match(event)) {
 							controller.scrollTaskUp();
 						} else if (scrollTaskDownHotKey.match(event)) {
