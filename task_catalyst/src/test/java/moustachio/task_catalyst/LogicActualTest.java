@@ -113,7 +113,8 @@ public class LogicActualTest {
 		Message message = logic.processCommand(null);
 		assertEquals(Message.TYPE_ERROR, message.getType());
 		assertEquals(
-				"Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #, press CTRL+H for more details.",
+				"Type something to begin adding a task."
+						+ "\nOther Commands: delete, edit, done, redo, undo, #. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
@@ -125,7 +126,7 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #, press CTRL+H for more details.",
+						+ "\nOther Commands: delete, edit, done, redo, undo, #. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
@@ -137,7 +138,7 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #, press CTRL+H for more details.",
+						+ "\nOther Commands: delete, edit, done, redo, undo, #. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
@@ -148,7 +149,7 @@ public class LogicActualTest {
 		assertEquals(Message.TYPE_HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #, press CTRL+H for more details.",
+						+ "\nOther Commands: delete, edit, done, redo, undo, #. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
@@ -594,7 +595,7 @@ public class LogicActualTest {
 	@Test
 	public void undoTc1() {
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("There is nothing to undo.", message.getMessage());
 	}
 
@@ -756,7 +757,7 @@ public class LogicActualTest {
 		logic.processCommand("something else");
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(Message.TYPE_SUCCESS, message.getType());
 		assertEquals("There is nothing to redo.", message.getMessage());
 	}
 

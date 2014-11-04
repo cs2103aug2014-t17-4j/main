@@ -376,7 +376,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 			@Override
 			public void mouseReleased(java.awt.event.MouseEvent e) {
-				if (e.getButton() == e.BUTTON1) {
+				if (e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
 					Platform.runLater(new Runnable() {
 						@Override
 						public void run() {
@@ -398,7 +398,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 							}
 						}
 					});
-				} else if (e.getButton() == e.BUTTON3) {
+				} else if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
 					trayPopupMenu.setInvoker(hiddenDialog);
 					hiddenDialog.setVisible(true);
 					trayPopupMenu.setVisible(true);
