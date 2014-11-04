@@ -90,7 +90,7 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isDeadline() {
-		return description.matches(".*(\\bby\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
+		return description.matches(".*(\\b(by|before)\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
 	}
 
 	@Override
