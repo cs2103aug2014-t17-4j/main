@@ -78,6 +78,7 @@ public class UIController {
 		initializeForms();
 		listChangeListener();
 		labelChangeListener();
+		
 	}
 
 	@FXML
@@ -365,7 +366,7 @@ public class UIController {
 		if (task.isEmpty()) {
 			StackPane container = new StackPane();
 			Label messageLabel = new Label(EMPTY_TASKVIEW_MESSAGE); 
-			messageLabel.setPrefHeight(taskScrollPane.getHeight());
+			messageLabel.setPrefHeight(taskScrollPane.getPrefHeight());
 			container.getChildren().add(messageLabel);
 			container.setAlignment(Pos.CENTER);
 			taskScrollPane.setContent(container);
