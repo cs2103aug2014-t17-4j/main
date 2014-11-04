@@ -1,3 +1,10 @@
+/**
+ * @author zhenyu
+ * credits: 
+ * icon - http://www.iconsdb.com/icon-sets/web-2-orange-icons/
+ * 	
+ */
+
 package moustachio.task_catalyst;
 
 import java.text.SimpleDateFormat;
@@ -6,17 +13,14 @@ import java.util.List;
 
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
-import javafx.geometry.VPos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Region;
-import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 
 public class TaskGrid extends GridPane {
 
@@ -28,9 +32,6 @@ public class TaskGrid extends GridPane {
 	private static final int SECOND_ROW = 1;
 	private static final int THIRD_ROW = 2;
 
-	private static final int COLUMN_SPAN = 5;
-	private static final int ROW_SPAN = 1;
-
 	private static final int DESCRIPTION_WRAPPING_WIDTH = 335;
 	private static final int ALT_TEXT_WRAPPING_WIDTH = 300;
 
@@ -39,6 +40,7 @@ public class TaskGrid extends GridPane {
 	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
 	private static final String BLOCKING_ICON_IMAGE_PATH = "/images/blocking.png";
+	private static final String DEADLINE_ICON_IMAGE_PATH = "/images/deadline.png";
 
 	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): \n";
 
@@ -55,19 +57,19 @@ public class TaskGrid extends GridPane {
 	}
 
 	private void configureTaskGrid() {
-		//this.setPrefWidth(460);
-		//ColumnConstraints idColumn = new ColumnConstraints();
-		//ColumnConstraints timeColumn = new ColumnConstraints();
-		//idColumn.setPercentWidth(8);
-		//timeColumn.setPercentWidth(15);
-		//this.getColumnConstraints().addAll(idColumn,timeColumn);
-		//this.setMaxWidth(440);
+		// this.setPrefWidth(460);
+		// ColumnConstraints idColumn = new ColumnConstraints();
+		// ColumnConstraints timeColumn = new ColumnConstraints();
+		// idColumn.setPercentWidth(8);
+		// timeColumn.setPercentWidth(15);
+		// this.getColumnConstraints().addAll(idColumn,timeColumn);
+		// this.setMaxWidth(440);
 		this.setHgap(10);
 		this.setVgap(5);
 		this.setPadding(new Insets(5));
 		this.getStyleClass().add("grid");
-		//this.setGridLinesVisible(true);
-		
+		// this.setGridLinesVisible(true);
+
 	}
 
 	private void displayID(int id, Task task) {
@@ -112,7 +114,7 @@ public class TaskGrid extends GridPane {
 		if (task.isBlocking()) {
 			if (nextDate != null) {
 				nextTiming = getTimeFormat(nextDate);
-				//Label nextTimeLabel = new Label(nextTiming);
+				// Label nextTimeLabel = new Label(nextTiming);
 
 				for (int i = 0; i < allDate.size(); i++) {
 					if (allDate.get(i).after(nextDate)) {
@@ -130,16 +132,16 @@ public class TaskGrid extends GridPane {
 					this.add(text, THIRD_COLUMN, SECOND_ROW);
 				}
 
-				//this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
+				// this.add(nextTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				addStartTimeLabel(nextTiming);
 
 			} else {
 				// if there's no next date, get the last date to be displayed
 				lastTiming = getTimeFormat(endDate);
 				addStartTimeLabel(lastTiming);
-				//Label lastTimingLabel = new Label(lastTiming);
-				//this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
-				
+				// Label lastTimingLabel = new Label(lastTiming);
+				// this.add(lastTimingLabel, SECOND_COLUMN, FIRST_ROW);
+
 			}
 		} else if (task.isRange()) {
 			startTime = getTimeFormat(startDate);
@@ -151,40 +153,41 @@ public class TaskGrid extends GridPane {
 			}
 			addStartTimeText(startTime + "\n     to");
 			addEndTimeText(endTime);
-			
-			//Text startTimeLabel = new Text(startTime + "\nto");
-			//Text endTimeLabel = new Text(endTime);
-			//this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
-			//this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
+
+			// Text startTimeLabel = new Text(startTime + "\nto");
+			// Text endTimeLabel = new Text(endTime);
+			// this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+			// this.add(endTimeLabel, SECOND_COLUMN, SECOND_ROW);
 		} else {
 			if (startDate != null) {
 				String checkAllDay = getAllDayTimeFormat(startDate);
 				if (checkAllDay.equals(allDayTimeFormat)) {
 					addStartTimeLabel("All Day");
-					//Label startTimeLabel = new Label("All Day");
-					//this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+					// Label startTimeLabel = new Label("All Day");
+					// this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				} else {
 					startTime = getTimeFormat(startDate);
 					addStartTimeLabel(startTime);
-					//Label startTimeLabel = new Label(startTime);
-					//this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
+					// Label startTimeLabel = new Label(startTime);
+					// this.add(startTimeLabel, SECOND_COLUMN, FIRST_ROW);
 				}
 			}
 		}
 	}
-	
-	private void addStartTimeText(String text){
+
+	private void addStartTimeText(String text) {
 		Text container = new Text(text);
 		this.setHalignment(container, HPos.CENTER);
 		this.add(container, SECOND_COLUMN, FIRST_ROW);
 	}
-	private void addEndTimeText(String text){
+
+	private void addEndTimeText(String text) {
 		Text container = new Text(text);
 		this.setHalignment(container, HPos.CENTER);
 		this.add(container, SECOND_COLUMN, SECOND_ROW);
 	}
-	
-	private void addStartTimeLabel(String text){
+
+	private void addStartTimeLabel(String text) {
 		Text container = new Text(text);
 		this.setHalignment(container, HPos.CENTER);
 		this.add(container, SECOND_COLUMN, FIRST_ROW);
@@ -192,12 +195,12 @@ public class TaskGrid extends GridPane {
 
 	private void displayTaskDescription(Task task) {
 		Text description = new Text(task.getDescription());
-		
+
 		description.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH);
 		description.getStyleClass().add("descTaskStyle");
-		
+
 		this.add(description, THIRD_COLUMN, FIRST_ROW);
-		this.setPrefHeight(0);	//this fix unusual row height problems
+		this.setPrefHeight(0); // this fix unusual row height problems
 	}
 
 	private void checkAndDisplayTaskIcon(Task task) {
@@ -227,6 +230,10 @@ public class TaskGrid extends GridPane {
 		if (task.isOverlapping()) {
 			iconContainer = createIconWithText(iconContainer,
 					OVERLAP_ICON_IMAGE_PATH, "Overlapping");
+		}
+		if (task.isDeadline()) {
+			iconContainer = createIconWithText(iconContainer,
+					DEADLINE_ICON_IMAGE_PATH, "Deadline");
 		}
 		iconContainer.getStyleClass().add("iconLabelStyle");
 		this.add(iconContainer, THIRD_COLUMN, iconRow);
