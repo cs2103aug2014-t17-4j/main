@@ -117,7 +117,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function registers the global hotkeys: Ctrl + M and Ctrl + D.
+	 * This function registers the global hotkeys: Ctrl+M and Ctrl+D.
 	 * 
 	 * @author A0112764J
 	 */
@@ -155,10 +155,10 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 	/**
 	 * This function creates hotkeys for the actions.
-	 * The hotkeys are to undo (Ctrl + Z), redo (Ctrl + Y), exit (Ctrl + E), 
-	 * launch help window (Ctrl + H), scroll up tasks' list (Shift + Up), 
-	 * scroll down tasks' list (Shift + Down), scroll up hashtag list (Alt + Down), 
-	 * and scroll down hashtag list (Alt + Up). 
+	 * The hotkeys are to undo (Ctrl+Z), redo (Ctrl+Y), exit (Ctrl+E), 
+	 * launch help window (Ctrl+H), scroll up tasks' list (Shift+Up), 
+	 * scroll down tasks' list (Shift+Down), scroll up hashtag list (Alt+Down), 
+	 * and scroll down hashtag list (Alt+Up). 
 	 * 
 	 * @author Lin XiuQing (A0112764J)
 	 */
@@ -193,14 +193,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 						} else if (exitHotKey.match(event)) {
 							stop();
 						} else if (helpHotKey.match(event)) {
-							if (helpFlag) {
-								helpController.getStage().close();
-								helpFlag = false;
-							} else {
-								helpController.openHelpWindow();
-								primaryStage.requestFocus();
-								helpFlag = true;
-							}
+							actionOnHelpWindow();
 						} else if (scrollTaskUpHotKey.match(event)) {
 							controller.scrollTaskUp();
 						} else if (scrollTaskDownHotKey.match(event)) {
@@ -209,6 +202,17 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 							controller.scrollHashtagUp();
 						} else if (scrollHashtagDownHotKey.match(event)) {
 							controller.scrollHashtagDown();
+						}
+					}
+
+					private void actionOnHelpWindow() {
+						if (helpFlag) {
+							helpController.getStage().close();
+							helpFlag = false;
+						} else {
+							helpController.openHelpWindow();
+							primaryStage.requestFocus();
+							helpFlag = true;
 						}
 					}
 				});
@@ -355,25 +359,21 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 			@Override
 			public void mouseClicked(java.awt.event.MouseEvent arg0) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mouseEntered(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mouseExited(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mousePressed(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
@@ -416,9 +416,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function is to execute global hot key ctrl+m that minimizes
+	 * This function is to execute global hot key Ctrl+M that minimizes
 	 * application while it is running, and to relaunch application while it is
 	 * minimize at system tray.
+	 * 
+	 * It is also used for another global hot key Ctrl+D to copy and paste in command bar.  
 	 * 
 	 * @author A0112764J
 	 * 
