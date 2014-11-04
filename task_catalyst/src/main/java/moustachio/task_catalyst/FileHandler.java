@@ -37,6 +37,7 @@ public class FileHandler {
 	private static final String MESSAGE_EMPTY_FILE = "The file is empty.";
 	private static final String MESSAGE_IO_FAULT = "IO fault has been enountered.";
 	private static final String MESSAGE_INVALID_FILE_FORMAT = "Invalid file format!";
+	
 	private static BlackBox blackBox = BlackBox.getInstance();
 
 	public void writeTask(Task task, String fileName) throws IOException {
@@ -141,7 +142,7 @@ public class FileHandler {
 	private Boolean writeSettingTofile(String name, String fileName,
 			String value) throws IOException {
 		assert (value != null && name != null);
-		Boolean isSuccess;
+		Boolean isSuccess=false;
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
 				true));
 		writer.write(String.format(STRING_WRITE_SETTING, name, value));
