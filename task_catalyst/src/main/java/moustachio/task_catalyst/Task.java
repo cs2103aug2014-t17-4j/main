@@ -38,6 +38,8 @@ public interface Task extends Comparable<Task> {
 	public boolean isOverlapping();
 	
 	public boolean isAllDay();
+	
+	public boolean isDeadline();
 
 	public void setDone(boolean done);
 
