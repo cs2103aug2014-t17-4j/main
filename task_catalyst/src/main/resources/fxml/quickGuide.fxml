@@ -67,7 +67,7 @@
                      <children>
                         <ImageView fitHeight="377.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/hotkeys.jpg" />
+                              <Image url="@../images/hotkeys2.jpg" />
                            </image>
                         </ImageView>
                      </children></AnchorPane>
