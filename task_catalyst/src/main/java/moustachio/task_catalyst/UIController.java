@@ -4,11 +4,11 @@
 
 package moustachio.task_catalyst;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,6 +30,9 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import javax.swing.JTextField;
+import javax.swing.undo.UndoManager;
 
 public class UIController {
 	@FXML
@@ -106,15 +109,17 @@ public class UIController {
 					}
 				});
 	}
-	
+
 	private void labelChangeListener() {
-		
-		statusMessage.heightProperty().addListener(new ChangeListener<Number>() {
-            @Override
-            public void changed(ObservableValue<? extends Number> ov, Number t, Number t1) {
-            	tc.setStageHeight(530+container.getHeight());
-            }
-        }); 
+
+		statusMessage.heightProperty().addListener(
+				new ChangeListener<Number>() {
+					@Override
+					public void changed(ObservableValue<? extends Number> ov,
+							Number t, Number t1) {
+						tc.setStageHeight(530 + container.getHeight());
+					}
+				});
 	}
 
 	private void initializeForms() {
@@ -260,12 +265,14 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				double scrollAmt = taskScrollPane.getVvalue()
-						- taskScrollPane.getHeight()
-						/ 4
-						/ taskScrollPane.getContent().getBoundsInLocal()
-								.getHeight();
-				taskScrollPane.setVvalue(scrollAmt);
+				if (!hashTagList.isFocused()) {
+					double scrollAmt = taskScrollPane.getVvalue()
+							- taskScrollPane.getHeight()
+							/ 4
+							/ taskScrollPane.getContent().getBoundsInLocal()
+									.getHeight();
+					taskScrollPane.setVvalue(scrollAmt);
+				}
 			}
 		});
 	}
@@ -274,37 +281,39 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				double scrollAmt = taskScrollPane.getVvalue()
-						+ taskScrollPane.getHeight()
-						/ 4
-						/ taskScrollPane.getContent().getBoundsInLocal()
-								.getHeight();
-				;
-				taskScrollPane.setVvalue(scrollAmt);
+				if (!hashTagList.isFocused()) {
+					double scrollAmt = taskScrollPane.getVvalue()
+							+ taskScrollPane.getHeight()
+							/ 4
+							/ taskScrollPane.getContent().getBoundsInLocal()
+									.getHeight();
+					;
+					taskScrollPane.setVvalue(scrollAmt);
+				}
 			}
 		});
 	}
-	
+
 	public void scrollHashtagUp() {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				int now = hashTagList.getSelectionModel().getSelectedIndex();
-				hashTagList.getSelectionModel().select(Math.max(0,now-1));
+				hashTagList.getSelectionModel().select(Math.max(0, now - 1));
 			}
 		});
 	}
-	
+
 	public void scrollHashtagDown() {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
 				int now = hashTagList.getSelectionModel().getSelectedIndex();
-				hashTagList.getSelectionModel().select(now+1);
+				hashTagList.getSelectionModel().select(now + 1);
 			}
 		});
 	}
-	
+
 	public void setCommandBar(String pasted) {
 		Platform.runLater(new Runnable() {
 			@Override
