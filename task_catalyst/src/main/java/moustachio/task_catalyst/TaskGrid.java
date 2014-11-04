@@ -56,15 +56,15 @@ public class TaskGrid extends GridPane {
 
 	private void configureTaskGrid() {
 		//this.setPrefWidth(460);
-		ColumnConstraints idColumn = new ColumnConstraints();
-		ColumnConstraints timeColumn = new ColumnConstraints();
-		idColumn.setPercentWidth(8);
-		timeColumn.setPercentWidth(15);
-		this.getColumnConstraints().addAll(idColumn,timeColumn);
+		//ColumnConstraints idColumn = new ColumnConstraints();
+		//ColumnConstraints timeColumn = new ColumnConstraints();
+		//idColumn.setPercentWidth(8);
+		//timeColumn.setPercentWidth(15);
+		//this.getColumnConstraints().addAll(idColumn,timeColumn);
+		//this.setMaxWidth(440);
 		this.setHgap(10);
 		this.setVgap(5);
 		this.setPadding(new Insets(5));
-		//this.setMaxWidth(440);
 		this.getStyleClass().add("grid");
 		//this.setGridLinesVisible(true);
 		
