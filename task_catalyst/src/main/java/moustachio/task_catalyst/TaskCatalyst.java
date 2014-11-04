@@ -183,39 +183,39 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		scene.addEventHandler(KeyEvent.KEY_RELEASED,
 				new EventHandler<KeyEvent>() {
 
-					@Override
-					public void handle(KeyEvent event) {
+			@Override
+			public void handle(KeyEvent event) {
 
-						if (undoHotKey.match(event)) {
-							controller.handleHotKeys(COMMAND_UNDO);
-						} else if (redoHotKey.match(event)) {
-							controller.handleHotKeys(COMMAND_REDO);
-						} else if (exitHotKey.match(event)) {
-							stop();
-						} else if (helpHotKey.match(event)) {
-							actionOnHelpWindow();
-						} else if (scrollTaskUpHotKey.match(event)) {
-							controller.scrollTaskUp();
-						} else if (scrollTaskDownHotKey.match(event)) {
-							controller.scrollTaskDown();
-						} else if (scrollHashtagUpHotKey.match(event)) {
-							controller.scrollHashtagUp();
-						} else if (scrollHashtagDownHotKey.match(event)) {
-							controller.scrollHashtagDown();
-						}
-					}
+				if (undoHotKey.match(event)) {
+					controller.handleHotKeys(COMMAND_UNDO);
+				} else if (redoHotKey.match(event)) {
+					controller.handleHotKeys(COMMAND_REDO);
+				} else if (exitHotKey.match(event)) {
+					stop();
+				} else if (helpHotKey.match(event)) {
+					actionOnHelpWindow();
+				} else if (scrollTaskUpHotKey.match(event)) {
+					controller.scrollTaskUp();
+				} else if (scrollTaskDownHotKey.match(event)) {
+					controller.scrollTaskDown();
+				} else if (scrollHashtagUpHotKey.match(event)) {
+					controller.scrollHashtagUp();
+				} else if (scrollHashtagDownHotKey.match(event)) {
+					controller.scrollHashtagDown();
+				}
+			}
 
-					private void actionOnHelpWindow() {
-						if (helpFlag) {
-							helpController.getStage().close();
-							helpFlag = false;
-						} else {
-							helpController.openHelpWindow();
-							primaryStage.requestFocus();
-							helpFlag = true;
-						}
-					}
-				});
+			private void actionOnHelpWindow() {
+				if (helpFlag) {
+					helpController.getStage().close();
+					helpFlag = false;
+				} else {
+					helpController.openHelpWindow();
+					primaryStage.requestFocus();
+					helpFlag = true;
+				}
+			}
+		});
 	}
 
 	/**
@@ -246,9 +246,9 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			public void handle(MouseEvent me) {
 				if (me.getButton() != MouseButton.MIDDLE) {
 					mainUI.getScene().getWindow()
-							.setX(me.getScreenX() - initialX);
+					.setX(me.getScreenX() - initialX);
 					mainUI.getScene().getWindow()
-							.setY(me.getScreenY() - initialY);
+					.setY(me.getScreenY() - initialY);
 				}
 			}
 		});
@@ -420,7 +420,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	 * application while it is running, and to relaunch application while it is
 	 * minimize at system tray.
 	 * 
-	 * It is also used for another global hot key Ctrl+D to copy and paste in command bar.  
+	 * It is also used for another global hot key Ctrl+D to paste in command bar.  
 	 * 
 	 * @author A0112764J
 	 * 
