@@ -399,4 +399,13 @@ public class TaskBuilderAdvancedTest {
 		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
 				task.getDescriptionEdit());
 	}
+
+	// Test for deadline
+	@Test
+	public void tc49() {
+		Task task = taskBuilder.createOneTask("Something by today");
+		assertEquals(true, task.isDeadline());
+		task = taskBuilder.createOneTask("Something today");
+		assertEquals(false, task.isDeadline());
+	}
 }
