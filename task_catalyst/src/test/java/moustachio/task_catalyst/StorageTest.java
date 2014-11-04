@@ -42,9 +42,23 @@ public class StorageTest {
 	
 	/* This is a boundary case for 'invalid name' partition */
 	@Test
-	public void testInvalidName(){
+	public void testInvalidName1(){
 		String name = "file.1";
 		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+	
+	/* This is a boundary case for 'invalid name (space)' partition */
+	@Test
+	public void testInvalidName2(){
+		String name = "file ";
+		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+	
+	/* This is a boundary case for 'valid name' partition */
+	@Test
+	public void testValidName(){
+		String name = "myTest1";
+		assertEquals(false, fileHandler.isInvalidName(name));
 	}
 	
 	
@@ -52,15 +66,22 @@ public class StorageTest {
 	
 	/* This is a boundary case for 'invalid file format' partition */
 	@Test
-	public void testInvalidFormat(){
+	public void testInvalidFormat1(){
 		String name = "file.1";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+	
+	/* This is a boundary case for 'invalid file format (name)' partition */
+	@Test
+	public void testInvalidFormat2(){
+		String name = "file$.txt";
 		assertEquals(true, fileHandler.isInvalidFileFormat(name));
 	}
 	
 	/* This is a boundary case for 'valid file format' partition */
 	@Test
 	public void testvalidFormat(){
-		String name = "file.txt";
+		String name = "my file1_.txt";
 		assertEquals(false, fileHandler.isInvalidFileFormat(name));
 	}
 	
