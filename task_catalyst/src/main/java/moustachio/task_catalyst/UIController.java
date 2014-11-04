@@ -31,9 +31,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-import javax.swing.JTextField;
-import javax.swing.undo.UndoManager;
-
 public class UIController {
 	@FXML
 	private BorderPane rootBorderPane;
