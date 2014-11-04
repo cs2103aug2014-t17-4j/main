@@ -66,7 +66,7 @@ public class TaskGrid extends GridPane {
 		this.setPadding(new Insets(5));
 		//this.setMaxWidth(440);
 		this.getStyleClass().add("grid");
-		this.setGridLinesVisible(true);
+		//this.setGridLinesVisible(true);
 		
 	}
 

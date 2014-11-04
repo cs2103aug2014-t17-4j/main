@@ -395,7 +395,7 @@ public class UIController {
 
 				if (!currentDate.equals(prevDate)) {
 					Label dateCategoryLabel = new Label(dateCategory);
-					dateCategoryLabel.setPrefWidth(460);
+					dateCategoryLabel.setMaxWidth(Double.MAX_VALUE);
 					dateCategoryLabel.getStyleClass().add("dateCategoryStyle");
 					taskContainer.getChildren().add(dateCategoryLabel);
 				}
