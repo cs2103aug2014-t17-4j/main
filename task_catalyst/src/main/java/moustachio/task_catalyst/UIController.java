@@ -104,7 +104,10 @@ public class UIController {
 							String old_val, String new_val) {
 						if (old_val != null && new_val != null
 								&& !old_val.equals(new_val)) {
-							logic.processCommand(new_val);
+							Message message = logic.processCommand(new_val);
+							if (message.getType() ==  Message.TYPE_SUCCESS) {
+								statusMessage.setText(message.getMessage());
+							}
 							displayTasks();
 						}
 					}

@@ -85,14 +85,7 @@ public class Edit extends Action {
 
 			return new Message(type, message);
 		}
-		String taskDescription = TaskCatalystCommons
-				.getFriendlyString(newDescription);
-		for (Task task : this.targetTasks) {
-			System.out.println("Giving Removing: " + task.getDescription());
-		}
-		for (Task task : this.replacementTasks) {
-			System.out.println("Giving Adding: " + task.getDescription());
-		}
+		String taskDescription = newDescription;
 		return replace(this.targetTasks, this.replacementTasks,
 				taskDescription, EXECUTE_SUCCESS, EXECUTE_ERROR);
 	}
