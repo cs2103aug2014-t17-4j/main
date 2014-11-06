@@ -12,17 +12,6 @@ import java.util.logging.Logger;
  *
  */
 
-/**
- * 
- * credited
- * http://nerdydevel.blogspot.sg/2012/07/run-only-single-java-application
- * -instance.html
- * 
- * 
- *
- */
-
-
 public class Lock {
 	private Lock() {
 	}
