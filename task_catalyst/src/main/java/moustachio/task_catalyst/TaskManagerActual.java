@@ -7,7 +7,6 @@ import java.util.TreeSet;
 
 //@author A0111890
 public class TaskManagerActual implements TaskManager {
-
 	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#ovd",
 			"#tdy", "#tmr", "#upc", "#smd", "#olp", "#dne" };
 	private static final DisplayMode DEFAULT_DISPLAY_MODE = DisplayMode.HASHTAG;
@@ -29,10 +28,23 @@ public class TaskManagerActual implements TaskManager {
 
 	private static TaskManagerActual instance;
 
+	// Initialization Methods
+
 	private TaskManagerActual() {
 		initializeInstance();
 		initializeComponents();
 		initializeLists();
+		refreshLists();
+	}
+
+	public void testMode() {
+		displayMode = DEFAULT_DISPLAY_MODE;
+		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
+
+		storage = new StorageStub();
+		hashtagList = new ArrayList<String>();
+
+		clearLists();
 		refreshLists();
 	}
 
@@ -60,14 +72,7 @@ public class TaskManagerActual implements TaskManager {
 		tasksSelected = new ArrayList<Integer>();
 	}
 
-	public void testMode() {
-		storage = new StorageStub();
-		displayMode = DEFAULT_DISPLAY_MODE;
-		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
-		hashtagList = new ArrayList<String>();
-		clearLists();
-		refreshLists();
-	}
+	// Getter Methods
 
 	@Override
 	public List<String> getHashtags() {
@@ -81,8 +86,8 @@ public class TaskManagerActual implements TaskManager {
 
 	@Override
 	public int getHashtagSelected() {
-		boolean isHashtagMode = displayMode == DisplayMode.HASHTAG;
-		boolean isSearchMode = displayMode == DisplayMode.SEARCH;
+		boolean isHashtagMode = (displayMode == DisplayMode.HASHTAG);
+		boolean isSearchMode = (displayMode == DisplayMode.SEARCH);
 
 		int index;
 
@@ -113,6 +118,8 @@ public class TaskManagerActual implements TaskManager {
 	public List<Task> getDisplayList() {
 		return displayList;
 	}
+
+	// Display List Methods
 
 	@Override
 	public void setDisplayModeKeyword(DisplayMode MODE, String keyword) {
@@ -149,6 +156,8 @@ public class TaskManagerActual implements TaskManager {
 		return task;
 	}
 
+	// CRUD Methods
+
 	@Override
 	public boolean addTask(Task task) {
 		List<Task> tasks = new ArrayList<Task>();
@@ -166,6 +175,7 @@ public class TaskManagerActual implements TaskManager {
 		int numberAdded = 0;
 
 		boolean isAdded = false;
+
 		for (Task task : tasks) {
 			isAdded = taskList.add(task);
 			if (!isAdded) {
@@ -175,13 +185,15 @@ public class TaskManagerActual implements TaskManager {
 		}
 
 		boolean isSaved = false;
+
 		if (isAdded) {
 			isSaved = saveTasks();
 		} else {
 			tasks = loadTasks();
 		}
 
-		boolean isSuccess = isAdded && isSaved;
+		boolean isSuccess = (isAdded && isSaved);
+
 		if (isSuccess) {
 			refreshLists();
 			for (Task task : tasks) {
@@ -200,7 +212,7 @@ public class TaskManagerActual implements TaskManager {
 
 		int tasksRemoved = removeTasks(tasks);
 
-		boolean isSuccess = tasksRemoved == 1;
+		boolean isSuccess = (tasksRemoved == 1);
 
 		return isSuccess;
 	}
@@ -292,7 +304,7 @@ public class TaskManagerActual implements TaskManager {
 			tasks = loadTasks();
 		}
 
-		boolean isSuccess = isCompleted && isSaved;
+		boolean isSuccess = (isCompleted && isSaved);
 
 		if (isSuccess) {
 			refreshLists();
@@ -339,7 +351,7 @@ public class TaskManagerActual implements TaskManager {
 			tasks = loadTasks();
 		}
 
-		boolean isSuccess = isUndone && isSaved;
+		boolean isSuccess = (isUndone && isSaved);
 
 		if (isSuccess) {
 			refreshLists();
@@ -351,6 +363,8 @@ public class TaskManagerActual implements TaskManager {
 
 		return numberUncomplete;
 	}
+
+	// List Administration Methods
 
 	private boolean saveTasks() {
 		boolean success;
@@ -417,20 +431,6 @@ public class TaskManagerActual implements TaskManager {
 		}
 	}
 
-	private void setOverlapping(List<Task> tasks) {
-		List<Task> overlapList = listProcessor.getOverlapping(tasks);
-
-		for (Task task : overlapList) {
-			task.setOverlapping(true);
-		}
-	}
-
-	private void clearOverlapping(List<Task> tasks) {
-		for (Task task : tasks) {
-			task.setOverlapping(false);
-		}
-	}
-
 	private List<String> generateDefaultHashtags() {
 		List<String> defaultHashtags = new ArrayList<String>();
 
@@ -456,12 +456,28 @@ public class TaskManagerActual implements TaskManager {
 		return customHashtags;
 	}
 
+	// Task Marking Methods
+
+	private void setOverlapping(List<Task> tasks) {
+		List<Task> overlapList = listProcessor.getOverlapping(tasks);
+
+		for (Task task : overlapList) {
+			task.setOverlapping(true);
+		}
+	}
+
+	private void clearOverlapping(List<Task> tasks) {
+		for (Task task : tasks) {
+			task.setOverlapping(false);
+		}
+	}
+
 	private void displayAutoswitchToTask(Task task) {
 		boolean isRemoveOperation = (task == null);
 		boolean isTaskDisplayed = displayList.contains(task);
 		boolean isListEmpty = displayList.isEmpty();
 		boolean isTaskMissing = (!isRemoveOperation && !isTaskDisplayed);
-		boolean isNeedAutoswitch = isTaskMissing || isListEmpty;
+		boolean isNeedAutoswitch = (isTaskMissing || isListEmpty);
 
 		if (isNeedAutoswitch) {
 			setDisplayModeKeyword(DEFAULT_DISPLAY_MODE, DEFAULT_DISPLAY_KEYWORD);
