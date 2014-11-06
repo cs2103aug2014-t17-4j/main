@@ -16,8 +16,7 @@ public class Hashtag extends Action {
 
 	@Override
 	public Message execute() {
-		taskManager.setDisplayMode(DisplayMode.HASHTAG);
-		taskManager.setDisplayKeyword(hashtag);
+		taskManager.setDisplayModeKeyword(DisplayMode.HASHTAG, hashtag);
 
 		int type = Message.TYPE_SUCCESS;
 		String message = String.format(EXECUTE_SUCCESS, hashtag);

@@ -28,8 +28,7 @@ public class Search extends Action {
 			type = Message.TYPE_ERROR;
 			message = String.format(EXECUTE_ERROR);
 		} else {
-			taskManager.setDisplayMode(DisplayMode.SEARCH);
-			taskManager.setDisplayKeyword(keyword);
+			taskManager.setDisplayModeKeyword(DisplayMode.SEARCH, keyword);
 			type = Message.TYPE_SUCCESS;
 			message = String.format(EXECUTE_SUCCESS, keyword);
 		}
