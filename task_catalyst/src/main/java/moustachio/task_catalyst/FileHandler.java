@@ -115,7 +115,7 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of storing setting in
 	 * future.
-	 * 
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
 	 * @author A0112764J -unused 
 	 * 
 	 */
@@ -159,6 +159,7 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of reading setting in
 	 * future.
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
 	 * 
 	 * @author A0112764J -unused 
 	 */

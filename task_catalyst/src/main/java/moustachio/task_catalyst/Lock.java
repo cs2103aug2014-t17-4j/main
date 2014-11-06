@@ -7,8 +7,9 @@ import java.nio.channels.FileLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** @author linxiuqing (A0112764J)
- * 
+/**
+ * @author A0112764J -reused
+ *
  */
 
 /**
@@ -20,6 +21,7 @@ import java.util.logging.Logger;
  * 
  *
  */
+
 
 public class Lock {
 	private Lock() {

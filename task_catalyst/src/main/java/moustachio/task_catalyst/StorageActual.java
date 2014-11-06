@@ -28,11 +28,23 @@ public class StorageActual implements Storage {
 	}
 
 	@Override
+	/**
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
+	 * 
+	 * @author A0112764J -unused 
+	 * 
+	 */
 	public boolean saveSetting(String name, String fileName, String value) {
 		return fileHandler.writeSetting(name, fileName, value) ;
 	}
 
 	@Override
+	/**
+	 * There is no setting to save and load for users but it can be useful for future if users set preferences. 
+	 * 
+	 * @author A0112764J -unused 
+	 * 
+	 */
 	public String loadSetting(String name, String fileName) {
 		return fileHandler.readSetting(name, fileName);
 	}
