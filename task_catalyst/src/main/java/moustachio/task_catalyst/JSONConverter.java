@@ -1,7 +1,6 @@
 package moustachio.task_catalyst;
 
 import java.util.List;
-
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -12,9 +11,9 @@ import org.json.simple.parser.ParseException;
  * This implementation uses JSONObject to encode the contents of tasks and
  * decode JSONOBject to String format which is text format.
  * 
- * @author Lin XiuQing (A0112764J)
+ * @author A0112764J
+ *
  */
-
 public class JSONConverter {
 
 	private static final String IS_DONE = "isDone";

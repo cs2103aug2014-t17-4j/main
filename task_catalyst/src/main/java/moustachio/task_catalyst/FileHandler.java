@@ -21,7 +21,7 @@ import org.json.simple.parser.ParseException;
  * the file. Likewise, the saved task is converted again to text for the purpose
  * of editing or displaying.
  * 
- * @author Lin XiuQing (A0112764J)
+ * @author A0112764J
  */
 
 public class FileHandler {
