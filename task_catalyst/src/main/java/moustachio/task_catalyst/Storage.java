@@ -3,7 +3,9 @@ package moustachio.task_catalyst;
 import java.util.List;
 
 /**
- * @author Lin XiuQing (A0112764J)
+ * 
+ * @author A0111890
+ *
  */
 
 public interface Storage {

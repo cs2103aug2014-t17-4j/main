@@ -2,6 +2,12 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
+/**
+ * 
+ * @author A0111890
+ *
+ */
+
 public interface ListProcessor {
     public List<Task> searchByHashtag(List<Task> list, String hashtag);
 
