@@ -16,7 +16,7 @@ public class StorageActual implements Storage {
 	private static BlackBox blackbox = BlackBox.getInstance();
 	private static final String MESSAGE_IO_FAULT = "IO fault has been enountered.";
 	FileHandler fileHandler = new FileHandler();
-	
+
 	@Override
 	public boolean saveTasks(List<Task> list, String fileName) {
 		return saveTasksToFile(list, fileName);
@@ -28,15 +28,17 @@ public class StorageActual implements Storage {
 	}
 
 	@Override
+	//@author A0112764J -unused 
 	public boolean saveSetting(String name, String fileName, String value) {
 		return fileHandler.writeSetting(name, fileName, value) ;
 	}
 
 	@Override
+	//@author A0112764J -unused 
 	public String loadSetting(String name, String fileName) {
 		return fileHandler.readSetting(name, fileName);
 	}
-	
+
 	private boolean saveTasksToFile(List<Task> list, String fileName) {
 		try{
 			fileHandler.clear(fileName);

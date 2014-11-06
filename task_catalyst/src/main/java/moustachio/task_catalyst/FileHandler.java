@@ -115,6 +115,8 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of storing setting in
 	 * future.
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
+	 * @author A0112764J -unused 
 	 * 
 	 */
 	public boolean writeSetting(String name, String fileName, String value) {
@@ -157,7 +159,9 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of reading setting in
 	 * future.
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
 	 * 
+	 * @author A0112764J -unused 
 	 */
 	public String readSetting(String name, String fileName) {
 		assert (name != null);

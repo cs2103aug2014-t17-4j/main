@@ -1,8 +1,8 @@
 /**
- * @author Toh Zhen Yu (A0111921W)
+ * @author (A0111921W)
  */
  
-#exitButton {          
+#exitButton {         
     -fx-background-image: url("../images/close24.png");
     -fx-background-size: 24.0 24.0;
     -fx-background-repeat: no-repeat;
@@ -11,19 +11,6 @@
 }
 #programTitle{
 	-fx-image: url("../images/title.png");
-}
-#settingsButton {          
-    -fx-background-image: url("../images/settings24.png");
-    -fx-background-size: 24.0 24.0;
-    -fx-background-repeat: no-repeat;
-    -fx-background-position:left;   
-    -fx-background-color: transparent;  
-}
-#rootBorderPane {
-}
-
-#idColumn {
-    -fx-alignment: CENTER;
 }
 
 /* GUI Interface background colour */
@@ -52,33 +39,6 @@
     -fx-background-color: gray;
 }
 
-/* Selected row */
-.table-row-cell:selected {
-	-fx-border-color: turquoise;
-	-fx-border-insets: 0.0;
-	-fx-border-width: 0.0 0.0 0.0 5.0;
-    -fx-background-insets: 0.0;
-    -fx-background: -fx-accent;
-    -fx-text-fill: white, -fx-selection-bar-text;
-}
-
-.table-row-cell .text {
-       -fx-fill: #000001 ;
-}
-
-/* Table row border colour */
-.table-row-cell {
-}
-
-/* Removed border colour when task table is empty */
-.table-row-cell:empty {
-    -fx-background-color: white;
-}
-
-.table-row-cell:empty .table-cell {
-    -fx-border-width: 0.0px;
-}
-
 #cmdTextField {
 	-fx-focus-color: orange;
     -fx-faint-focus-color: orange;
@@ -92,10 +52,12 @@
     -fx-border-radius: 5;
     -fx-background-radius: 5.0;
 }
+
 /* TaskGrid Container style */
 .vbox{
 	-fx-padding: 7px;
 }
+
 /* TaskGrid ID label style */
 .idLabel{
 	-fx-padding: 4;
@@ -104,7 +66,7 @@
     -fx-background-color: #ffc107;
 	-fx-background-radius: 5;
 }
-/* TaskGrid selected id style */
+/* TaskGrid selected ID label style */
 .isSelected{
 	-fx-padding: 4;
     -fx-border-width: 1px;
@@ -112,7 +74,7 @@
     -fx-background-color: turquoise;
 	-fx-background-radius: 5;
 }
-/* Date category style */
+
 .dateCategoryStyle{
 	-fx-padding: 4;
 	-fx-text-fill: white;
@@ -121,14 +83,17 @@
     -fx-background-color: derive(master-color, -60.0%);
 	-fx-background-radius: 5;
 }
+
 .iconLabelStyle{
 	-fx-alignment: center-right;
     -fx-font-size: 12.0px;
 	-fx-spacing	: 5px;   
 }
+
 .descTaskStyle{
 	-fx-font-size: 15.0px;
 }
+
 .statusMessageVBox{
 	-fx-border-color: black;
 }

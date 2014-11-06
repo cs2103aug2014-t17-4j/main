@@ -1,8 +1,6 @@
 package moustachio.task_catalyst;
 
-
 import java.io.IOException;
-
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,6 +17,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
+/**
+ * This program is to create pop-up window for comprehensive quick guide for users. 
+ * 
+ * Users can use hotkey "Ctrl+H" to launch quick guide window and use "Ctrl+H" to close 
+ * Task Catalyst while it is running.
+ * 
+ * @author A0112764J
+ *
+ */
 
 public class HelpViewController {
 	@FXML
@@ -64,7 +72,6 @@ public class HelpViewController {
 	Stage getStage() {
 		return this.helpStage;
 	}
-
 	
 	@FXML
 	public void initialize() {
@@ -88,11 +95,9 @@ public class HelpViewController {
 	}
 	
 	private void addDragListeners(final Node helpUI) {
-
 		helpUI.setOnMousePressed(new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent me) {
-
 				if (me.getButton() != MouseButton.MIDDLE) {
 					initialX = me.getSceneX();
 					initialY = me.getSceneY();
@@ -101,7 +106,6 @@ public class HelpViewController {
 					initialX = helpUI.getScene().getWindow().getX();
 					initialY = helpUI.getScene().getWindow().getY();
 				}
-
 			}
 		});
 
@@ -110,14 +114,14 @@ public class HelpViewController {
 			public void handle(MouseEvent me) {
 				if (me.getButton() != MouseButton.MIDDLE) {
 					helpUI.getScene().getWindow()
-							.setX(me.getScreenX() - initialX);
+					.setX(me.getScreenX() - initialX);
 					helpUI.getScene().getWindow()
-							.setY(me.getScreenY() - initialY);
+					.setY(me.getScreenY() - initialY);
 				}
 			}
 		});
 	}
-	
+
 	public void openHelpWindow() {
 		AnchorPane helpPane;
 		if (helpStage != null) {
@@ -130,7 +134,7 @@ public class HelpViewController {
 				FXMLLoader loader = new FXMLLoader(getClass().getResource(
 						QUICKGUIDE_FXML_PATH));
 				helpPane = loader.load();
-				
+
 				controller = loader.getController();
 				addDragListeners(helpPane);
 				controller.setStage(helpStage);
@@ -138,7 +142,6 @@ public class HelpViewController {
 				helpStage.initStyle(StageStyle.UNDECORATED);
 				helpStage.setX(0);
 				helpStage.setY(30);
-				//if(helpStage.)
 				helpStage.show();
 			} catch (IOException e) {
 				e.printStackTrace();
