@@ -25,8 +25,8 @@ public class Redo extends Action {
 					message.getMessage());
 			message.setMessage(appendedMessage);
 		} else {
-			int type = Message.TYPE_SUCCESS;
-			message = new Message(type, EXECUTE_ERROR);
+			MessageType messageType = MessageType.SUCCESS;
+			message = new Message(messageType, EXECUTE_ERROR);
 		}
 		return message;
 	}
@@ -37,8 +37,8 @@ public class Redo extends Action {
 	}
 
 	public static Message getHint(String userCommand) {
-		int type = Message.TYPE_HINT;
-		Message returnMessage = new Message(type, HINT_MESSAGE);
+		MessageType messageType = MessageType.HINT;
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
 		return returnMessage;
 	}
 

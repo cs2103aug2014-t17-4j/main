@@ -32,12 +32,12 @@ public class ActionInvoker {
 	}
 
 	public Message doAction(Action action) {
-		Message message = new Message(Message.TYPE_ERROR, defaultMessage);
+		Message message = new Message(MessageType.ERROR, defaultMessage);
 
 		if (action != null) {
 			message = action.execute();
 
-			boolean isSuccess = (message.getType() == Message.TYPE_SUCCESS);
+			boolean isSuccess = (message.getType() == MessageType.SUCCESS);
 			boolean isUndoable = action.isUndoable();
 
 			if (isSuccess && isUndoable) {

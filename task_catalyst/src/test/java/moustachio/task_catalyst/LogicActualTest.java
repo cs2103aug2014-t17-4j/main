@@ -30,7 +30,7 @@ public class LogicActualTest {
 	@Test
 	public void addTc1() {
 		Message message = logic.processCommand("Meet boss at MR5");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Task successfully added: Meet boss at MR5",
 				message.getMessage());
 		assertEquals("Meet boss at MR5", logic.getList().get(0)
@@ -42,7 +42,7 @@ public class LogicActualTest {
 	public void addTc2() {
 		String userCommand = "Meet boss at MR5 at 21 Sep 5pm";
 		Message message = logic.processCommand(userCommand);
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		// assertEquals("Task successfully added: " + userCommand,
 		// message.getMessage());
 
@@ -57,7 +57,7 @@ public class LogicActualTest {
 	public void addTc3() {
 		String userCommand = "Meet boss at MR5 at 21 Sep 5pm to 6pm";
 		Message message = logic.processCommand(userCommand);
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		// assertEquals("Task successfully added: " + userCommand,
 		// message.getMessage());
 
@@ -78,8 +78,8 @@ public class LogicActualTest {
 		Message message1 = logic.processCommand(userCommand1);
 		Message message2 = logic.processCommand(userCommand2);
 
-		assertEquals(Message.TYPE_SUCCESS, message1.getType());
-		assertEquals(Message.TYPE_SUCCESS, message2.getType());
+		assertEquals(MessageType.SUCCESS, message1.getType());
+		assertEquals(MessageType.SUCCESS, message2.getType());
 
 		Task task1 = logic.getList().get(0);
 		assertEquals("25 Sep 6pm to 26 Sep 8pm clients conference.",
@@ -94,7 +94,7 @@ public class LogicActualTest {
 	@Test
 	public void addTc5() {
 		Message message = logic.processCommand("");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		// assertEquals("Invalid Action Encountered", message.getMessage());
 	}
 
@@ -103,7 +103,7 @@ public class LogicActualTest {
 	@Test
 	public void addTc6() {
 		Message message = logic.processCommand(" ");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		// assertEquals("Invalid Action Encountered", message.getMessage());
 	}
 
@@ -111,7 +111,7 @@ public class LogicActualTest {
 	@Test
 	public void addTc7() {
 		Message message = logic.processCommand(null);
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
 						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
@@ -123,7 +123,7 @@ public class LogicActualTest {
 	@Test
 	public void getMessageTypingTc1() {
 		Message message = logic.getMessageTyping("");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
 						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
@@ -135,7 +135,7 @@ public class LogicActualTest {
 	@Test
 	public void getMessageTypingTc2() {
 		Message message = logic.getMessageTyping(" ");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
 						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
@@ -146,7 +146,7 @@ public class LogicActualTest {
 	@Test
 	public void getMessageTypingTc3() {
 		Message message = logic.getMessageTyping(null);
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
 						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
@@ -157,7 +157,7 @@ public class LogicActualTest {
 	@Test
 	public void getMessageTypingTc4() {
 		Message message = logic.getMessageTyping("e");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals("Do you mean \"edit\"?", message.getMessage());
 	}
 
@@ -166,7 +166,7 @@ public class LogicActualTest {
 	@Test
 	public void getMessageTypingTc5() {
 		Message message = logic.getMessageTyping("d");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals("Do you mean \"delete\", \"del\", \"done\"?",
 				message.getMessage());
 	}
@@ -176,7 +176,7 @@ public class LogicActualTest {
 	@Test
 	public void getMessageTypingTc6() {
 		Message message = logic.getMessageTyping("edit");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -187,7 +187,7 @@ public class LogicActualTest {
 	@Test
 	public void getMessageTypingTc7() {
 		Message message = logic.getMessageTyping("edit ");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -199,7 +199,7 @@ public class LogicActualTest {
 	public void getMessageTypingTc8() {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 2");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -211,7 +211,7 @@ public class LogicActualTest {
 	public void getMessageTypingTc9() {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 2 ");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -223,7 +223,7 @@ public class LogicActualTest {
 	public void getMessageTypingTc10() {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 1 ");
-		assertEquals(Message.TYPE_AUTOCOMPLETE, message.getType());
+		assertEquals(MessageType.AUTOCOMPLETE, message.getType());
 		assertEquals("edit 1 item 1", message.getMessage());
 	}
 
@@ -233,7 +233,7 @@ public class LogicActualTest {
 	public void getMessageTypingTc11() {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 1  ");
-		// assertEquals(Message.TYPE_AUTOCOMPLETE, message.getType());
+		// assertEquals(MessageType.AUTOCOMPLETE, message.getType());
 		assertEquals("edit 1 item 1", message.getMessage());
 	}
 
@@ -243,7 +243,7 @@ public class LogicActualTest {
 	public void getMessageTypingTc12() {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 1 item 1");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"item 1\nEdit: Hit enter after making your changes.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -255,7 +255,7 @@ public class LogicActualTest {
 	public void getMessageTypingTc13() {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 2 item 1");
-		assertEquals(Message.TYPE_HINT, message.getType());
+		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -265,7 +265,7 @@ public class LogicActualTest {
 	@Test
 	public void deleteTc1() {
 		Message message = logic.processCommand("rm -1");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals("There was/were no matching task(s) to delete.",
 				message.getMessage());
 	}
@@ -275,7 +275,7 @@ public class LogicActualTest {
 	public void deleteTc2() {
 		logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("rm 2");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals("There was/were no matching task(s) to delete.",
 				message.getMessage());
 	}
@@ -284,7 +284,7 @@ public class LogicActualTest {
 	@Test
 	public void deleteTc3() {
 		Message message = logic.processCommand("rm");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals("There was/were no matching task(s) to delete.",
 				message.getMessage());
 	}
@@ -294,7 +294,7 @@ public class LogicActualTest {
 	public void deleteTc4() {
 		logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("rm 1");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Task successfully deleted: Hello kitty!",
 				message.getMessage());
 	}
@@ -305,7 +305,7 @@ public class LogicActualTest {
 		logic.processCommand("Task 1!");
 		logic.processCommand("Task 2!");
 		Message message = logic.processCommand("rm all");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -316,7 +316,7 @@ public class LogicActualTest {
 		logic.processCommand("Task 1!");
 		logic.processCommand("Task 2!");
 		Message message = logic.processCommand("rm all    ");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -327,7 +327,7 @@ public class LogicActualTest {
 		logic.processCommand("Task 1!");
 		logic.processCommand("Task 2!");
 		Message message = logic.processCommand("rm 1 2");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -338,7 +338,7 @@ public class LogicActualTest {
 		logic.processCommand("Task 1!");
 		logic.processCommand("Task 2!");
 		Message message = logic.processCommand("rm 1, 2");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -349,7 +349,7 @@ public class LogicActualTest {
 		logic.processCommand("Task 1!");
 		logic.processCommand("Task 2!");
 		Message message = logic.processCommand("rm 1,2");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -358,7 +358,7 @@ public class LogicActualTest {
 	@Test
 	public void doneTc1() {
 		Message message = logic.processCommand("done -1");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals("There was/were no matching task(s) to complete.",
 				message.getMessage());
 	}
@@ -368,7 +368,7 @@ public class LogicActualTest {
 	public void doneTc2() {
 		logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("done 2");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals("There was/were no matching task(s) to complete.",
 				message.getMessage());
 	}
@@ -377,7 +377,7 @@ public class LogicActualTest {
 	@Test
 	public void doneTc3() {
 		Message message = logic.processCommand("done");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals("There was/were no matching task(s) to complete.",
 				message.getMessage());
 	}
@@ -387,7 +387,7 @@ public class LogicActualTest {
 	public void doneTc4() {
 		logic.processCommand("Hello kitty!");
 		Message message = logic.processCommand("done 1");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Task successfully completed: Hello kitty!",
 				message.getMessage());
 	}
@@ -396,7 +396,7 @@ public class LogicActualTest {
 	@Test
 	public void editTc1() {
 		Message message = logic.processCommand("edit 1 after!");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
 				"Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -406,7 +406,7 @@ public class LogicActualTest {
 	@Test
 	public void editTc2() {
 		Message message = logic.processCommand("edit");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
 				"Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -417,7 +417,7 @@ public class LogicActualTest {
 	public void editTc3() {
 		logic.processCommand("hello kitty!");
 		Message message = logic.processCommand("edit");
-		assertEquals(Message.TYPE_ERROR, message.getType());
+		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
 				"Invalid task number specified.\nSyntax: edit <task number>",
 				message.getMessage());
@@ -429,7 +429,7 @@ public class LogicActualTest {
 		logic.processCommand("before1!");
 		logic.processCommand("before2!");
 		Message message = logic.processCommand("edit 2 after!");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Task successfully edited: after!", message.getMessage());
 	}
 
@@ -564,7 +564,7 @@ public class LogicActualTest {
 	@Test
 	public void searchTc1() {
 		Message message = logic.processCommand("search hello");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Displaying search: hello.", message.getMessage());
 		assertEquals(0, logic.getList().size());
 	}
@@ -575,7 +575,7 @@ public class LogicActualTest {
 		logic.processCommand("apple banana");
 		logic.processCommand("apple papaya");
 		Message message = logic.processCommand("search banana");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Displaying search: banana.", message.getMessage());
 		assertEquals(1, logic.getList().size());
 	}
@@ -586,7 +586,7 @@ public class LogicActualTest {
 		logic.processCommand("apple banana");
 		logic.processCommand("apple papaya");
 		Message message = logic.processCommand("search apple");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Displaying search: apple.", message.getMessage());
 		assertEquals(2, logic.getList().size());
 	}
@@ -595,7 +595,7 @@ public class LogicActualTest {
 	@Test
 	public void undoTc1() {
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("There is nothing to undo.", message.getMessage());
 	}
 
@@ -606,13 +606,13 @@ public class LogicActualTest {
 		assertEquals(1, logic.getList().size());
 
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Undo: Task successfully removed: this is the first item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Redo: Task successfully added: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
@@ -626,26 +626,26 @@ public class LogicActualTest {
 		assertEquals(2, logic.getList().size());
 
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Undo: Task successfully removed: this is the second item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Undo: Task successfully removed: this is the first item",
 				message.getMessage());
 		assertEquals(0, logic.getList().size());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Redo: Task successfully added: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Redo: Task successfully added: this is the second item",
 				message.getMessage());
 		assertEquals(2, logic.getList().size());
@@ -661,27 +661,27 @@ public class LogicActualTest {
 		assertEquals(0, logic.getList().size());
 
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Undo: Task successfully restored: this is the second item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Undo: Task successfully restored: this is the first item",
 				message.getMessage());
 		assertEquals(2, logic.getList().size());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Redo: Task successfully deleted: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Redo: Task successfully deleted: this is the second item",
 				message.getMessage());
@@ -698,28 +698,28 @@ public class LogicActualTest {
 		assertEquals(0, logic.getList().size());
 
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Undo: Task successfully restored: this is the second item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Undo: Task successfully restored: this is the first item",
 				message.getMessage());
 		assertEquals(2, logic.getList().size());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Redo: Task successfully completed: this is the first item",
 				message.getMessage());
 		assertEquals(1, logic.getList().size());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals(
 				"Redo: Task successfully completed: this is the second item",
 				message.getMessage());
@@ -733,12 +733,12 @@ public class LogicActualTest {
 		logic.processCommand("edit 1 after");
 
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Undo: Task successfully restored: before",
 				message.getMessage());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Redo: Task successfully edited: after",
 				message.getMessage());
 	}
@@ -750,14 +750,14 @@ public class LogicActualTest {
 		logic.processCommand("edit 1 after");
 
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Undo: Task successfully restored: before",
 				message.getMessage());
 
 		logic.processCommand("something else");
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("There is nothing to redo.", message.getMessage());
 	}
 
@@ -770,12 +770,12 @@ public class LogicActualTest {
 		logic.processCommand("delete");
 
 		Message message = logic.processCommand("undo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Undo: Task successfully restored: before",
 				message.getMessage());
 
 		message = logic.processCommand("redo");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Redo: Task successfully edited: after",
 				message.getMessage());
 	}
@@ -787,7 +787,7 @@ public class LogicActualTest {
 		logic.processCommand("Task 2!");
 		logic.processCommand("Task 3!");
 		Message message = logic.processCommand("rm 1, 3");
-		assertEquals(Message.TYPE_SUCCESS, message.getType());
+		assertEquals(MessageType.SUCCESS, message.getType());
 		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
 		List<Task> tasks = logic.getList();
 		assertEquals(1, tasks.size());

@@ -75,7 +75,7 @@ public class UIController {
 		initializeForms();
 		listChangeListener();
 		labelChangeListener();
-		
+
 	}
 
 	@FXML
@@ -104,7 +104,7 @@ public class UIController {
 						if (old_val != null && new_val != null
 								&& !old_val.equals(new_val)) {
 							Message message = logic.processCommand(new_val);
-							if (message.getType() ==  Message.TYPE_SUCCESS) {
+							if (message.getType() == MessageType.SUCCESS) {
 								statusMessage.setText(message.getMessage());
 							}
 							displayTasks();
@@ -220,7 +220,7 @@ public class UIController {
 	 */
 	private void handleMessage(Message message) {
 		switch (message.getType()) {
-		case Message.TYPE_SUCCESS:
+		case SUCCESS:
 			statusMessage.setText(message.getMessage());
 			setFocusForHashTable(logic.getHashtagSelected());
 			setFocusForTaskTableList(logic.getTasksSelected());
@@ -228,11 +228,11 @@ public class UIController {
 			displayTasks();
 			clearForm();
 			break;
-		case Message.TYPE_AUTOCOMPLETE:
+		case AUTOCOMPLETE:
 			commandBar.setText(message.getMessage());
 			commandBar.positionCaret(commandBar.getText().length());
 			break;
-		case Message.TYPE_ERROR:
+		case ERROR:
 			statusMessage.setText(message.getMessage());
 			break;
 		}
@@ -341,7 +341,7 @@ public class UIController {
 			Message message = logic.getMessageTyping(commandBar.getText());
 
 			// This will remove autocomplete when hitting backspace during edit
-			if (message.getType() == Message.TYPE_AUTOCOMPLETE
+			if (message.getType() == MessageType.AUTOCOMPLETE
 					&& !event.getCode().equals(KeyCode.BACK_SPACE)) {
 				commandBar.setText(message.getMessage());
 				commandBar.positionCaret(commandBar.getText().length());
@@ -422,7 +422,7 @@ public class UIController {
 	}
 
 	private StackPane createEmptyMessageLabel(StackPane container) {
-		Label messageLabel = new Label(EMPTY_TASKVIEW_MESSAGE); 
+		Label messageLabel = new Label(EMPTY_TASKVIEW_MESSAGE);
 		messageLabel.setPrefHeight(taskScrollPane.getPrefHeight());
 		container.getChildren().add(messageLabel);
 		container.setAlignment(Pos.CENTER);
@@ -473,62 +473,79 @@ public class UIController {
 	}
 }
 
-
-//<?xml version="1.0" encoding="UTF-8"?>
+// <?xml version="1.0" encoding="UTF-8"?>
 //
-//<?import javafx.scene.paint.*?>
-//<?import javafx.scene.effect.*?>
-//<?import javafx.scene.image.*?>
-//<?import javafx.scene.text.*?>
-//<?import javafx.geometry.*?>
-//<?import javafx.scene.control.*?>
-//<?import java.lang.*?>
-//<?import javafx.scene.layout.*?>
-//<?import javafx.scene.layout.AnchorPane?>
+// <?import javafx.scene.paint.*?>
+// <?import javafx.scene.effect.*?>
+// <?import javafx.scene.image.*?>
+// <?import javafx.scene.text.*?>
+// <?import javafx.geometry.*?>
+// <?import javafx.scene.control.*?>
+// <?import java.lang.*?>
+// <?import javafx.scene.layout.*?>
+// <?import javafx.scene.layout.AnchorPane?>
 //
-//<VBox styleClass="theme" stylesheets="@../css/DarkTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.UIController">
-//	<children>
-//		<BorderPane fx:id="rootBorderPane" prefHeight="520.0" prefWidth="620.0" stylesheets="@../css/DarkTheme.css">
-//			<top>
-//				<HBox alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="200.0" spacing="10.0">
-//					<children>
-//						<ImageView fx:id="programTitle" fitHeight="24.0" fitWidth="173.0" />
-//						<HBox prefHeight="24.0" prefWidth="500.0" styleClass="theme" />
-//						<Button id="exitButton" fx:id="exitButton" alignment="CENTER" contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#exitButtonAction" prefHeight="24.0" prefWidth="24.0" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
-//					</children>
-//					<BorderPane.margin>
-//						<Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
-//					</BorderPane.margin>
-//				</HBox>
-//			</top>
-//			<bottom>
-//				<AnchorPane maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefWidth="620.0">
-//					<children>
-//						<VBox id="statusMessageLabel" fx:id="container" prefWidth="618.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" BorderPane.alignment="CENTER">
-//							<children>
-//								<TextField id="cmdTextField" fx:id="commandBar" onAction="#handleTextFieldOnAction" onKeyReleased="#handleTextFieldWhileUserTyping" prefHeight="0.0" prefWidth="617.0" />
-//							</children>
-//						</VBox>
-//					</children>
-//				</AnchorPane>
-//			</bottom>
-//			<center>
-//				<SplitPane dividerPositions="0.2" minHeight="-Infinity" prefWidth="345.0" styleClass="theme" BorderPane.alignment="CENTER">
-//					<items>
-//						<ListView fx:id="hashTagList" prefHeight="200.0" prefWidth="200.0" styleClass="lightList" />
-//						<ScrollPane fx:id="taskScrollPane" fitToWidth="true" prefHeight="410.0" prefWidth="470.0" />
-//					</items>
-//				</SplitPane>
-//			</center>
-//		</BorderPane>
-//		<VBox fx:id="container" prefWidth="620.0" stylesheets="@../css/DarkTheme.css">
-//			<children>
-//				<Label fx:id="statusMessage" prefWidth="618.0">
-//					<VBox.margin>
-//						<Insets left="5.0" right="5.0" />
-//					</VBox.margin>
-//				</Label>
-//			</children>
-//		</VBox>
-//	</children>
-//</VBox>
+// <VBox styleClass="theme" stylesheets="@../css/DarkTheme.css"
+// xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+// fx:controller="moustachio.task_catalyst.UIController">
+// <children>
+// <BorderPane fx:id="rootBorderPane" prefHeight="520.0" prefWidth="620.0"
+// stylesheets="@../css/DarkTheme.css">
+// <top>
+// <HBox alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="200.0"
+// spacing="10.0">
+// <children>
+// <ImageView fx:id="programTitle" fitHeight="24.0" fitWidth="173.0" />
+// <HBox prefHeight="24.0" prefWidth="500.0" styleClass="theme" />
+// <Button id="exitButton" fx:id="exitButton" alignment="CENTER"
+// contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity"
+// mnemonicParsing="false" onAction="#exitButtonAction" prefHeight="24.0"
+// prefWidth="24.0" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+// </children>
+// <BorderPane.margin>
+// <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+// </BorderPane.margin>
+// </HBox>
+// </top>
+// <bottom>
+// <AnchorPane maxHeight="1.7976931348623157E308" minHeight="-Infinity"
+// prefWidth="620.0">
+// <children>
+// <VBox id="statusMessageLabel" fx:id="container" prefWidth="618.0"
+// AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+// AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+// BorderPane.alignment="CENTER">
+// <children>
+// <TextField id="cmdTextField" fx:id="commandBar"
+// onAction="#handleTextFieldOnAction"
+// onKeyReleased="#handleTextFieldWhileUserTyping" prefHeight="0.0"
+// prefWidth="617.0" />
+// </children>
+// </VBox>
+// </children>
+// </AnchorPane>
+// </bottom>
+// <center>
+// <SplitPane dividerPositions="0.2" minHeight="-Infinity" prefWidth="345.0"
+// styleClass="theme" BorderPane.alignment="CENTER">
+// <items>
+// <ListView fx:id="hashTagList" prefHeight="200.0" prefWidth="200.0"
+// styleClass="lightList" />
+// <ScrollPane fx:id="taskScrollPane" fitToWidth="true" prefHeight="410.0"
+// prefWidth="470.0" />
+// </items>
+// </SplitPane>
+// </center>
+// </BorderPane>
+// <VBox fx:id="container" prefWidth="620.0"
+// stylesheets="@../css/DarkTheme.css">
+// <children>
+// <Label fx:id="statusMessage" prefWidth="618.0">
+// <VBox.margin>
+// <Insets left="5.0" right="5.0" />
+// </VBox.margin>
+// </Label>
+// </children>
+// </VBox>
+// </children>
+// </VBox>

@@ -18,9 +18,9 @@ public class Hashtag extends Action {
 	public Message execute() {
 		taskManager.setDisplayModeKeyword(DisplayMode.HASHTAG, hashtag);
 
-		int type = Message.TYPE_SUCCESS;
+		MessageType messageType = MessageType.SUCCESS;
 		String message = String.format(EXECUTE_SUCCESS, hashtag);
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	@Override
@@ -29,8 +29,8 @@ public class Hashtag extends Action {
 	}
 
 	public static Message getHint(String userCommand) {
-		int type = Message.TYPE_HINT;
-		Message returnMessage = new Message(type, HINT_MESSAGE);
+		MessageType messageType = MessageType.HINT;
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
 		return returnMessage;
 	}
 

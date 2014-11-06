@@ -36,7 +36,7 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		boolean isInvalidCommand = isInvalidCommand(userCommand);
 
 		if (isInvalidCommand) {
-			return new Message(Message.TYPE_HINT, HINT_MESSAGE_DEFAULT);
+			return new Message(MessageType.HINT, HINT_MESSAGE_DEFAULT);
 		}
 
 		CommandType COMMAND_TYPE = TaskCatalystCommons
@@ -164,20 +164,20 @@ public class ActionHintSystemActual implements ActionHintSystem {
 	}
 
 	private Message getHintDefault() {
-		int type = Message.TYPE_HINT;
+		MessageType messageType = MessageType.HINT;
 
-		Message defaultHint = new Message(type, HINT_MESSAGE_DEFAULT);
+		Message defaultHint = new Message(messageType, HINT_MESSAGE_DEFAULT);
 
 		return defaultHint;
 	}
 
 	private Message getHintSuggestion(String matchingCommandsString) {
-		int type = Message.TYPE_HINT;
+		MessageType messageType = MessageType.HINT;
 
 		String commandSuggestions = String.format(FORMAT_PARTIAL_SUGGESTIONS,
 				matchingCommandsString);
 
-		Message suggestionHint = new Message(type, commandSuggestions);
+		Message suggestionHint = new Message(messageType, commandSuggestions);
 
 		return suggestionHint;
 	}

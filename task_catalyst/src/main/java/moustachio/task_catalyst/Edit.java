@@ -72,18 +72,18 @@ public class Edit extends Action {
 	public Message execute() {
 
 		if (targetTasks != null && replacementTasks == null) {
-			int type = Message.TYPE_AUTOCOMPLETE;
+			MessageType messageType = MessageType.AUTOCOMPLETE;
 			String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
 					descriptionEdit);
 
-			return new Message(type, message);
+			return new Message(messageType, message);
 		}
 
 		if (targetTasks == null) {
-			int type = Message.TYPE_ERROR;
+			MessageType messageType = MessageType.ERROR;
 			String message = String.format(EXECUTE_ERROR) + HINT_SYNTAX;
 
-			return new Message(type, message);
+			return new Message(messageType, message);
 		}
 		String taskDescription = newDescription;
 		return replace(this.targetTasks, this.replacementTasks,
@@ -108,25 +108,25 @@ public class Edit extends Action {
 		int tasksAdded = taskManager.addTasks(replacementTasks);
 		boolean isAddSuccess = tasksAdded > 0;
 
-		int type;
+		MessageType messageType;
 		String message;
 
 		if (isDeleteSuccess && isAddSuccess) {
-			type = Message.TYPE_SUCCESS;
+			messageType = MessageType.SUCCESS;
 			message = String.format(successFormat, taskDescription);
 		} else {
-			type = Message.TYPE_ERROR;
+			messageType = MessageType.ERROR;
 			message = String.format(errorFormat);
 		}
 
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	public static Message getHint(String userCommand) {
-		int type;
+		MessageType messageType;
 		String message;
 
-		type = Message.TYPE_HINT;
+		messageType = MessageType.HINT;
 		message = HINT_MESSAGE;
 
 		String taskNumberString;
@@ -158,24 +158,24 @@ public class Edit extends Action {
 		} else if (isAutocomplete) {
 			String taskDescription = editTask.getDescriptionEdit();
 
-			type = Message.TYPE_AUTOCOMPLETE;
+			messageType = MessageType.AUTOCOMPLETE;
 			message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
 					taskDescription);
 		} else if (isBeingEdited) {
 			try {
 				message = TaskCatalystCommons.getFriendlyString(userCommand
 						.replace("edit " + taskNumber + " ", ""));
-				type = Message.TYPE_HINT;
+				messageType = MessageType.HINT;
 			} catch (UnsupportedOperationException e) {
 				message = e.getMessage();
-				type = Message.TYPE_ERROR;
+				messageType = MessageType.ERROR;
 			}
 
-			type = Message.TYPE_HINT;
+			messageType = MessageType.HINT;
 			message += HINT_VALID_TASK;
 		}
 
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	public static boolean isThisAction(String command) {

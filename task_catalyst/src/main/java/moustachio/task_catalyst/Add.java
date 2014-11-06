@@ -26,57 +26,57 @@ public class Add extends Action {
 	@Override
 	public Message execute() {
 		if (tasks == null) {
-			int type = Message.TYPE_ERROR;
+			MessageType messageType = MessageType.ERROR;
 			String message = String.format(EXECUTE_ERROR) + HINT_MESSAGE;
 
-			return new Message(type, message);
+			return new Message(messageType, message);
 		}
 
 		int tasksAdded = taskManager.addTasks(tasks);
 		boolean addSuccess = tasksAdded > 0;
-		int type;
+		MessageType messageType;
 		String message;
 		if (addSuccess) {
 			String taskDescription = TaskCatalystCommons
 					.getFriendlyString(userCommand);
-			type = Message.TYPE_SUCCESS;
+			messageType = MessageType.SUCCESS;
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else {
-			type = Message.TYPE_ERROR;
+			messageType = MessageType.ERROR;
 			message = String.format(EXECUTE_ERROR) + HINT_MESSAGE;
 		}
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	@Override
 	public Message undo() {
 		int tasksRemoved = taskManager.removeTasks(tasks);
 		boolean isSuccess = tasksRemoved > 0;
-		int type;
+		MessageType messageType;
 		String message;
 		if (isSuccess) {
 			String taskDescription = TaskCatalystCommons
 					.getFriendlyString(userCommand);
-			type = Message.TYPE_SUCCESS;
+			messageType = MessageType.SUCCESS;
 			message = String.format(UNDO_SUCCESS, taskDescription);
 		} else {
-			type = Message.TYPE_ERROR;
+			messageType = MessageType.ERROR;
 			message = String.format(UNDO_ERROR);
 		}
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	public static Message getHint(String userCommand) {
 
 		String messageString;
-		int messageType;
+		MessageType messageType;
 
 		try {
 			messageString = TaskCatalystCommons.getFriendlyString(userCommand);
-			messageType = Message.TYPE_HINT;
+			messageType = MessageType.HINT;
 		} catch (UnsupportedOperationException e) {
 			messageString = e.getMessage();
-			messageType = Message.TYPE_ERROR;
+			messageType = MessageType.ERROR;
 		}
 		messageString += HINT_MESSAGE;
 
