@@ -18,10 +18,12 @@ import org.json.simple.parser.ParseException;
  * This program is to manage writing and reading tasks in a specific text file.
  * 
  * The description of a task is converted into JSON object before saving it in
- * the file. Likewise, the saved task is converted again to text for the purpose
+ * the file. 
+ * 
+ * Likewise, the saved task is converted again to text for the purpose
  * of editing or displaying.
  * 
- * @author Lin XiuQing (A0112764J)
+ * @author A0112764J
  */
 
 public class FileHandler {
@@ -113,6 +115,8 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of storing setting in
 	 * future.
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
+	 * @author A0112764J -unused 
 	 * 
 	 */
 	public boolean writeSetting(String name, String fileName, String value) {
@@ -155,7 +159,9 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of reading setting in
 	 * future.
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
 	 * 
+	 * @author A0112764J -unused 
 	 */
 	public String readSetting(String name, String fileName) {
 		assert (name != null);
