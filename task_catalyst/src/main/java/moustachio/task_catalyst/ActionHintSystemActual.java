@@ -132,6 +132,10 @@ public class ActionHintSystemActual implements ActionHintSystem {
 			action = new Undone(userCommand);
 			break;
 
+		case INVALID:
+			action = null;
+			break;
+
 		default:
 			throw new Error(ERROR_ACTION_UNDEFINED);
 		}
@@ -142,10 +146,19 @@ public class ActionHintSystemActual implements ActionHintSystem {
 	// Low-Level Methods
 
 	private boolean isInvalidCommand(String userCommand) {
+		boolean isNullCommand = (userCommand == null);
+
+		if (isNullCommand) {
+			return true;
+		}
+
 		boolean isEmptyCommand = userCommand.trim().isEmpty();
-		boolean isNullCommand = userCommand == null;
-		boolean isInvalidCommand = isNullCommand || isEmptyCommand;
-		return isInvalidCommand;
+
+		if (isEmptyCommand) {
+			return true;
+		}
+
+		return false;
 	}
 
 	private Message getHintPartialAdd(String userCommand) {
