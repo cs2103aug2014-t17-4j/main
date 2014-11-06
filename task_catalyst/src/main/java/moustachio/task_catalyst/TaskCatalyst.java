@@ -452,37 +452,47 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
 			case java.awt.event.KeyEvent.VK_M:
-				if (primaryStage.isShowing()) {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							primaryStage.hide();
-						}
-					});
-				} else {
-					Platform.runLater(new Runnable() {
-						@Override
-						public void run() {
-							primaryStage.show();
-							primaryStage.toFront();
-						}
-					});
-				}
+			toggleStage();
 				break;
 			case java.awt.event.KeyEvent.VK_D:
-				Platform.runLater(new Runnable() {
-					@Override
-					public void run() {
-						if (clipboard.hasString()) {
-							if (!primaryStage.isShowing()) {
-								primaryStage.show();
-							}
-							primaryStage.toFront();
-							controller.setCommandBar(clipboard.getString());
-						}
-					}
-				});
+			pasteClipboard();
 				break;
+		}
+	}
+	
+	//@author A0111890
+	private void pasteClipboard() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (clipboard.hasString()) {
+					if (!primaryStage.isShowing()) {
+						primaryStage.show();
+					}
+					primaryStage.toFront();
+					controller.setCommandBar(clipboard.getString());
+				}
+			}
+		});
+	}
+	
+	//@author A0112764J
+	private void toggleStage() {
+		if (primaryStage.isShowing()) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					primaryStage.hide();
+				}
+			});
+		} else {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					primaryStage.show();
+					primaryStage.toFront();
+				}
+			});
 		}
 	}
 }
