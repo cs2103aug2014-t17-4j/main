@@ -54,9 +54,9 @@ public class Delete extends Action {
 	public Message execute() {
 
 		if (tasks == null) {
-			int type = Message.TYPE_ERROR;
+			MessageType messageType = MessageType.ERROR;
 			String message = String.format(EXECUTE_ERROR);
-			return new Message(type, message);
+			return new Message(messageType, message);
 		}
 
 		int numberRemoved = taskManager.removeTasks(tasks);
@@ -66,11 +66,11 @@ public class Delete extends Action {
 		boolean isAllRemoved = numberRemoved == tasks.size();
 		boolean isSuccess = isRemoved && isAllRemoved;
 
-		int type = generateType(isSuccess);
+		MessageType messageType = generateType(isSuccess);
 		String message = generateExecuteMessage(isSingleTask, numberRemoved,
 				isSuccess);
 
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	@Override
@@ -83,21 +83,21 @@ public class Delete extends Action {
 		boolean isAllAdded = numberAdded == tasks.size();
 		boolean isSuccess = isAdded && isAllAdded;
 
-		int type = generateType(isSuccess);
+		MessageType messageType = generateType(isSuccess);
 		String message = generateUndoMessage(isSingleTask, numberAdded,
 				isSuccess);
 
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
-	private int generateType(boolean isSuccess) {
-		int type;
+	private MessageType generateType(boolean isSuccess) {
+		MessageType messageType;
 		if (isSuccess) {
-			type = Message.TYPE_SUCCESS;
+			messageType = MessageType.SUCCESS;
 		} else {
-			type = Message.TYPE_ERROR;
+			messageType = MessageType.ERROR;
 		}
-		return type;
+		return messageType;
 	}
 
 	private String generateExecuteMessage(boolean isSingleTask,
@@ -142,8 +142,8 @@ public class Delete extends Action {
 	}
 
 	public static Message getHint(String userCommand) {
-		int type = Message.TYPE_HINT;
-		Message returnMessage = new Message(type, HINT_MESSAGE);
+		MessageType messageType = MessageType.HINT;
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
 		return returnMessage;
 	}
 

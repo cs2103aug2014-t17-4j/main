@@ -2,23 +2,27 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
+//@author A0111890
 public interface TaskManager {
+	public void testMode();
 
 	public List<String> getHashtags();
 
 	public String[] getDefaultHashtags();
 
-	public List<Task> getDisplayList();
+	public int getHashtagSelected();
+
+	public List<Integer> getTasksSelected();
 
 	public List<Task> getList();
 
-	public boolean completeTask(Task task);
+	public List<Task> getDisplayList();
 
-	public int completeTasks(List<Task> tasks);
+	public void setDisplayModeKeyword(DisplayMode MODE, String keyword);
 
-	public boolean uncompleteTask(Task task);
+	public Task getDisplayTask(int taskNumber);
 
-	public int uncompleteTasks(List<Task> task);
+	public Task removeDisplayTask(int taskNumber);
 
 	public boolean addTask(Task task);
 
@@ -30,17 +34,11 @@ public interface TaskManager {
 
 	public boolean editTask(Task target, Task replacement);
 
-	public Task removeDisplayTask(int taskNumber);
+	public boolean completeTask(Task task);
 
-	public Task getDisplayTask(int taskNumber);
+	public int completeTasks(List<Task> tasks);
 
-	public void setDisplayMode(DisplayMode TYPE);
+	public boolean uncompleteTask(Task task);
 
-	public void setDisplayKeyword(String keyword);
-
-	public int getHashtagSelected();
-
-	public List<Integer> getTasksSelected();
-
-	public void testMode();
+	public int uncompleteTasks(List<Task> tasks);
 }

@@ -54,9 +54,9 @@ public class Done extends Action {
 	public Message execute() {
 
 		if (tasks == null) {
-			int type = Message.TYPE_ERROR;
+			MessageType messageType = MessageType.ERROR;
 			String message = String.format(EXECUTE_ERROR);
-			return new Message(type, message);
+			return new Message(messageType, message);
 		}
 
 		int numberCompleted = taskManager.completeTasks(tasks);
@@ -66,11 +66,11 @@ public class Done extends Action {
 		boolean isAllCompleted = numberCompleted == tasks.size();
 		boolean isSuccess = isCompleted && isAllCompleted;
 
-		int type = generateType(isSuccess);
+		MessageType messageType = generateType(isSuccess);
 		String message = generateExecuteMessage(isSingleTask, numberCompleted,
 				isSuccess);
 
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	@Override
@@ -83,21 +83,21 @@ public class Done extends Action {
 		boolean isAllRestored = numberRestored == tasks.size();
 		boolean isSuccess = isRestored && isAllRestored;
 
-		int type = generateType(isSuccess);
+		MessageType messageType = generateType(isSuccess);
 		String message = generateUndoMessage(isSingleTask, numberRestored,
 				isSuccess);
 
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
-	private int generateType(boolean isSuccess) {
-		int type;
+	private MessageType generateType(boolean isSuccess) {
+		MessageType messageType;
 		if (isSuccess) {
-			type = Message.TYPE_SUCCESS;
+			messageType = MessageType.SUCCESS;
 		} else {
-			type = Message.TYPE_ERROR;
+			messageType = MessageType.ERROR;
 		}
-		return type;
+		return messageType;
 	}
 
 	private String generateExecuteMessage(boolean isSingleTask,
@@ -142,8 +142,8 @@ public class Done extends Action {
 	}
 
 	public static Message getHint(String userCommand) {
-		int type = Message.TYPE_HINT;
-		Message returnMessage = new Message(type, HINT_MESSAGE);
+		MessageType messageType = MessageType.HINT;
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
 		return returnMessage;
 	}
 

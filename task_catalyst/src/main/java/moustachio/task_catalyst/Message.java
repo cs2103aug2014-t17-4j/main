@@ -1,22 +1,16 @@
 package moustachio.task_catalyst;
 
 public class Message {
-
-	public static final int TYPE_SUCCESS = 0;
-	public static final int TYPE_ERROR = 1;
-	public static final int TYPE_HINT = 2;
-	public static final int TYPE_AUTOCOMPLETE = 3;
-
-	int type;
+	MessageType messageType;
 	String message;
 
-	public Message(int type, String message) {
-		this.type = type;
+	public Message(MessageType type, String message) {
+		this.messageType = type;
 		this.message = message;
 	}
 
-	public int getType() {
-		return type;
+	public MessageType getType() {
+		return this.messageType;
 	}
 
 	public void setMessage(String message) {

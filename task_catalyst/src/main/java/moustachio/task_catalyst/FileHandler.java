@@ -2,6 +2,7 @@ package moustachio.task_catalyst;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.ParseException;
 
@@ -18,25 +20,34 @@ import org.json.simple.parser.ParseException;
  * This program is to manage writing and reading tasks in a specific text file.
  * 
  * The description of a task is converted into JSON object before saving it in
- * the file. Likewise, the saved task is converted again to text for the purpose
+ * the file. 
+ * 
+ * Likewise, the saved task is converted again to text for the purpose
  * of editing or displaying.
  * 
- * @author Lin XiuQing (A0112764J)
+ * @author A0112764J
  */
 
 public class FileHandler {
 
+	private static final String FOLDER_TASK_CATALYST = "Task Catalyst";
+	private static final String PATH_TASK_CATALYST = "Task Catalyst/";
 	private static final String STRING_SPACE = " ";
 	private static final String STRING_WRITE_SETTING = "%1$s,%2$s";
 	private static final String STRING_EMPTY = "";
 	private static final String VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
 	private static final String VALID_PATTERN = "(?i)^\\w+|\\d+$";
-
+	
 	private static final String MESSAGE_NOT_FOUND = "The file is not found!";
 	private static final String MESSAGE_INCORRECT_FORMAT = "Incorrect format has been found";
 	private static final String MESSAGE_EMPTY_FILE = "The file is empty.";
-	private static final String MESSAGE_IO_FAULT = "IO fault has been enountered.";
+	private static final String MESSAGE_IO_FAULT_READ = "IO fault has been enountered during reading from file";
+	private static final String MESSAGE_IO_FAULT_WRITE = "IO fault has been enountered during writing to file.";
+	private static final String MESSAGE_IO_FAULT_DIR = "IO fault has been encountered during creating dir";
 	private static final String MESSAGE_INVALID_FILE_FORMAT = "Invalid file format!";
+	private static final String MESSAGE_IO_FAULT_DIR_READ = "IO fault has been encountered during making folder to read task.";
+
+	
 	private static BlackBox blackBox = BlackBox.getInstance();
 
 	public void writeTask(Task task, String fileName) throws IOException {
@@ -45,14 +56,27 @@ public class FileHandler {
 		checkTaskFileFormat(fileName);
 
 		try {
+			makeFolder();
 			writeJSONFile(task, fileName);
 		} catch (IOException e) {
-			blackBox.info(MESSAGE_IO_FAULT);
+			blackBox.info(MESSAGE_IO_FAULT_WRITE);
 		}
 	}
-
+	
+	private void makeFolder() throws IOException {
+		File folder = new File(FOLDER_TASK_CATALYST);
+		if (folder.exists() && folder.isFile()) {
+			System.out.println(MESSAGE_IO_FAULT_DIR);	
+		} else {
+			if (!folder.exists())
+			{
+			    folder.mkdir();
+			}
+		}
+	}
+	
 	private void writeJSONFile(Task task, String fileName) throws IOException {
-		FileWriter jsonFile = new FileWriter(fileName, true);
+		FileWriter jsonFile = new FileWriter(PATH_TASK_CATALYST +fileName, true);
 		BufferedWriter writer = new BufferedWriter(jsonFile);
 		JSONObject object = new JSONObject();
 		JSONConverter objCodec = new JSONConverter();
@@ -62,18 +86,39 @@ public class FileHandler {
 		writer.flush();
 		writer.close();
 	}
-
+	
 	public List<Task> readTask(String fileName) {
 		List<Task> list = new ArrayList<Task>();
 
 		checkTaskFileFormat(fileName);
-
-		if (isEmptyFile(fileName)) {
+		createFolder();
+		
+		File file = new File(PATH_TASK_CATALYST +fileName);
+		
+		if (!file.exists() || isEmptyFile(PATH_TASK_CATALYST +fileName)) {
+			createNewTextFile(fileName);
 			return new ArrayList<Task>();
 		} else {
-			readJSONFile(fileName, list);
+			readJSONFile(PATH_TASK_CATALYST +fileName, list);
 		}
 		return list;
+	}
+
+	private void createFolder() {
+		try {
+			makeFolder();
+		} catch (IOException e) {
+			System.out.println(MESSAGE_IO_FAULT_DIR_READ);
+		}
+	}
+
+	private void createNewTextFile(String fileName) {
+		File newfileName = new File(PATH_TASK_CATALYST +fileName);
+		try {
+			writeEmpty(newfileName.getPath());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private void checkTaskFileFormat(String fileName) throws Error {
@@ -89,7 +134,7 @@ public class FileHandler {
 		} catch (FileNotFoundException e) {
 			blackBox.info(MESSAGE_EMPTY_FILE);
 		} catch (IOException e) {
-			blackBox.info(MESSAGE_IO_FAULT);
+			blackBox.info(MESSAGE_IO_FAULT_READ);
 		} catch (ParseException e) {
 			blackBox.info(MESSAGE_INCORRECT_FORMAT);
 		}
@@ -112,6 +157,9 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of storing setting in
 	 * future.
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
+	 * 
+	 * @author A0112764J -unused 
 	 * 
 	 */
 	public boolean writeSetting(String name, String fileName, String value) {
@@ -124,7 +172,7 @@ public class FileHandler {
 		} catch (FileNotFoundException e) {
 			blackBox.info(MESSAGE_NOT_FOUND);
 		} catch (IOException e) {
-			blackBox.info(MESSAGE_IO_FAULT);
+			blackBox.info(MESSAGE_IO_FAULT_WRITE);
 		}
 		return isSuccess;
 	}
@@ -141,7 +189,7 @@ public class FileHandler {
 	private Boolean writeSettingTofile(String name, String fileName,
 			String value) throws IOException {
 		assert (value != null && name != null);
-		Boolean isSuccess;
+		Boolean isSuccess=false;
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
 				true));
 		writer.write(String.format(STRING_WRITE_SETTING, name, value));
@@ -154,7 +202,9 @@ public class FileHandler {
 	/**
 	 * This function is implemented for the purpose of reading setting in
 	 * future.
+	 * There is no setting to save for users but it can be useful for future if users set preferences. 
 	 * 
+	 * @author A0112764J -unused 
 	 */
 	public String readSetting(String name, String fileName) {
 		assert (name != null);
@@ -177,7 +227,7 @@ public class FileHandler {
 			}
 			reader.close();
 		} catch (IOException e) {
-			blackBox.info(MESSAGE_IO_FAULT);
+			blackBox.info(MESSAGE_IO_FAULT_READ);
 		}
 		return value;
 	}
@@ -206,14 +256,14 @@ public class FileHandler {
 			}
 			reader.close();
 		} catch (IOException e) {
-			blackBox.info(MESSAGE_IO_FAULT);
+			blackBox.info(MESSAGE_IO_FAULT_READ);
 		}
 		return false;
 	}
 
 	public void clear(String fileName) {
 		try {
-			writeEmpty(fileName);
+			writeEmpty(PATH_TASK_CATALYST +fileName);
 		} catch (FileNotFoundException e) {
 			blackBox.info(MESSAGE_NOT_FOUND);
 		}

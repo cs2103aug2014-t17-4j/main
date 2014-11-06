@@ -2,7 +2,7 @@
  * @author zhenyu
  * credits: 
  * icon - http://www.iconsdb.com/icon-sets/web-2-orange-icons/
- * 	
+ *
  */
 
 package moustachio.task_catalyst;
@@ -23,6 +23,10 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 
+/**
+ * @author A0111921W
+ *
+ */
 public class TaskGrid extends GridPane {
 
 	private static final int FIRST_COLUMN = 0;

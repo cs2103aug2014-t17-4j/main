@@ -1,131 +1,88 @@
 package moustachio.task_catalyst;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+// @author A0111890
 public class TaskAdvanced implements Task {
-
-	boolean isOverlapping;
-	boolean isDone;
 	String description;
-
 	Date dateStart;
 	Date dateEnd;
 	List<Date> allDates;
 
+	boolean isOverlapping;
+	boolean isDone;
+
+	// Initialization Methods
+
 	public TaskAdvanced(String description) {
-		this.description = description;
-		isDone = false;
-		initializeDates();
+		setDescription(description);
 	}
 
-	// Description Mutators
+	private void initializeAttributes(String description) {
+		this.description = description;
+		this.isDone = false;
+	}
 
 	private void initializeDates() {
 		String descriptionRaw = getDescriptionRaw();
+
 		allDates = TaskCatalystCommons.getAllDates(descriptionRaw);
-		if (!allDates.isEmpty()) {
+
+		boolean isFloatingTask = allDates.isEmpty();
+
+		if (!isFloatingTask) {
 			int firstIndex = 0;
 			int lastIndex = allDates.size() - 1;
+
 			dateStart = allDates.get(firstIndex);
 			dateEnd = allDates.get(lastIndex);
 		}
 	}
 
-	@Override
-	public void setDescription(String description) {
-		this.description = description;
-		initializeDates();
-	}
+	// Public Mutators
 
 	@Override
 	public String getDescription() {
-		String interpretedString = this.description;
+		String interpretedString = getDescriptionRaw();
 
-		String friendlyString = TaskCatalystCommons
+		String description = TaskCatalystCommons
 				.getPrettyStringWithoutDate(interpretedString);
 
-		return friendlyString;
+		return description;
 	}
 
 	@Override
 	public String getDescriptionEdit() {
-		String interpretedString = this.description;
+		String interpretedString = getDescriptionRaw();
+
 		boolean isAlwaysShowTime = true;
 
 		String prettyString = TaskCatalystCommons.getPrettyString(
 				interpretedString, isAlwaysShowTime);
 
-		String noCurlyBracesString = TaskCatalystCommons
+		String descriptionEdit = TaskCatalystCommons
 				.removeCurlyBraces(prettyString);
 
-		return noCurlyBracesString;
+		return descriptionEdit;
 	}
 
 	@Override
 	public String getDescriptionRaw() {
-		return this.description;
-	}
+		String descriptionRaw = this.description;
 
-	// Administrative Mutators
-
-	@Override
-	public boolean isRange() {
-		return description
-				.matches(".*\\}.*(\\bto\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
+		return descriptionRaw;
 	}
 
 	@Override
-	public boolean isBlocking() {
-		return description
-				.matches(".*\\}.*(\\bor\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
-	}
-
-	@Override
-	public boolean isMultiple() {
-		return description
-				.matches(".*\\}.*(\\band\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
-	}
-
-	@Override
-	public boolean isDeadline() {
-		return description.matches(".*(\\bby\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
-	}
-
-	@Override
-	public boolean isDone() {
-		return isDone;
+	public void setDescription(String description) {
+		initializeAttributes(description);
+		initializeDates();
 	}
 
 	@Override
 	public void setDone(boolean isDone) {
 		this.isDone = isDone;
-	}
-
-	@Override
-	public boolean isPriority() {
-		return hasHashtag("pri");
-	}
-
-	@Override
-	public boolean isOverdue() {
-		if (isAllDay()) {
-			if (TaskCatalystCommons.isToday(getDateStart())) {
-				return false;
-			}
-		}
-		if (getDateEnd() == null) {
-			return false;
-		} else {
-			Date now = new Date();
-			return now.after(getDateEnd());
-		}
-	}
-
-	@Override
-	public boolean isOverlapping() {
-		return isOverlapping;
 	}
 
 	@Override
@@ -137,103 +94,217 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public List<Date> getAllDates() {
-		return allDates;
+		return this.allDates;
 	}
 
 	@Override
 	public Date getDateStart() {
-		return dateStart;
+		return this.dateStart;
 	}
 
 	@Override
 	public Date getDateEnd() {
-		return dateEnd;
+		return this.dateEnd;
 	}
 
 	@Override
 	public Date getNextDate() {
 		if (allDates.isEmpty()) {
 			return null;
-		} else if (isRange()) {
+		}
+
+		if (isRange()) {
 			return getDateStart();
-		} else {
-			Date now = new Date();
-			for (Date date : allDates) {
-				if (date.after(now)) {
-					return date;
-				}
+		}
+
+		Date now = new Date();
+		Date nextDate = null;
+
+		for (Date date : allDates) {
+			boolean isDateAfterNow = date.after(now);
+			if (isDateAfterNow) {
+				nextDate = date;
+				break;
 			}
-			return null;
 		}
+
+		return nextDate;
 	}
 
-	@Override
-	public boolean isAllDay() {
-		if (getDateStart() == null || isBlocking() || isRange()) {
-			return false;
-		}
-		boolean isOneSecond = TaskCatalystCommons.getSeconds(getDateStart()) == 1;
-		boolean isZeroMinutes = TaskCatalystCommons.getMinutes(getDateStart()) == 0;
-		boolean isZeroHours = TaskCatalystCommons.getHours(getDateStart()) == 0;
-		return isOneSecond && isZeroMinutes && isZeroHours;
-	}
-
-	// Comparison Methods
+	// Hashtag / Search Methods
 
 	@Override
 	public List<String> getHashtags() {
-		List<String> hashtagList = new ArrayList<String>();
-		String[] descriptionTokenized = this.description.split(" ");
-		for (String token : descriptionTokenized) {
-			if (token.startsWith("#")) {
-				String tokenProcessed = token.toLowerCase();
-				tokenProcessed = TaskCatalystCommons
-						.removeSquareBrackets(tokenProcessed);
+		String interpretedString = getDescriptionRaw();
 
-				String repeatedStartingHashtags = "(\\s|^)#+";
-				String endingPunctuations = "(,|\\.|\\?|!|:|;)+(\\s|$)";
+		List<String> hashtags = TaskCatalystCommons
+				.extractHashtags(interpretedString);
 
-				tokenProcessed = tokenProcessed.replaceAll(
-						repeatedStartingHashtags, "#");
-				tokenProcessed = tokenProcessed.replaceAll(endingPunctuations,
-						"");
-				if (tokenProcessed.length() > 1) {
-					hashtagList.add(tokenProcessed);
-				}
-			}
-		}
-		return hashtagList;
+		return hashtags;
 	}
 
 	@Override
 	public boolean hasHashtag(String hashtag) {
 		String hashtagLowerCase = "#" + hashtag.toLowerCase();
-		return getHashtags().contains(hashtagLowerCase);
+
+		List<String> hashtags = getHashtags();
+
+		boolean hasHashtag = hashtags.contains(hashtagLowerCase);
+
+		return hasHashtag;
 	}
 
 	@Override
 	public boolean hasKeyword(String keyword) {
 		String descriptionLowerCase = getDescription().toLowerCase();
 		String keywordLowerCase = keyword.toLowerCase();
-		return descriptionLowerCase.contains(keywordLowerCase);
+		String[] tokenizedKeywords = keywordLowerCase.split(" ");
+		boolean isKeywordFound = false;
+
+		for (String token : tokenizedKeywords) {
+			isKeywordFound = descriptionLowerCase.contains(token);
+			if (isKeywordFound) {
+				break;
+			}
+		}
+
+		return isKeywordFound;
+	}
+
+	// Marking Methods
+
+	@Override
+	public boolean isAllDay() {
+		if (getDateStart() == null || isBlocking() || isRange()) {
+			return false;
+		}
+
+		boolean isOneSecond = (TaskCatalystCommons.getSeconds(getDateStart()) == 1);
+		boolean isZeroMinutes = (TaskCatalystCommons.getMinutes(getDateStart()) == 0);
+		boolean isZeroHours = (TaskCatalystCommons.getHours(getDateStart()) == 0);
+		boolean isAllDay = (isOneSecond && isZeroMinutes && isZeroHours);
+
+		return isAllDay;
+	}
+
+	@Override
+	public boolean isBlocking() {
+		boolean hasOr = hasWordBetweenDates("or");
+		boolean isBlocking = (!isDone() && hasOr);
+
+		return isBlocking;
+	}
+
+	@Override
+	public boolean isDeadline() {
+		boolean hasBefore = hasWordBeforeDates("before");
+		boolean hasBy = hasWordBeforeDates("by");
+		boolean hasKeywords = (hasBefore || hasBy);
+		boolean isDeadline = (!isDone() && hasKeywords);
+
+		return isDeadline;
+	}
+
+	@Override
+	public boolean isDone() {
+		return isDone;
+	}
+
+	@Override
+	public boolean isMultiple() {
+		boolean isMultiple = hasWordBetweenDates("and");
+
+		return isMultiple;
+	}
+
+	@Override
+	public boolean isOverdue() {
+		boolean isFloatingTask = (getDateEnd() == null);
+
+		if (isFloatingTask) {
+			return false;
+		}
+
+		boolean isToday = TaskCatalystCommons.isToday(getDateStart());
+
+		if (isAllDay() && isToday) {
+			return false;
+		}
+
+		Date now = new Date();
+
+		boolean isNowAfterEnd = now.after(getDateEnd());
+		boolean isOverdue = (!isDone() && isNowAfterEnd);
+
+		return isOverdue;
+	}
+
+	@Override
+	public boolean isOverlapping() {
+		return isOverlapping;
+	}
+
+	@Override
+	public boolean isPriority() {
+		boolean isPriority = hasHashtag("pri");
+		return isPriority;
+	}
+
+	@Override
+	public boolean isRange() {
+		boolean isRange = hasWordBetweenDates("to");
+		return isRange;
+	}
+
+	private boolean hasWordBetweenDates(String word) {
+		String openingBrace = ".*\\}.*(\\b";
+		String closingBrace = "\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
+		String matchingCriteria = openingBrace + word + closingBrace;
+
+		boolean hasWordBetweenDates = description.matches(matchingCriteria);
+
+		return hasWordBetweenDates;
+	}
+
+	private boolean hasWordBeforeDates(String word) {
+		String openingBrace = ".*(\\b(";
+		String closingBrace = ")\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
+		String matchingCriteria = openingBrace + word + closingBrace;
+
+		boolean hasWordBeforeDates = description.matches(matchingCriteria);
+
+		return hasWordBeforeDates;
 	}
 
 	@Override
 	public int compareTo(Task o) {
 		Date thisDateTime = this.getDateStart();
 		Date otherDateTime = o.getDateStart();
-		if (thisDateTime == null && otherDateTime != null) {
+
+		boolean isThisDateNull = thisDateTime == null;
+		boolean isOtherDateNull = otherDateTime == null;
+
+		if (isThisDateNull && !isOtherDateNull) {
 			return 1;
-		} else if (otherDateTime == null && thisDateTime != null) {
-			return -1;
-		} else if (thisDateTime == null && otherDateTime == null) {
-			return 0;
-		} else {
-			if (TaskCatalystCommons.isSameDate(thisDateTime, otherDateTime)
-					&& isAllDay() && !o.isAllDay()) {
-				return -1;
-			}
-			return thisDateTime.compareTo(otherDateTime);
 		}
+
+		if (isOtherDateNull && !isThisDateNull) {
+			return -1;
+		}
+
+		if (isThisDateNull && isOtherDateNull) {
+			return 0;
+		}
+
+		boolean isSameDate = TaskCatalystCommons.isSameDate(thisDateTime,
+				otherDateTime);
+		boolean isThisAllDay = isAllDay();
+		boolean isOtherAllDay = o.isAllDay();
+
+		if (isSameDate && isThisAllDay && !isOtherAllDay) {
+			return -1;
+		}
+
+		return thisDateTime.compareTo(otherDateTime);
 	}
 }

@@ -22,18 +22,17 @@ public class Search extends Action {
 
 	@Override
 	public Message execute() {
-		int type;
+		MessageType messageType;
 		String message;
 		if (keyword.isEmpty()) {
-			type = Message.TYPE_ERROR;
+			messageType = MessageType.ERROR;
 			message = String.format(EXECUTE_ERROR);
 		} else {
-			taskManager.setDisplayMode(DisplayMode.SEARCH);
-			taskManager.setDisplayKeyword(keyword);
-			type = Message.TYPE_SUCCESS;
+			taskManager.setDisplayModeKeyword(DisplayMode.SEARCH, keyword);
+			messageType = MessageType.SUCCESS;
 			message = String.format(EXECUTE_SUCCESS, keyword);
 		}
-		return new Message(type, message);
+		return new Message(messageType, message);
 	}
 
 	@Override
@@ -42,8 +41,8 @@ public class Search extends Action {
 	}
 
 	public static Message getHint(String userCommand) {
-		int type = Message.TYPE_HINT;
-		Message returnMessage = new Message(type, HINT_MESSAGE);
+		MessageType messageType = MessageType.HINT;
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
 		return returnMessage;
 	}
 

@@ -2,6 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
+//@author A0111890
 public class LogicActual implements Logic {
 
 	ActionHintSystem actionHintSystem;
@@ -17,6 +18,8 @@ public class LogicActual implements Logic {
 		actionHintSystem.testMode();
 	}
 
+	// ActionHintSystem Commands
+
 	@Override
 	public Message processCommand(String userCommand) {
 		return actionHintSystem.processCommand(userCommand);
@@ -26,6 +29,8 @@ public class LogicActual implements Logic {
 	public Message getMessageTyping(String userCommand) {
 		return actionHintSystem.getMessageTyping(userCommand);
 	}
+
+	// TaskManager Commands
 
 	@Override
 	public List<String> getHashtags() {

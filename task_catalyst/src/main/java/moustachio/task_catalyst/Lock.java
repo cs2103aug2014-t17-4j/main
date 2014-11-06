@@ -7,21 +7,24 @@ import java.nio.channels.FileLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-/** @author linxiuqing (A0112764J)
- * 
- */
-
 /**
+ * This class is to create lock for global hotkeys. 
  * 
- * credited
- * http://nerdydevel.blogspot.sg/2012/07/run-only-single-java-application
- * -instance.html
- * 
- * 
+ * @author A0112764J -reused
  *
  */
 
 public class Lock {
+	private static final String MESSAGE_INSTATCE_IS_NULL = "INSTATCE IS NULL!";
+	private static final String MESSAGE_FAIL_TO_SET_LOCK = "Fail to set Lock.";
+	private static final String MESSAGE_FAIL_TO_CREATE_LOCK = "Can't create Lock";
+	private static final String MESSAGE_ANOTHER_INSTANCE_DETECTED = "Another instance detected";
+	private static final String MESSAGE_LOCKED_BY_KEY = "Java Lock Object\r\nLocked by key: ";
+	private static final String MD5 = "MD5";
+	private static final String FILE_SEPARATOR = "file.separator";
+	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
+	private static final String MESSAGE_LOCK_FILE_FAIL = "Lock.Lock() file fail";
+
 	private Lock() {
 	}
 
@@ -40,15 +43,38 @@ public class Lock {
 	 * @throws Exception
 	 */
 	private Lock(String lockKey) throws Exception {
-		String tmpDir = System.getProperty("java.io.tmpdir");
-		if (!tmpDir.endsWith(System.getProperty("file.separator"))) {
-			tmpDir += System.getProperty("file.separator");
+		String tmpDir = System.getProperty(JAVA_IO_TMPDIR);
+		if (!tmpDir.endsWith(System.getProperty(FILE_SEPARATOR))) {
+			tmpDir += System.getProperty(FILE_SEPARATOR);
 		}
 
 		// Acquire MD5
+		acquireMD5(lockKey, tmpDir);
+
+		// MD5 acquire fail
+		if (lockFile == null) {
+			lockFile = new File(tmpDir + lockKey + ".lock");
+		}
+
+		lockStream = new FileOutputStream(lockFile);
+
+		String fileContent = MESSAGE_LOCKED_BY_KEY + lockKey
+				+ "\r\n";
+		writeLockStream(fileContent);
+
+		lockChannel = lockStream.getChannel();
+
+		lock = lockChannel.tryLock();
+
+		if (lock == null) {
+			throw new Exception(MESSAGE_FAIL_TO_CREATE_LOCK);
+		}
+	}
+
+	private void acquireMD5(String lockKey, String tmpDir) {
 		try {
 			java.security.MessageDigest md = java.security.MessageDigest
-					.getInstance("MD5");
+					.getInstance(MD5);
 			md.reset();
 			String hashText = new java.math.BigInteger(1, md.digest(lockKey
 					.getBytes())).toString(16);
@@ -59,32 +85,17 @@ public class Lock {
 			}
 			lockFile = new File(tmpDir + hashText + ".app_lock");
 		} catch (Exception ex) {
-			System.out.println("Lock.Lock() file fail");
+			System.out.println(MESSAGE_LOCK_FILE_FAIL);
 		}
+	}
 
-		// MD5 acquire fail
-		if (lockFile == null) {
-			lockFile = new File(tmpDir + lockKey + ".lock");
-		}
-
-		lockStream = new FileOutputStream(lockFile);
-
-		String fileContent = "Java Lock Object\r\nLocked by key: " + lockKey
-				+ "\r\n";
+	private void writeLockStream(String fileContent) {
 		try {
-		lockStream.write(fileContent.getBytes());
+			lockStream.write(fileContent.getBytes());
 		} catch (Exception e) {
 			Logger.getLogger(Lock.class.getName()).log(Level.INFO,
-					"Another instance detected");
+					MESSAGE_ANOTHER_INSTANCE_DETECTED);
 			System.exit(0);
-		}
-
-		lockChannel = lockStream.getChannel();
-
-		lock = lockChannel.tryLock();
-
-		if (lock == null) {
-			throw new Exception("Can't create Lock");
 		}
 	}
 
@@ -132,7 +143,7 @@ public class Lock {
 		} catch (Exception ex) {
 			sInstance = null;
 			Logger.getLogger(Lock.class.getName()).log(Level.SEVERE,
-					"Fail to set Lock.", ex);
+					MESSAGE_FAIL_TO_SET_LOCK, ex);
 			return false;
 		}
 
@@ -156,12 +167,12 @@ public class Lock {
 	public static void releaseLock() {
 		try {
 			if (sInstance == null) {
-				throw new NoSuchFieldException("INSTATCE IS NULL!");
+				throw new NoSuchFieldException(MESSAGE_INSTATCE_IS_NULL);
 			}
 			sInstance.release();
 		} catch (Throwable ex) {
-//			Logger.getLogger(Lock.class.getName()).log(Level.SEVERE,
-//					"Fail to release lock.", ex);
+			//			Logger.getLogger(Lock.class.getName()).log(Level.SEVERE,
+			//					"Fail to release lock.", ex);
 		}
 	}
 }

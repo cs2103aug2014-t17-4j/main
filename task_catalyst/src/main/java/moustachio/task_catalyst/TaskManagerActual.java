@@ -5,13 +5,15 @@ import java.util.List;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
+//@author A0111890
 public class TaskManagerActual implements TaskManager {
-
 	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#ovd",
 			"#tdy", "#tmr", "#upc", "#smd", "#olp", "#dne" };
 	private static final DisplayMode DEFAULT_DISPLAY_MODE = DisplayMode.HASHTAG;
 	private static final String DEFAULT_DISPLAY_KEYWORD = "all";
 	private static final String DEFAULT_FILE_NAME = "tasks.txt";
+
+	private static final int ERROR_INTEGER = -1;
 
 	private Storage storage;
 	private ListProcessor listProcessor;
@@ -26,6 +28,26 @@ public class TaskManagerActual implements TaskManager {
 
 	private static TaskManagerActual instance;
 
+	// Initialization Methods
+
+	private TaskManagerActual() {
+		initializeInstance();
+		initializeComponents();
+		initializeLists();
+		refreshLists();
+	}
+
+	public void testMode() {
+		displayMode = DEFAULT_DISPLAY_MODE;
+		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
+
+		storage = new StorageStub();
+		hashtagList = new ArrayList<String>();
+
+		clearLists();
+		refreshLists();
+	}
+
 	public static TaskManagerActual getInstance() {
 		if (instance == null) {
 			instance = new TaskManagerActual();
@@ -33,26 +55,24 @@ public class TaskManagerActual implements TaskManager {
 		return instance;
 	}
 
-	private TaskManagerActual() {
+	private void initializeInstance() {
 		instance = this;
-		listProcessor = new ListProcessorActual();
-		displayMode = DEFAULT_DISPLAY_MODE;
-		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
-		storage = new StorageActual();
-		taskList = storage.loadTasks(DEFAULT_FILE_NAME);
-		hashtagList = new ArrayList<String>();
-		tasksSelected = new ArrayList<Integer>();
-		refreshLists();
 	}
 
-	public void testMode() {
-		storage = new StorageStub();
+	private void initializeComponents() {
+		listProcessor = new ListProcessorActual();
+		storage = new StorageActual();
+	}
+
+	private void initializeLists() {
 		displayMode = DEFAULT_DISPLAY_MODE;
 		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
+		taskList = loadTasks();
 		hashtagList = new ArrayList<String>();
-		clearLists();
-		refreshLists();
+		tasksSelected = new ArrayList<Integer>();
 	}
+
+	// Getter Methods
 
 	@Override
 	public List<String> getHashtags() {
@@ -65,22 +85,23 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
-	public List<Task> getDisplayList() {
-		return displayList;
-	}
-
-	@Override
-	public List<Task> getList() {
-		return taskList;
-	}
-
-	@Override
 	public int getHashtagSelected() {
-		if (displayMode == DisplayMode.HASHTAG) {
-			return getHashtags().indexOf("#" + displayKeyword);
+		boolean isHashtagMode = (displayMode == DisplayMode.HASHTAG);
+		boolean isSearchMode = (displayMode == DisplayMode.SEARCH);
+
+		int index;
+
+		if (isHashtagMode) {
+			String hashtagString = "#" + displayKeyword;
+			index = getHashtags().indexOf(hashtagString);
+		} else if (isSearchMode) {
+			String searchString = "search " + displayKeyword;
+			index = getHashtags().indexOf(searchString);
 		} else {
-			return getHashtags().indexOf("search " + displayKeyword);
+			index = ERROR_INTEGER;
 		}
+
+		return index;
 	}
 
 	@Override
@@ -89,20 +110,72 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
+	public List<Task> getList() {
+		return taskList;
+	}
+
+	@Override
+	public List<Task> getDisplayList() {
+		return displayList;
+	}
+
+	// Display List Methods
+
+	@Override
+	public void setDisplayModeKeyword(DisplayMode MODE, String keyword) {
+		this.displayMode = MODE;
+		this.displayKeyword = keyword;
+		refreshLists();
+	}
+
+	@Override
+	public Task getDisplayTask(int taskNumber) {
+		Task task;
+
+		try {
+			task = displayList.get(taskNumber - 1);
+		} catch (Exception e) {
+			task = null;
+		}
+
+		return task;
+	}
+
+	@Override
+	public Task removeDisplayTask(int taskNumber) {
+		Task task = getDisplayTask(taskNumber);
+
+		boolean isFound = (task != null);
+		boolean isRemoved = removeTask(task);
+		boolean isSuccess = (isRemoved && isFound);
+
+		if (isSuccess) {
+			refreshLists();
+		}
+
+		return task;
+	}
+
+	// CRUD Methods
+
+	@Override
 	public boolean addTask(Task task) {
 		List<Task> tasks = new ArrayList<Task>();
 		tasks.add(task);
+
 		int tasksAdded = addTasks(tasks);
-		boolean isSuccess = tasksAdded == 1;
+
+		boolean isSuccess = (tasksAdded == 1);
+
 		return isSuccess;
 	}
 
 	@Override
 	public int addTasks(List<Task> tasks) {
-
 		int numberAdded = 0;
 
 		boolean isAdded = false;
+
 		for (Task task : tasks) {
 			isAdded = taskList.add(task);
 			if (!isAdded) {
@@ -112,13 +185,15 @@ public class TaskManagerActual implements TaskManager {
 		}
 
 		boolean isSaved = false;
+
 		if (isAdded) {
 			isSaved = saveTasks();
 		} else {
-			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+			tasks = loadTasks();
 		}
 
-		boolean isSuccess = isAdded && isSaved;
+		boolean isSuccess = (isAdded && isSaved);
+
 		if (isSuccess) {
 			refreshLists();
 			for (Task task : tasks) {
@@ -131,25 +206,23 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
-	public boolean editTask(Task target, Task replacement) {
-		boolean isRemoved = removeTask(target);
-		boolean isAdded = false;
-		if (isRemoved) {
-			isAdded = addTask(replacement);
-		}
-		boolean isSuccess = isRemoved && isAdded;
-		if (isSuccess) {
-			refreshLists();
-		}
+	public boolean removeTask(Task task) {
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+
+		int tasksRemoved = removeTasks(tasks);
+
+		boolean isSuccess = (tasksRemoved == 1);
+
 		return isSuccess;
 	}
 
 	@Override
 	public int removeTasks(List<Task> tasks) {
-
 		int numberRemoved = 0;
 
 		boolean isRemoved = false;
+
 		for (Task task : tasks) {
 			isRemoved = taskList.remove(task);
 			if (!isRemoved) {
@@ -159,13 +232,15 @@ public class TaskManagerActual implements TaskManager {
 		}
 
 		boolean isSaved = false;
+
 		if (isRemoved) {
 			isSaved = saveTasks();
 		} else {
-			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+			tasks = loadTasks();
 		}
 
-		boolean isSuccess = isRemoved && isSaved;
+		boolean isSuccess = (isRemoved && isSaved);
+
 		if (isSuccess) {
 			refreshLists();
 			displayAutoswitchToTask(null);
@@ -175,20 +250,41 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
-	public boolean removeTask(Task task) {
+	public boolean editTask(Task target, Task replacement) {
+		boolean isRemoved = removeTask(target);
+		boolean isAdded = false;
+
+		if (isRemoved) {
+			isAdded = addTask(replacement);
+		}
+
+		boolean isSuccess = (isRemoved && isAdded);
+
+		if (isSuccess) {
+			refreshLists();
+		}
+
+		return isSuccess;
+	}
+
+	@Override
+	public boolean completeTask(Task task) {
 		List<Task> tasks = new ArrayList<Task>();
 		tasks.add(task);
-		int tasksRemoved = removeTasks(tasks);
-		boolean isSuccess = tasksRemoved == 1;
+
+		int tasksCompleted = completeTasks(tasks);
+
+		boolean isSuccess = (tasksCompleted == 1);
+
 		return isSuccess;
 	}
 
 	@Override
 	public int completeTasks(List<Task> tasks) {
-
 		int numberCompleted = 0;
 
 		boolean isCompleted = false;
+
 		for (Task task : tasks) {
 			if (!task.isDone()) {
 				task.setDone(true);
@@ -201,13 +297,15 @@ public class TaskManagerActual implements TaskManager {
 		}
 
 		boolean isSaved = false;
+
 		if (isCompleted) {
 			isSaved = saveTasks();
 		} else {
-			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+			tasks = loadTasks();
 		}
 
-		boolean isSuccess = isCompleted && isSaved;
+		boolean isSuccess = (isCompleted && isSaved);
+
 		if (isSuccess) {
 			refreshLists();
 			displayAutoswitchToTask(null);
@@ -217,11 +315,14 @@ public class TaskManagerActual implements TaskManager {
 	}
 
 	@Override
-	public boolean completeTask(Task task) {
+	public boolean uncompleteTask(Task task) {
 		List<Task> tasks = new ArrayList<Task>();
 		tasks.add(task);
-		int tasksCompleted = completeTasks(tasks);
-		boolean isSuccess = tasksCompleted == 1;
+
+		int tasksUncompleted = uncompleteTasks(tasks);
+
+		boolean isSuccess = (tasksUncompleted == 1);
+
 		return isSuccess;
 	}
 
@@ -230,6 +331,7 @@ public class TaskManagerActual implements TaskManager {
 		int numberUncomplete = 0;
 
 		boolean isUndone = false;
+
 		for (Task task : tasks) {
 			if (task.isDone()) {
 				task.setDone(false);
@@ -242,13 +344,15 @@ public class TaskManagerActual implements TaskManager {
 		}
 
 		boolean isSaved = false;
+
 		if (isUndone) {
 			isSaved = saveTasks();
 		} else {
-			tasks = storage.loadTasks(DEFAULT_FILE_NAME);
+			tasks = loadTasks();
 		}
 
-		boolean isSuccess = isUndone && isSaved;
+		boolean isSuccess = (isUndone && isSaved);
+
 		if (isSuccess) {
 			refreshLists();
 			for (Task task : tasks) {
@@ -260,53 +364,18 @@ public class TaskManagerActual implements TaskManager {
 		return numberUncomplete;
 	}
 
-	@Override
-	public boolean uncompleteTask(Task task) {
-		task.setDone(false);
-		boolean isSaved = saveTasks();
-		boolean isUndone = !task.isDone();
-		boolean isSuccess = isUndone && isSaved;
-		if (isSuccess) {
-			refreshLists();
-		}
-		return isSuccess;
+	// List Administration Methods
+
+	private boolean saveTasks() {
+		boolean success;
+
+		success = storage.saveTasks(taskList, DEFAULT_FILE_NAME);
+
+		return success;
 	}
 
-	@Override
-	public Task removeDisplayTask(int taskNumber) {
-		Task task = null;
-		boolean isFound = false;
-		boolean isRemoved = false;
-		task = getDisplayTask(taskNumber);
-		isFound = task != null;
-		isRemoved = removeTask(task);
-		boolean isSuccess = isRemoved && isFound;
-		if (isSuccess) {
-			refreshLists();
-		}
-		return task;
-	}
-
-	@Override
-	public Task getDisplayTask(int taskNumber) {
-		Task task;
-		try {
-			task = displayList.get(taskNumber - 1);
-		} catch (Exception e) {
-			task = null;
-		}
-		return task;
-	}
-
-	@Override
-	public void setDisplayMode(DisplayMode TYPE) {
-		displayMode = TYPE;
-	}
-
-	@Override
-	public void setDisplayKeyword(String keyword) {
-		displayKeyword = keyword;
-		refreshLists();
+	private List<Task> loadTasks() {
+		return storage.loadTasks(DEFAULT_FILE_NAME);
 	}
 
 	private void clearLists() {
@@ -325,42 +394,36 @@ public class TaskManagerActual implements TaskManager {
 			displayList = listProcessor.searchByHashtag(taskList,
 					displayKeyword);
 			break;
+
 		case SEARCH:
 			displayList = listProcessor.searchByKeyword(taskList,
 					displayKeyword);
 			break;
 		}
+
 		displayList = listProcessor.sortByDate(displayList);
-		tasksSelected.clear();
+
 		clearOverlapping(displayList);
 		setOverlapping(taskList);
-	}
 
-	private void clearOverlapping(List<Task> tasks) {
-		for (Task task : tasks) {
-			task.setOverlapping(false);
-		}
-	}
-
-	private void setOverlapping(List<Task> tasks) {
-		List<Task> overlapList = listProcessor.getOverlapping(tasks);
-		for (Task task : overlapList) {
-			task.setOverlapping(true);
-		}
+		tasksSelected.clear();
 	}
 
 	private void refreshHashtagList() {
-
 		List<String> defaultHashtags = generateDefaultHashtags();
 		List<String> customHashtags = generateCustomHashtags();
 
 		hashtagList.clear();
 
-		if (displayMode == DisplayMode.SEARCH) {
-			hashtagList.add("search " + displayKeyword);
+		boolean isSearchMode = (displayMode == DisplayMode.SEARCH);
+
+		if (isSearchMode) {
+			String searchString = "search " + displayKeyword;
+			hashtagList.add(searchString);
 		}
 
 		hashtagList.addAll(defaultHashtags);
+
 		for (String hashtag : customHashtags) {
 			if (!defaultHashtags.contains(hashtag)) {
 				hashtagList.add(hashtag);
@@ -370,40 +433,55 @@ public class TaskManagerActual implements TaskManager {
 
 	private List<String> generateDefaultHashtags() {
 		List<String> defaultHashtags = new ArrayList<String>();
+
 		for (String hashtag : DEFAULT_HASHTAGS) {
 			defaultHashtags.add(hashtag);
 		}
+
 		return defaultHashtags;
 	}
 
 	private List<String> generateCustomHashtags() {
 		SortedSet<String> allHashtagsSet = new TreeSet<String>();
+
 		for (Task task : taskList) {
 			if (!task.isDone()) {
 				List<String> taskHashtags = task.getHashtags();
 				allHashtagsSet.addAll(taskHashtags);
 			}
 		}
+
 		List<String> customHashtags = new ArrayList<String>(allHashtagsSet);
+
 		return customHashtags;
 	}
 
-	private void displayAutoswitchToTask(Task task) {
-		boolean isTaskNull = task == null;
-		boolean isTaskDisplayed = displayList.contains(task);
-		boolean isListEmpty = displayList.isEmpty();
-		boolean isNeedAutoswitch = (!isTaskNull && !isTaskDisplayed)
-				|| isListEmpty;
-		if (isNeedAutoswitch) {
-			setDisplayMode(DEFAULT_DISPLAY_MODE);
-			setDisplayKeyword(DEFAULT_DISPLAY_KEYWORD);
-			refreshLists();
+	// Task Marking Methods
+
+	private void setOverlapping(List<Task> tasks) {
+		List<Task> overlapList = listProcessor.getOverlapping(tasks);
+
+		for (Task task : overlapList) {
+			task.setOverlapping(true);
 		}
 	}
 
-	private boolean saveTasks() {
-		boolean success;
-		success = storage.saveTasks(taskList, DEFAULT_FILE_NAME);
-		return success;
+	private void clearOverlapping(List<Task> tasks) {
+		for (Task task : tasks) {
+			task.setOverlapping(false);
+		}
+	}
+
+	private void displayAutoswitchToTask(Task task) {
+		boolean isRemoveOperation = (task == null);
+		boolean isTaskDisplayed = displayList.contains(task);
+		boolean isListEmpty = displayList.isEmpty();
+		boolean isTaskMissing = (!isRemoveOperation && !isTaskDisplayed);
+		boolean isNeedAutoswitch = (isTaskMissing || isListEmpty);
+
+		if (isNeedAutoswitch) {
+			setDisplayModeKeyword(DEFAULT_DISPLAY_MODE, DEFAULT_DISPLAY_KEYWORD);
+			refreshLists();
+		}
 	}
 }

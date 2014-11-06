@@ -2,11 +2,13 @@ package moustachio.task_catalyst;
 
 import java.util.ArrayList;
 
+// @author A0111890
 public class ActionHintSystemActual implements ActionHintSystem {
-
+	private static final String ERROR_ACTION_UNDEFINED = "Undefined Action Encountered.";
 	private static final String FORMAT_PARTIAL_SUGGESTIONS = "Do you mean %s?";
 	private static final String HINT_MESSAGE_DEFAULT = "Type something to begin adding a task."
 			+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.";
+
 	ActionInvoker actionInvoker;
 
 	public ActionHintSystemActual() {
@@ -18,18 +20,23 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		actionInvoker.testMode();
 	}
 
+	// High Level Methods
+
 	@Override
 	public Message processCommand(String userCommand) {
 		Action action = generateAction(userCommand);
+
 		Message message = actionInvoker.doAction(action);
+
 		return message;
 	}
 
 	@Override
 	public Message getMessageTyping(String userCommand) {
+		boolean isInvalidCommand = isInvalidCommand(userCommand);
 
-		if (userCommand == null || userCommand.trim().isEmpty()) {
-			return new Message(Message.TYPE_HINT, HINT_MESSAGE_DEFAULT);
+		if (isInvalidCommand) {
+			return new Message(MessageType.HINT, HINT_MESSAGE_DEFAULT);
 		}
 
 		CommandType COMMAND_TYPE = TaskCatalystCommons
@@ -39,36 +46,46 @@ public class ActionHintSystemActual implements ActionHintSystem {
 
 		switch (COMMAND_TYPE) {
 		case ADD:
-			message = getHintPartialOrAdd(userCommand);
+			message = getHintPartialAdd(userCommand);
 			break;
+
 		case DELETE:
 			message = Delete.getHint(userCommand);
 			break;
+
 		case DONE:
 			message = Done.getHint(userCommand);
 			break;
+
 		case EDIT:
 			message = Edit.getHint(userCommand);
 			break;
+
 		case HASHTAG:
 			message = Hashtag.getHint(userCommand);
 			break;
+
 		case REDO:
 			message = Redo.getHint(userCommand);
 			break;
+
 		case SEARCH:
 			message = Search.getHint(userCommand);
 			break;
+
 		case UNDO:
 			message = Undo.getHint(userCommand);
 			break;
+
 		case UNDONE:
 			message = Undone.getHint(userCommand);
 			break;
+
 		default:
 			message = getHintDefault();
 			break;
 		}
+
 		return message;
 	}
 
@@ -82,33 +99,45 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		case ADD:
 			action = new Add(userCommand);
 			break;
+
 		case DELETE:
 			action = new Delete(userCommand);
 			break;
+
 		case DONE:
 			action = new Done(userCommand);
 			break;
+
 		case EDIT:
 			action = new Edit(userCommand);
 			break;
+
 		case HASHTAG:
 			action = new Hashtag(userCommand);
 			break;
+
 		case REDO:
 			action = new Redo(userCommand);
 			break;
+
 		case SEARCH:
 			action = new Search(userCommand);
 			break;
+
 		case UNDO:
 			action = new Undo(userCommand);
 			break;
+
 		case UNDONE:
 			action = new Undone(userCommand);
 			break;
-		default:
+
+		case INVALID:
 			action = null;
 			break;
+
+		default:
+			throw new Error(ERROR_ACTION_UNDEFINED);
 		}
 
 		return action;
@@ -116,11 +145,28 @@ public class ActionHintSystemActual implements ActionHintSystem {
 
 	// Low-Level Methods
 
-	private Message getHintPartialOrAdd(String userCommand) {
-		Message message;
+	private boolean isInvalidCommand(String userCommand) {
+		boolean isNullCommand = (userCommand == null);
+
+		if (isNullCommand) {
+			return true;
+		}
+
+		boolean isEmptyCommand = userCommand.trim().isEmpty();
+
+		if (isEmptyCommand) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private Message getHintPartialAdd(String userCommand) {
 		String matchingCommandsString = getMatchingCommandsString(userCommand);
 
 		boolean isPartialCommand = !matchingCommandsString.isEmpty();
+
+		Message message;
 
 		if (isPartialCommand) {
 			message = getHintSuggestion(matchingCommandsString);
@@ -131,26 +177,33 @@ public class ActionHintSystemActual implements ActionHintSystem {
 	}
 
 	private Message getHintDefault() {
-		int type = Message.TYPE_HINT;
-		Message defaultHint = new Message(type, HINT_MESSAGE_DEFAULT);
+		MessageType messageType = MessageType.HINT;
+
+		Message defaultHint = new Message(messageType, HINT_MESSAGE_DEFAULT);
+
 		return defaultHint;
 	}
 
 	private Message getHintSuggestion(String matchingCommandsString) {
-		int type = Message.TYPE_HINT;
+		MessageType messageType = MessageType.HINT;
+
 		String commandSuggestions = String.format(FORMAT_PARTIAL_SUGGESTIONS,
 				matchingCommandsString);
-		Message suggestionHint = new Message(type, commandSuggestions);
+
+		Message suggestionHint = new Message(messageType, commandSuggestions);
+
 		return suggestionHint;
 	}
 
 	private String getMatchingCommandsString(String firstWord) {
+		boolean isEmptyWord = firstWord.trim().isEmpty();
 
-		if (firstWord.trim().isEmpty()) {
+		if (isEmptyWord) {
 			return "";
 		}
 
 		ArrayList<String[]> dictionaries = new ArrayList<String[]>();
+
 		dictionaries.add(Delete.getDictionary());
 		dictionaries.add(Done.getDictionary());
 		dictionaries.add(Edit.getDictionary());
@@ -159,23 +212,34 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		dictionaries.add(Undo.getDictionary());
 		dictionaries.add(Undone.getDictionary());
 
+		String lastComma = ", $";
+
 		String matchingCommands = getPartialString(firstWord, dictionaries);
-		matchingCommands = matchingCommands.replaceAll(", $", "");
+		matchingCommands = matchingCommands.replaceAll(lastComma, "");
 
 		return matchingCommands;
 	}
 
 	private String getPartialString(String partialCommand,
 			ArrayList<String[]> dictionaries) {
+		String partialCommandLowerCase = partialCommand.toLowerCase();
 		String matchingCommands = "";
+
 		for (String[] dictionary : dictionaries) {
 			for (String keyword : dictionary) {
-				if (!keyword.equalsIgnoreCase(partialCommand)
-						&& keyword.startsWith(partialCommand.toLowerCase())) {
+				boolean isExactCommand = keyword
+						.equals(partialCommandLowerCase);
+				boolean isStartsWithKeyword = keyword
+						.startsWith(partialCommandLowerCase);
+				boolean isPartialCommand = !isExactCommand
+						&& isStartsWithKeyword;
+
+				if (isPartialCommand) {
 					matchingCommands += "\"" + keyword + "\", ";
 				}
 			}
 		}
+
 		return matchingCommands;
 	}
 }
