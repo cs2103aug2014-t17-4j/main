@@ -8,6 +8,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
+ * This class is to create lock for global hotkeys. 
+ * 
  * @author A0112764J -reused
  *
  */
