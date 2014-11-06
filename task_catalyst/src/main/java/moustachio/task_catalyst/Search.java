@@ -4,7 +4,7 @@ import java.util.Arrays;
 
 public class Search extends Action {
 
-	private static final String[] DICTIONARY = { "search" };
+	private static final String[] DICTIONARY = { "search", "find" };
 
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
 	private static final String EXECUTE_ERROR = "Please enter a valid search term.";
