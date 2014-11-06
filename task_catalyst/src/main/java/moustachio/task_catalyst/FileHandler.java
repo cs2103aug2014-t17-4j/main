@@ -18,7 +18,9 @@ import org.json.simple.parser.ParseException;
  * This program is to manage writing and reading tasks in a specific text file.
  * 
  * The description of a task is converted into JSON object before saving it in
- * the file. Likewise, the saved task is converted again to text for the purpose
+ * the file. 
+ * 
+ * Likewise, the saved task is converted again to text for the purpose
  * of editing or displaying.
  * 
  * @author A0112764J
