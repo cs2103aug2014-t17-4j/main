@@ -1,22 +1,24 @@
 package moustachio.task_catalyst;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 public class TaskAdvanced implements Task {
 
+	SimpleDateFormat formatter;
+
 	boolean isOverlapping;
 	boolean isDone;
 	String description;
-	HighlightType highlightType;
 
 	Date dateStart;
 	Date dateEnd;
 	List<Date> allDates;
 
 	public TaskAdvanced(String description) {
-		highlightType = HighlightType.NORMAL;
+		formatter = new SimpleDateFormat("M EEEE dd/mm/yyyy mm/dd/yyyy");
 		this.description = description;
 		isDone = false;
 		initializeDates();
@@ -215,9 +217,13 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean hasKeyword(String keyword) {
-		String descriptionLowerCase = getDescription().toLowerCase();
+		String descriptionRaw = getDescription();
+		for (Date date : allDates) {
+			descriptionRaw += " " + formatter.format(date);
+		}
+		descriptionRaw = descriptionRaw.toLowerCase();
 		String keywordLowerCase = keyword.toLowerCase();
-		return descriptionLowerCase.contains(keywordLowerCase);
+		return descriptionRaw.contains(keywordLowerCase);
 	}
 
 	@Override
