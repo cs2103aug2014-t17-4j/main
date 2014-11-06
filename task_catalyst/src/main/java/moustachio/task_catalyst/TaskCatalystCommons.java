@@ -168,6 +168,7 @@ public class TaskCatalystCommons {
 		String interpretedInput = userInput;
 		interpretedInput = interpretedInput.replaceAll("\\} \\{", "\\}, \\{");
 		interpretedInput = interpretedInput.replaceAll(",", ", ");
+		interpretedInput = interpretedInput.replaceAll("\\s+,+",",");
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				wordsContainingEst);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
@@ -723,6 +724,35 @@ public class TaskCatalystCommons {
 		friendlyString = friendlyString.trim();
 		friendlyString = removeConsecutiveWhitespaces(friendlyString);
 		return friendlyString;
+	}
+
+	public static List<String> extractHashtags(String interpretedString) {
+		List<String> hashtagList = new ArrayList<String>();
+
+		String[] descriptionTokenized = interpretedString.split(" ");
+
+		for (String token : descriptionTokenized) {
+			if (token.startsWith("#")) {
+				String tokenProcessed = token.toLowerCase();
+				tokenProcessed = TaskCatalystCommons
+						.removeSquareBrackets(tokenProcessed);
+
+				String repeatedStartingHashtags = "(\\s|^)#+";
+				String endingPunctuations = "(,|\\.|\\?|!|:|;)+(\\s|$)";
+
+				tokenProcessed = tokenProcessed.replaceAll(
+						repeatedStartingHashtags, "#");
+
+				tokenProcessed = tokenProcessed.replaceAll(endingPunctuations,
+						"");
+
+				if (tokenProcessed.length() > 1) {
+					hashtagList.add(tokenProcessed);
+				}
+			}
+		}
+
+		return hashtagList;
 	}
 
 	// Date Time Libraries
