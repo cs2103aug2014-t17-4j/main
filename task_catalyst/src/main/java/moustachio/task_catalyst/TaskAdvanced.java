@@ -92,8 +92,7 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isDeadline() {
-		return description
-				.matches(".*(\\bby\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
+		return description.matches(".*(\\bby\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
 	}
 
 	@Override
@@ -232,7 +231,8 @@ public class TaskAdvanced implements Task {
 		} else if (thisDateTime == null && otherDateTime == null) {
 			return 0;
 		} else {
-			if (isAllDay() && !o.isAllDay()) {
+			if (TaskCatalystCommons.isSameDate(thisDateTime, otherDateTime)
+					&& isAllDay() && !o.isAllDay()) {
 				return -1;
 			}
 			return thisDateTime.compareTo(otherDateTime);
