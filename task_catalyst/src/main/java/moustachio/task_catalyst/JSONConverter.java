@@ -29,7 +29,6 @@ public class JSONConverter {
 	public JSONObject encode(Task task) {
 		jsonObject.put(IS_DONE, task.isDone());
 		jsonObject.put(DESCRIPTION, task.getDescriptionRaw());
-
 		return jsonObject;
 	}
 
