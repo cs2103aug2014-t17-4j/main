@@ -18,10 +18,12 @@ import org.json.simple.parser.ParseException;
  * This program is to manage writing and reading tasks in a specific text file.
  * 
  * The description of a task is converted into JSON object before saving it in
- * the file. Likewise, the saved task is converted again to text for the purpose
+ * the file. 
+ * 
+ * Likewise, the saved task is converted again to text for the purpose
  * of editing or displaying.
  * 
- * @author Lin XiuQing (A0112764J)
+ * @author A0112764J
  */
 
 public class FileHandler {
@@ -37,6 +39,7 @@ public class FileHandler {
 	private static final String MESSAGE_EMPTY_FILE = "The file is empty.";
 	private static final String MESSAGE_IO_FAULT = "IO fault has been enountered.";
 	private static final String MESSAGE_INVALID_FILE_FORMAT = "Invalid file format!";
+	
 	private static BlackBox blackBox = BlackBox.getInstance();
 
 	public void writeTask(Task task, String fileName) throws IOException {
@@ -141,7 +144,7 @@ public class FileHandler {
 	private Boolean writeSettingTofile(String name, String fileName,
 			String value) throws IOException {
 		assert (value != null && name != null);
-		Boolean isSuccess;
+		Boolean isSuccess=false;
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
 				true));
 		writer.write(String.format(STRING_WRITE_SETTING, name, value));

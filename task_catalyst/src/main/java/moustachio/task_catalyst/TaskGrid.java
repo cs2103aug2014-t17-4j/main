@@ -41,7 +41,7 @@ public class TaskGrid extends GridPane {
 	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
 	private static final String BLOCKING_ICON_IMAGE_PATH = "/images/blocking.png";
-	private static final String DEADLINE_ICON_IMAGE_PATH = "/images/deadline.png";
+	private static final String DEADLINE_ICON_IMAGE_PATH = "/images/deadline1.png";
 
 	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): \n";
 

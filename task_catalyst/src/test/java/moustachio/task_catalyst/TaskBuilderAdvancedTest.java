@@ -374,31 +374,31 @@ public class TaskBuilderAdvancedTest {
 		assertEquals(true, task.isAllDay());
 	}
 
-	// Be able to take time without commas correctly
-	@Test
-	public void tc46() {
-		Task task = taskBuilder.createOneTask("Something tomorrow 1pm 2pm 3pm");
-		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
-				task.getDescriptionEdit());
-	}
-
-	// Be able to take time without commas correctly
-	@Test
-	public void tc47() {
-		Task task = taskBuilder
-				.createOneTask("Something tomorrow 1300 1400 1500");
-		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
-				task.getDescriptionEdit());
-	}
-
-	// Be able to take time without commas correctly
-	@Test
-	public void tc48() {
-		Task task = taskBuilder
-				.createOneTask("Something tomorrow 13:00 14:00 15:00");
-		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
-				task.getDescriptionEdit());
-	}
+//	// Be able to take time without commas correctly
+//	@Test
+//	public void tc46() {
+//		Task task = taskBuilder.createOneTask("Something tomorrow 1pm 2pm 3pm");
+//		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
+//				task.getDescriptionEdit());
+//	}
+//
+//	// Be able to take time without commas correctly
+//	@Test
+//	public void tc47() {
+//		Task task = taskBuilder
+//				.createOneTask("Something tomorrow 1300 1400 1500");
+//		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
+//				task.getDescriptionEdit());
+//	}
+//
+//	// Be able to take time without commas correctly
+//	@Test
+//	public void tc48() {
+//		Task task = taskBuilder
+//				.createOneTask("Something tomorrow 13:00 14:00 15:00");
+//		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
+//				task.getDescriptionEdit());
+//	}
 
 	// Test for deadline
 	@Test

@@ -11,7 +11,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
 import java.io.IOException;
-
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -28,12 +27,10 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
-
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
@@ -55,6 +52,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private static String toggleLaunchHK = "control M";
 	private static String pasteHK = "control D";
 
+	private static final String ACTION_EXIT = "Exit";
+	private static final String ACTION_LAUNCH = "Launch";
+	private static final String COMMAND_REDO = "redo";
+	private static final String COMMAND_UNDO = "undo";
+	
 	private static final String MULTIPLE_INSTANCE_EXCEPTION_MESSAGE = "This application is single instance!";
 	private static final String SYSTEM_TRAY_ERROR_MESSAGE = "System tray is not supported!";
 
@@ -87,9 +89,6 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		javafx.scene.image.Image applicationIcon = new javafx.scene.image.Image(
 				getClass().getResourceAsStream(SYSTEM_TRAY_IMAGE_PATH));
 		this.primaryStage.getIcons().add(applicationIcon);
-		// this.setIconImage(Toolkit.getDefaultToolkit().getImage("images\\mylogo.png"));
-		// primaryStage.getIcons().add(new
-		// javafx.scene.image.Image(this.getClass().getResource(SYSTEM_TRAY_IMAGE_PATH).toExternalForm()));
 		try {
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
@@ -118,7 +117,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function registers the global hotkey (ctrl+m).
+	 * This function registers the global hotkeys: Ctrl+M and Ctrl+D.
 	 * 
 	 * @author A0112764J
 	 */
@@ -138,7 +137,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function disables the global hotkey (ctrl+m).
+	 * This function disables the global hotkeys.
 	 * 
 	 * @author A0112764J
 	 */
@@ -155,8 +154,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function creates hotkeys for the actions that are undo,redo and
-	 * exit.
+	 * This function creates hotkeys for the actions.
+	 * The hotkeys are to undo (Ctrl+Z), redo (Ctrl+Y), exit (Ctrl+E), 
+	 * launch help window (Ctrl+H), scroll up tasks' list (Shift+Up), 
+	 * scroll down tasks' list (Shift+Down), scroll up hashtag list (Alt+Down), 
+	 * and scroll down hashtag list (Alt+Up). 
 	 * 
 	 * @author Lin XiuQing (A0112764J)
 	 */
@@ -181,39 +183,43 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		scene.addEventHandler(KeyEvent.KEY_RELEASED,
 				new EventHandler<KeyEvent>() {
 
-					@Override
-					public void handle(KeyEvent event) {
+			@Override
+			public void handle(KeyEvent event) {
 
-						if (undoHotKey.match(event)) {
-							controller.handleHotKeys("undo");
-						} else if (redoHotKey.match(event)) {
-							controller.handleHotKeys("redo");
-						} else if (exitHotKey.match(event)) {
-							stop();
-						} else if (helpHotKey.match(event)) {
-							if (helpFlag) {
-								helpController.getStage().close();
-								helpFlag = false;
-							} else {
-								helpController.openHelpWindow();
-								primaryStage.requestFocus();
-								helpFlag = true;
-							}
-						} else if (scrollTaskUpHotKey.match(event)) {
-							controller.scrollTaskUp();
-						} else if (scrollTaskDownHotKey.match(event)) {
-							controller.scrollTaskDown();
-						} else if (scrollHashtagUpHotKey.match(event)) {
-							controller.scrollHashtagUp();
-						} else if (scrollHashtagDownHotKey.match(event)) {
-							controller.scrollHashtagDown();
-						}
-					}
-				});
+				if (undoHotKey.match(event)) {
+					controller.handleHotKeys(COMMAND_UNDO);
+				} else if (redoHotKey.match(event)) {
+					controller.handleHotKeys(COMMAND_REDO);
+				} else if (exitHotKey.match(event)) {
+					stop();
+				} else if (helpHotKey.match(event)) {
+					actionOnHelpWindow();
+				} else if (scrollTaskUpHotKey.match(event)) {
+					controller.scrollTaskUp();
+				} else if (scrollTaskDownHotKey.match(event)) {
+					controller.scrollTaskDown();
+				} else if (scrollHashtagUpHotKey.match(event)) {
+					controller.scrollHashtagUp();
+				} else if (scrollHashtagDownHotKey.match(event)) {
+					controller.scrollHashtagDown();
+				}
+			}
+
+			private void actionOnHelpWindow() {
+				if (helpFlag) {
+					helpController.getStage().close();
+					helpFlag = false;
+				} else {
+					helpController.openHelpWindow();
+					primaryStage.requestFocus();
+					helpFlag = true;
+				}
+			}
+		});
 	}
 
 	/**
-	 * This function enables the UI to be draggable
+	 * This function enables the UI to be draggable.
 	 * 
 	 * @author A0111921W
 	 */
@@ -240,15 +246,16 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			public void handle(MouseEvent me) {
 				if (me.getButton() != MouseButton.MIDDLE) {
 					mainUI.getScene().getWindow()
-							.setX(me.getScreenX() - initialX);
+					.setX(me.getScreenX() - initialX);
 					mainUI.getScene().getWindow()
-							.setY(me.getScreenY() - initialY);
+					.setY(me.getScreenY() - initialY);
 				}
 			}
 		});
 	}
 
 	/**
+	 * This function is to exit the program and also keeps logging. 
 	 * 
 	 * @author A0112764J
 	 */
@@ -264,7 +271,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function creates a system tray with 2 popup menu Launch and Exit
+	 * This function creates a system tray with 2 popup menu Launch and Exit.
 	 * 
 	 * @param stage
 	 */
@@ -289,7 +296,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		 */
 
 		// 1st menuitem for popupmenu
-		JMenuItem launch = new JMenuItem("Launch");
+		JMenuItem launch = new JMenuItem(ACTION_LAUNCH);
 		launch.setAccelerator(KeyStroke.getKeyStroke(
 				java.awt.event.KeyEvent.VK_M,
 				java.awt.event.InputEvent.CTRL_MASK));
@@ -309,7 +316,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		trayPopupMenu.addSeparator();
 
 		// 2nd menuitem of popupmenu
-		JMenuItem close = new JMenuItem("Exit");
+		JMenuItem close = new JMenuItem(ACTION_EXIT);
 		close.setAccelerator(KeyStroke.getKeyStroke(
 				java.awt.event.KeyEvent.VK_E,
 				java.awt.event.InputEvent.CTRL_MASK));
@@ -352,25 +359,21 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 			@Override
 			public void mouseClicked(java.awt.event.MouseEvent arg0) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mouseEntered(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mouseExited(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
 			@Override
 			public void mousePressed(java.awt.event.MouseEvent e) {
-				// TODO Auto-generated method stub
 
 			}
 
@@ -413,9 +416,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 
 	/**
-	 * This function is to execute global hot key ctrl+m that minimizes
+	 * This function is to execute global hot key Ctrl+M that minimizes
 	 * application while it is running, and to relaunch application while it is
 	 * minimize at system tray.
+	 * 
+	 * It is also used for another global hot key Ctrl+D to paste in command bar.  
 	 * 
 	 * @author A0112764J
 	 * 

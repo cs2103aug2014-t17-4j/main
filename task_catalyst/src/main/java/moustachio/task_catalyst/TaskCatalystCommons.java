@@ -184,12 +184,12 @@ public class TaskCatalystCommons {
 
 		String parsingInput = interpretedInput;
 		parsingInput = removeWordsInBrackets(interpretedInput);
-		parsingInput = parsingInput.replaceAll(
-				"(\\d{1,2}(am|pm))(\\s|$)(?![a-zA-Z])", "$1,");
-		parsingInput = parsingInput.replaceAll(
-				"(?<!:)(\\d{2}:\\d{2}(am|pm)?)(?!:)", " $1,");
-		parsingInput = parsingInput.replaceAll(
-				"(\\d{4}(am|pm)?)(?!\\s\\d{1,2}(:|am|pm))", " $1,");
+		// parsingInput = parsingInput.replaceAll(
+		// "(\\d{1,2}(am|pm))(\\s|$)(?![a-zA-Z])", "$1,");
+		// parsingInput = parsingInput.replaceAll(
+		// "(?<!:)(\\d{2}:\\d{2}(am|pm)?)(?!:)", " $1,");
+		// parsingInput = parsingInput.replaceAll(
+		// "(\\d{4}(am|pm)?)(?!\\s\\d{1,2}(:|am|pm))", " $1,");
 		parsingInput = removeHashtaggedWords(parsingInput);
 		parsingInput = removeSensitiveParsingWords(parsingInput);
 		parsingInput = removeNumberWords(parsingInput);

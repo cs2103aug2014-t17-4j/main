@@ -104,7 +104,10 @@ public class UIController {
 							String old_val, String new_val) {
 						if (old_val != null && new_val != null
 								&& !old_val.equals(new_val)) {
-							logic.processCommand(new_val);
+							Message message = logic.processCommand(new_val);
+							if (message.getType() ==  Message.TYPE_SUCCESS) {
+								statusMessage.setText(message.getMessage());
+							}
 							displayTasks();
 						}
 					}
@@ -363,10 +366,7 @@ public class UIController {
 
 		if (task.isEmpty()) {
 			StackPane container = new StackPane();
-			Label messageLabel = new Label(EMPTY_TASKVIEW_MESSAGE); 
-			messageLabel.setPrefHeight(taskScrollPane.getPrefHeight());
-			container.getChildren().add(messageLabel);
-			container.setAlignment(Pos.CENTER);
+			container = createEmptyMessageLabel(container);
 			taskScrollPane.setContent(container);
 		} else {
 			for (int i = 0; i < task.size(); i++) {
@@ -386,7 +386,7 @@ public class UIController {
 						startDate = currentTask.getDateStart();
 					}
 
-					String formatString = "MMMM dd";
+					String formatString = "dd MMMM yyyy";
 
 					if (TaskCatalystCommons.isYesterday(startDate)) {
 						formatString += "' (Yesterday)'";
@@ -397,7 +397,6 @@ public class UIController {
 					} else if (TaskCatalystCommons.isThisWeek(startDate)) {
 						formatString += " (E)";
 					}
-
 					dateCategory = new SimpleDateFormat(formatString)
 							.format(startDate);
 
@@ -421,6 +420,14 @@ public class UIController {
 				taskScrollPane.setContent(taskContainer);
 			}
 		}
+	}
+
+	private StackPane createEmptyMessageLabel(StackPane container) {
+		Label messageLabel = new Label(EMPTY_TASKVIEW_MESSAGE); 
+		messageLabel.setPrefHeight(taskScrollPane.getPrefHeight());
+		container.getChildren().add(messageLabel);
+		container.setAlignment(Pos.CENTER);
+		return container;
 	}
 
 	private void displayHashTags() {

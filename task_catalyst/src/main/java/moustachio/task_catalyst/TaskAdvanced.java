@@ -78,8 +78,9 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isBlocking() {
-		return description
-				.matches(".*\\}.*(\\bor\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
+		return !isDone()
+				&& description
+						.matches(".*\\}.*(\\bor\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
 	}
 
 	@Override
@@ -90,7 +91,9 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isDeadline() {
-		return description.matches(".*(\\bby\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
+		return !isDone()
+				&& description
+						.matches(".*(\\b(by|before)\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*");
 	}
 
 	@Override
@@ -119,7 +122,7 @@ public class TaskAdvanced implements Task {
 			return false;
 		} else {
 			Date now = new Date();
-			return now.after(getDateEnd());
+			return !isDone() && now.after(getDateEnd());
 		}
 	}
 

@@ -8,9 +8,9 @@ import java.util.List;
  * 
  * This program makes use of FileHandler to handle saving and loading tasks or setting. 
  * 
- * @author Lin XiuQing (A0112764J)
+ * @author A0112764J
+ *
  */
-
 public class StorageActual implements Storage {
 
 	private static BlackBox blackbox = BlackBox.getInstance();
