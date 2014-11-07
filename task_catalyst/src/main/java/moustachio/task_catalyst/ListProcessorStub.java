@@ -48,14 +48,4 @@ public class ListProcessorStub implements
 		return null;
 	}
 
-	@Override
-	public List<Task> searchByDate(List<Task> list, Date date) {
-		return null;
-	}
-
-	@Override
-	public List<Task> searchByDateRange(List<Task> list, Date start, Date end) {
-		return null;
-	}
-
 }
