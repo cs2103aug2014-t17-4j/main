@@ -54,14 +54,14 @@ public class FileHandler {
 		assert (task != null && fileName !=null);
 		checkTaskFileFormat(fileName);
 		try {
-			makeFolder();
+			createFolder();
 			writeJSONFile(task, fileName);
 		} catch (IOException e) {
 			blackBox.info(MESSAGE_IO_FAULT_WRITE);
 		}
 	}
 	
-	private void makeFolder() throws IOException {
+	private void createFolder() throws IOException {
 		File folder = new File(FOLDER_TASK_CATALYST);
 		if (folder.exists() && folder.isFile()) {
 			printMessage(MESSAGE_IO_FAULT_DIR);	
@@ -90,7 +90,7 @@ public class FileHandler {
 		List<Task> list = new ArrayList<Task>();
 
 		checkTaskFileFormat(fileName);
-		createFolder();
+		doActionToCreateFolder();
 		
 		File file = new File(PATH_TASK_CATALYST +fileName);
 		
@@ -103,9 +103,9 @@ public class FileHandler {
 		return list;
 	}
 
-	private void createFolder() {
+	private void doActionToCreateFolder() {
 		try {
-			makeFolder();
+			createFolder();
 		} catch (IOException e) {
 			printMessage(MESSAGE_IO_FAULT_DIR_READ);
 		}
@@ -152,7 +152,7 @@ public class FileHandler {
 		}
 		breader.close();
 	}
-
+	
 	/**
 	 * This function is implemented for the purpose of storing setting in
 	 * future.
