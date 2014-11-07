@@ -46,9 +46,11 @@ public class ListProcessorActual implements ListProcessor {
 		List<Date> dates = TaskCatalystCommons.getAllDates(interpretedString);
 		Collections.sort(dates);
 
-		for (Task task : list) {
-			if (task.hasKeyword(keyword)) {
-				searchList.add(task);
+		if (dates.isEmpty()) {
+			for (Task task : list) {
+				if (task.hasKeyword(keyword)) {
+					searchList.add(task);
+				}
 			}
 		}
 		
