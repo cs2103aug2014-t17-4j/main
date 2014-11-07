@@ -9,6 +9,9 @@ import java.util.List;
 
 public class ListProcessorActual implements ListProcessor {
 
+	private static final String KEYWORD_TO = "to";
+	private static final String KEYWORD_BETWEEN = "between";
+	
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
 		switch (hashtag) {
@@ -38,55 +41,27 @@ public class ListProcessorActual implements ListProcessor {
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
 		List<Task> searchList = new ArrayList<Task>();
-
 		boolean strict = false;
-
-		String interpretedString = TaskCatalystCommons.getInterpretedString(
-				keyword, strict);
-
+		String interpretedString = TaskCatalystCommons.getInterpretedString(keyword, strict);
 		List<Date> dates = TaskCatalystCommons.getAllDates(interpretedString);
-
 		Collections.sort(dates);
-
-		boolean hasTo = TaskCatalystCommons.hasWordBeforeDates(
-				interpretedString, "to");
-
-		boolean hasBetween = TaskCatalystCommons.hasWordBeforeDates(
-				interpretedString, "between");
-
-		boolean hasKeyword = (hasTo || hasBetween);
-
-		boolean hasAtLeastTwoDates = dates.size() > 1;
-
-		boolean isRanged = hasKeyword && hasAtLeastTwoDates;
 
 		for (Task task : list) {
 			if (task.hasKeyword(keyword)) {
 				searchList.add(task);
 			}
 		}
-
-		if (isRanged) {
+		
+		if (isRanged(interpretedString,dates)) {
 			Date start = dates.get(0);
 			Date end = dates.get(dates.size() - 1);
-			for (Task task : list) {
-				if (task.isBetweenDates(start, end)
-						&& !searchList.contains(task)) {
-					searchList.add(task);
-				}
-			}
-		} else {
-			for (Task task : list) {
-				for (Date date : dates) {
-					if (task.hasDate(date) && !searchList.contains(task)) {
-						searchList.add(task);
-					}
-				}
-			}
+			searchList.addAll(searchByDateRange(list, start, end));
+		} 
+		else {
+			searchList.addAll(searchByDate(list, dates));
 		}
-
+		
 		Collections.sort(searchList);
-
 		return searchList;
 	}
 
@@ -100,6 +75,7 @@ public class ListProcessorActual implements ListProcessor {
 	@Override
 	public List<Task> getOverlapping(List<Task> list) {
 		List<Task> overlapList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			List<Task> tempList = new ArrayList<Task>(
 					getOverlapping(task, list));
@@ -108,52 +84,81 @@ public class ListProcessorActual implements ListProcessor {
 				overlapList.addAll(tempList);
 			}
 		}
+		
 		return new ArrayList<Task>(new LinkedHashSet<Task>(overlapList));
 	}
 
 	@Override
 	public List<Task> getOverlapping(Task task, List<Task> list) {
 		List<Task> overlapList = new ArrayList<Task>();
+		
 		for (Task task2 : list) {
 			if (isOverlapping(task, task2)) {
 				overlapList.add(task2);
 			}
 		}
+		
 		return overlapList;
+	}
+
+	private boolean hasRangeKeyword(String interpretedString) {
+		if (TaskCatalystCommons.hasWordBeforeDates(interpretedString, KEYWORD_TO) 
+				|| TaskCatalystCommons.hasWordBeforeDates(interpretedString, KEYWORD_BETWEEN)) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	private boolean isRanged(String interpretedString, List<Date> dates) {
+		if (hasRangeKeyword(interpretedString) && (dates.size() > 1)) {
+			return true;
+		}
+		else {
+			return false;
+		}
 	}
 
 	private List<Task> searchByHashtagAll(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone()) {
 				filteredList.add(task);
 			}
 		}
+		
 		return filteredList;
 	}
 
 	private List<Task> searchByHashtagPriority(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone() && task.isPriority()) {
 				filteredList.add(task);
 			}
 		}
+		
 		return filteredList;
 	}
 
 	private List<Task> searchByHashtagOverdue(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone() && task.isOverdue()) {
 				filteredList.add(task);
 			}
 		}
+		
 		return filteredList;
 	}
 
 	private List<Task> searchByHashtagToday(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone()
 					&& task.isRange()
@@ -169,11 +174,13 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
+		
 		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashtagTomorrow(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone()
 					&& task.isRange()
@@ -189,11 +196,13 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
+		
 		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
 	private List<Task> searchByHashtagUpcoming(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone()
 					&& task.isRange()
@@ -208,37 +217,43 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
+		
 		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
-	private List<Task> searchByHashTagUserDefined(List<Task> list,
-			String hashtag) {
+	private List<Task> searchByHashTagUserDefined(List<Task> list,String hashtag) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone() && task.hasHashtag(hashtag)) {
 				filteredList.add(task);
 			}
 		}
+		
 		return filteredList;
 	}
 
 	private List<Task> searchByHashtagSomeday(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (!task.isDone() && task.getAllDates().isEmpty()) {
 				filteredList.add(task);
 			}
 		}
+		
 		return filteredList;
 	}
 
 	private List<Task> searchByHashtagDone(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
+		
 		for (Task task : list) {
 			if (task.isDone()) {
 				filteredList.add(task);
 			}
 		}
+		
 		return filteredList;
 	}
 
@@ -249,6 +264,7 @@ public class ListProcessorActual implements ListProcessor {
 				|| task2.getAllDates().isEmpty() || task1.equals(task2)) {
 			return false;
 		}
+		
 		if (task1.isRange() && task2.isRange()) {
 			return isOverlappingTwoRanged(task1, task2);
 		} else if (task1.isRange() && !task2.isRange()) {
@@ -266,6 +282,7 @@ public class ListProcessorActual implements ListProcessor {
 			task1 = task2;
 			task2 = temp;
 		}
+		
 		if (task2.getDateStart().before(task1.getDateEnd())) {
 			return true;
 		} else {
@@ -275,18 +292,22 @@ public class ListProcessorActual implements ListProcessor {
 
 	private boolean isOverlappingOneRanged(Task task1, Task task2) {
 		List<Date> list = new ArrayList<Date>(task2.getAllDates());
+		
 		for (Date date : list) {
-			if ((date.before(task1.getDateEnd()) && date.after(task1
-					.getDateStart())) || date.equals(task1.getDateStart())) {
+			if ((date.before(task1.getDateEnd()) 
+					&& date.after(task1.getDateStart())) 
+					|| date.equals(task1.getDateStart())) {
 				return true;
 			}
 		}
+		
 		return false;
 	}
 
 	private boolean isOverlappingNonRanged(Task task1, Task task2) {
 		List<Date> list1 = new ArrayList<Date>(task1.getAllDates());
 		List<Date> list2 = new ArrayList<Date>(task2.getAllDates());
+		
 		for (Date date1 : list1) {
 			for (Date date2 : list2) {
 				if (date1.equals(date2)) {
@@ -294,28 +315,34 @@ public class ListProcessorActual implements ListProcessor {
 				}
 			}
 		}
+		
 		return false;
 	}
 
-	@Override
-	public List<Task> searchByDate(List<Task> list, Date date) {
+	private List<Task> searchByDate(List<Task> list, List<Date> dates) {
 		List<Task> searchList = new ArrayList<Task>();
+		
 		for (Task task : list) {
-			if (task.hasDate(date)) {
-				searchList.add(task);
+			for (Date date : dates) {
+				if (task.hasDate(date) && !searchList.contains(task)) {
+					searchList.add(task);
+				}
 			}
 		}
+		
 		return searchList;
 	}
 
-	@Override
-	public List<Task> searchByDateRange(List<Task> list, Date start, Date end) {
+	private List<Task> searchByDateRange(List<Task> list, Date start, Date end) {
 		List<Task> searchList = new ArrayList<Task>();
+		
 		for (Task task : list) {
-			if (task.isBetweenDates(start, end)) {
+			if (task.isBetweenDates(start, end)
+					&& !searchList.contains(task)) {
 				searchList.add(task);
 			}
 		}
+		
 		return searchList;
 	}
 }
