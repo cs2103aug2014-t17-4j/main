@@ -3,10 +3,13 @@ package moustachio.task_catalyst;
 import java.io.IOException;
 import java.util.logging.FileHandler;
 import java.util.logging.Handler;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
+//@author A0111890
 public class BlackBox {
 
+	private static final String DEFAULT_LOG_FILE_NAME = "Task Catalyst/blackbox.log";
 	public static BlackBox blackBox;
 	private static Logger logger;
 
@@ -19,14 +22,22 @@ public class BlackBox {
 
 	private BlackBox() {
 		try {
-			logger = Logger.getLogger(BlackBox.class.getName());
-			// logger.setLevel(Level.ALL);
-			String fileName = "blackbox.log";
-			boolean appendToFile = true;
-			Handler handler = new FileHandler(fileName, appendToFile);
-			logger.addHandler(handler);
+			initializeLogger();
+			initializeHandler();
 		} catch (IOException e) {
 		}
+	}
+
+	private void initializeLogger() {
+		logger = Logger.getLogger(BlackBox.class.getName());
+		logger.setLevel(Level.ALL);
+	}
+
+	private void initializeHandler() throws IOException {
+		String fileName = DEFAULT_LOG_FILE_NAME;
+		boolean appendToFile = true;
+		Handler handler = new FileHandler(fileName, appendToFile);
+		logger.addHandler(handler);
 	}
 
 	public void severe(String string) {
