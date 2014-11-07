@@ -65,6 +65,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static String getFirstWord(String userCommand) {
+		assert userCommand != null;
+
 		String oneOrMoreSpaces = "\\s+";
 
 		String[] splitUserCommand = userCommand.split(oneOrMoreSpaces);
@@ -74,6 +76,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static String removeFirstWord(String userCommand) {
+		assert userCommand != null;
+
 		String blank = "";
 
 		String firstWord = getFirstWord(userCommand);
@@ -102,6 +106,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static List<Integer> parsePositiveIntList(String intListString) {
+		assert intListString != null;
+
 		String intListStringProcessed = intListString.replaceAll(",", " ");
 		String[] splitIntStrings = intListStringProcessed.split("\\s+");
 
@@ -125,6 +131,8 @@ public class TaskCatalystCommons {
 
 	public static String getInterpretedString(String userInput, boolean strict)
 			throws UnsupportedOperationException {
+		assert userInput != null;
+
 		String interpretedString = userInput;
 		interpretedString = getInterpretedStringSingleIteration(interpretedString);
 		interpretedString = removeCurlyBraces(interpretedString);
@@ -143,6 +151,8 @@ public class TaskCatalystCommons {
 
 	public static String getInterpretedStringSingleIteration(
 			String interpretedString) {
+		assert interpretedString != null;
+
 		String interpretedStringNextPass = getInterpretedStringSinglePass(interpretedString);
 
 		boolean isNoChanges;
@@ -158,6 +168,8 @@ public class TaskCatalystCommons {
 
 	public static String getInterpretedStringSinglePass(String userInput)
 			throws UnsupportedOperationException {
+		assert userInput != null;
+
 		String interpretedInput = getInterpretedInput(userInput);
 		String parsingInput = getParsingInput(interpretedInput);
 		List<DateGroup> dateGroups = parseParsingInput(parsingInput);
@@ -168,6 +180,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String getInterpretedInput(String userInput) {
+		assert userInput != null;
+
 		String interpretedInput = userInput;
 		interpretedInput = removeRepeatedCommas(interpretedInput);
 		interpretedInput = addCommaToBraces(interpretedInput);
@@ -184,6 +198,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String getParsingInput(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String parsingInput = interpretedInput;
 		parsingInput = removeWordsInBrackets(interpretedInput);
 		parsingInput = addCommaAfterTimeAmPm(parsingInput);
@@ -201,12 +217,18 @@ public class TaskCatalystCommons {
 	// Medium-Level Interpreted String Parsing Methods
 
 	private static List<DateGroup> parseParsingInput(String parsingInput) {
+		assert parsingInput != null;
+
 		return prettyTimeParser.parseSyntax(parsingInput);
 	}
 
 	private static String replaceDateStrings(String interpretedInput,
 			String parsingInput, List<DateGroup> dateGroups)
 			throws UnsupportedOperationException {
+		assert interpretedInput != null;
+		assert parsingInput != null;
+		assert dateGroups != null;
+
 		for (DateGroup dateGroup : dateGroups) {
 			boolean wholeMatch = isWholeMatch(parsingInput, dateGroup);
 			boolean longMatch = isLongMatch(dateGroup);
@@ -233,6 +255,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String getConnector(String matchingText) {
+		assert matchingText != null;
+
 		String connector;
 
 		boolean isContainsTo = matchingText.contains(" to ");
@@ -251,15 +275,17 @@ public class TaskCatalystCommons {
 		return connector;
 	}
 
-	private static void exceptionIfInvalidRange(String interpretedStringNextPass)
+	private static void exceptionIfInvalidRange(String interpretedString)
 			throws UnsupportedOperationException {
+		assert interpretedString != null;
+
 		// isRange is true when there exists a "to" between two dates,
 		// with the "to" at most 2 words away from the second date.
 		String rangeCondition = ".*\\}.*(\\bto\\b\\s)(\\b\\w*\\b\\s){0,2}\\{.*";
 
-		List<Date> dates = getAllDates(interpretedStringNextPass);
+		List<Date> dates = getAllDates(interpretedString);
 
-		boolean isRange = interpretedStringNextPass.matches(rangeCondition);
+		boolean isRange = interpretedString.matches(rangeCondition);
 		boolean isMoreThanTwoDates = (dates.size() > 2);
 		boolean isMixedTypes = isRange && isMoreThanTwoDates;
 
@@ -268,10 +294,11 @@ public class TaskCatalystCommons {
 		}
 	}
 
-	private static void exceptionIfOverlappingDates(
-			String interpretedStringNextPass)
+	private static void exceptionIfOverlappingDates(String interpretedString)
 			throws UnsupportedOperationException {
-		List<Date> dates = getAllDates(interpretedStringNextPass);
+		assert interpretedString != null;
+
+		List<Date> dates = getAllDates(interpretedString);
 
 		int j = 0;
 		int secondLastElement = dates.size() - 1;
@@ -295,12 +322,13 @@ public class TaskCatalystCommons {
 	}
 
 	private static void exceptionIfContainsDefaultHashtag(
-			String interpretedStringNextPass)
-			throws UnsupportedOperationException {
+			String interpretedString) throws UnsupportedOperationException {
+		assert interpretedString != null;
+
 		TaskManager taskManager = TaskManagerActual.getInstance();
 
 		String[] defaultHashtags = taskManager.getDefaultHashtags();
-		String lowerCaseString = interpretedStringNextPass.toLowerCase();
+		String lowerCaseString = interpretedString.toLowerCase();
 
 		boolean isContainsDefaultHashtag = false;
 
@@ -321,15 +349,16 @@ public class TaskCatalystCommons {
 		}
 	}
 
-	private static void exceptionIfMultipleChunks(
-			String interpretedStringNextPass)
+	private static void exceptionIfMultipleChunks(String interpretedString)
 			throws UnsupportedOperationException {
+		assert interpretedString != null;
+
 		String prepositions = "(,|and|or|to) \\{";
 		String spacesAfterBraces = "\\}(,)?(\\s)?";
 		String consecutiveCurly = "\\}\\{";
 		String textBetweenCurly = ".*\\}(.*?)\\{.*";
 
-		String processingString = interpretedStringNextPass;
+		String processingString = interpretedString;
 		processingString = processingString.replaceAll(prepositions, "\\{");
 		processingString = processingString
 				.replaceAll(spacesAfterBraces, "\\}");
@@ -342,12 +371,13 @@ public class TaskCatalystCommons {
 		}
 	}
 
-	private static void exceptionIfDescriptionEmpty(
-			String interpretedStringNextPass)
+	private static void exceptionIfDescriptionEmpty(String interpretedString)
 			throws UnsupportedOperationException {
+		assert interpretedString != null;
+
 		boolean isAlwaysShowTime = false;
 
-		String relativeString = getRelativeString(interpretedStringNextPass,
+		String relativeString = getRelativeString(interpretedString,
 				isAlwaysShowTime);
 		String withoutDates = getDisplayStringWithoutDate(relativeString);
 		withoutDates = removeSurroundingSpaces(withoutDates);
@@ -360,6 +390,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static void truncateDateWithoutTime(List<Date> dates) {
+		assert dates != null;
+
 		for (Date date : dates) {
 			Date now = new Date();
 
@@ -373,21 +405,29 @@ public class TaskCatalystCommons {
 
 	@SuppressWarnings("deprecation")
 	public static Date truncateTime(Date date) {
+		assert date != null;
+
 		date.setHours(0);
 		date.setMinutes(0);
 		date.setSeconds(1);
+
 		return date;
 	}
 
 	// Low-Level Interpreted String Parsing Methods
 
 	private static void sortDates(List<Date> dates) {
+		assert dates != null;
+
 		Collections.sort(dates);
 	}
 
 	// Generates a single Date String for a DateGroup.
 	// Example Date String: {date}, {date} and {date}
 	private static String getDateString(List<Date> dates, String finalConnector) {
+		assert dates != null;
+		assert finalConnector != null;
+
 		int dateCount = dates.size();
 
 		String intermediateConnector = ", ";
@@ -414,6 +454,10 @@ public class TaskCatalystCommons {
 	// Replace corresponding matching text with date string.
 	private static String replaceDateString(String interpretedInput,
 			String matchingText, String dateString) {
+		assert interpretedInput != null;
+		assert matchingText != null;
+		assert dateString != null;
+
 		String wordBoundaryStart = "(^|\\b)";
 		String wordBoundaryEnd = "(\\b|$)";
 		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
@@ -433,11 +477,16 @@ public class TaskCatalystCommons {
 	}
 
 	private static boolean isLongMatch(DateGroup dateGroup) {
+		assert dateGroup != null;
+
 		return (dateGroup.getText().length() > 2);
 	}
 
 	// This checks if the match is exact
 	private static boolean isWholeMatch(String parsingInput, DateGroup dateGroup) {
+		assert parsingInput != null;
+		assert dateGroup != null;
+
 		String trailingSymbols = "[^A-Z^a-z^0-9]$";
 		String extendedText = extendMatch(parsingInput, dateGroup);
 		String matchingText = dateGroup.getText();
@@ -454,6 +503,9 @@ public class TaskCatalystCommons {
 
 	// This is used to extend a match of dateGroup by 1 on both sides.
 	private static String extendMatch(String parsingInput, DateGroup dateGroup) {
+		assert parsingInput != null;
+		assert dateGroup != null;
+
 		int position = dateGroup.getPosition();
 		int length = dateGroup.getText().length();
 		int startIndex = Math.max(0, position - 1);
@@ -468,6 +520,8 @@ public class TaskCatalystCommons {
 
 	public static String getRelativeString(String userInput,
 			boolean isAlwaysShowTime) {
+		assert userInput != null;
+
 		String editedUserInput = userInput;
 
 		List<DateGroup> dateGroups = getRelativeStringDateGroups(userInput);
@@ -501,6 +555,8 @@ public class TaskCatalystCommons {
 
 	public static String getDisplayString(String userInput)
 			throws UnsupportedOperationException {
+		assert userInput != null;
+
 		boolean isAlwaysShowTime = false;
 		boolean strict = true;
 
@@ -514,6 +570,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static String getDisplayStringWithoutDate(String relativeString) {
+		assert relativeString != null;
+
 		String friendlyStringWithoutDate = relativeString;
 
 		friendlyStringWithoutDate = removeAllPrepositions(friendlyStringWithoutDate);
@@ -531,6 +589,8 @@ public class TaskCatalystCommons {
 	// Low-Level Pretty String Parsing Methods
 
 	private static String replaceRelativeStringPrepositions(String userInput) {
+		assert userInput != null;
+
 		String editedUserInput = userInput;
 
 		editedUserInput = removeRepeatedPrepositions(editedUserInput, "by",
@@ -551,6 +611,7 @@ public class TaskCatalystCommons {
 
 	private static SimpleDateFormat generateFormatter(Date previousDate,
 			Date currentDate, Date nextDate, boolean isAlwaysShowTime) {
+
 		String formatString = generateFormatString(previousDate, currentDate,
 				nextDate, isAlwaysShowTime);
 
@@ -612,6 +673,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static List<DateGroup> getRelativeStringDateGroups(String userInput) {
+		assert userInput != null;
+
 		String textInCurlyBraces = "\\{(.*?)\\}";
 
 		Pattern pattern = Pattern.compile(textInCurlyBraces);
@@ -634,6 +697,8 @@ public class TaskCatalystCommons {
 	// Interpreted String Operation Methods
 
 	public static List<Date> getAllDates(String interpretedString) {
+		assert interpretedString != null;
+
 		Pattern pattern = Pattern.compile("\\{(.*?)\\}");
 		Matcher matcher = pattern.matcher(interpretedString);
 		List<Date> allDates = new ArrayList<Date>();
@@ -653,6 +718,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static List<String> getAllHashtags(String interpretedString) {
+		assert interpretedString != null;
+
 		List<String> hashtagList = new ArrayList<String>();
 
 		String[] descriptionTokenized = interpretedString.split(" ");
@@ -677,6 +744,9 @@ public class TaskCatalystCommons {
 
 	public static boolean hasWordBetweenDates(String interpretedString,
 			String word) {
+		assert interpretedString != null;
+		assert word != null;
+
 		String openingBrace = ".*\\}.*(\\b";
 		String closingBrace = "\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
 		String matchingCriteria = openingBrace + word + closingBrace;
@@ -689,6 +759,9 @@ public class TaskCatalystCommons {
 
 	public static boolean hasWordBeforeDates(String interpretedString,
 			String word) {
+		assert interpretedString != null;
+		assert word != null;
+
 		String openingBrace = ".*(\\b(";
 		String closingBrace = ")\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
 		String matchingCriteria = openingBrace + word + closingBrace;
@@ -700,6 +773,10 @@ public class TaskCatalystCommons {
 	}
 
 	public static boolean isBetweenDates(Date start, Date end, Date check) {
+		assert start != null;
+		assert end != null;
+		assert check != null;
+
 		boolean isSameStartDate = TaskCatalystCommons.isSameDate(start, check);
 		boolean isSameStartEnd = TaskCatalystCommons.isSameDate(end, check);
 		boolean isAfterStartDate = check.after(start);
@@ -755,58 +832,82 @@ public class TaskCatalystCommons {
 	}
 
 	public static boolean hasHours(Date date) {
+		assert date != null;
+
 		return getHours(date) != 0;
 	}
 
 	public static boolean hasMinutes(Date date) {
+		assert date != null;
+
 		return getMinutes(date) != 0;
 	}
 
 	public static boolean hasSeconds(Date date) {
+		assert date != null;
+
 		return getSeconds(date) != 0;
 	}
 
 	public static int getHours(Date date) {
+		assert date != null;
+
 		cal1.setTime(date);
 
 		return cal1.get(Calendar.HOUR_OF_DAY);
 	}
 
 	public static int getMinutes(Date date) {
+		assert date != null;
+
 		cal1.setTime(date);
 
 		return cal1.get(Calendar.MINUTE);
 	}
 
 	public static int getSeconds(Date date) {
+		assert date != null;
+
 		cal1.setTime(date);
 
 		return cal1.get(Calendar.SECOND);
 	}
 
 	public static int getMilliseconds(Date date) {
+		assert date != null;
+
 		cal1.setTime(date);
 
 		return cal1.get(Calendar.MILLISECOND);
 	}
 
 	public static boolean isYesterday(Date date) {
+		assert date != null;
+
 		return daysFromToday(date) == -1;
 	}
 
 	public static boolean isToday(Date date) {
+		assert date != null;
+
 		return daysFromToday(date) == 0;
 	}
 
 	public static boolean isTomorrow(Date date) {
+		assert date != null;
+
 		return daysFromToday(date) == 1;
 	}
 
 	public static boolean isThisWeek(Date date) {
+		assert date != null;
+
 		return daysFromToday(date) <= 7 && daysFromToday(date) > 0;
 	}
 
 	public static boolean isThisYear(Date date) {
+		assert date != null;
+
 		cal1.setTime(date);
 		cal2.setTimeInMillis(System.currentTimeMillis());
 
@@ -814,6 +915,8 @@ public class TaskCatalystCommons {
 	}
 
 	public static int daysFromToday(Date date) {
+		assert date != null;
+
 		cal1.setTime(date);
 		cal2.setTimeInMillis(System.currentTimeMillis());
 
@@ -830,6 +933,8 @@ public class TaskCatalystCommons {
 	// Very Low Level Methods
 
 	private static String addSpaceAfterCommas(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String commas = ",";
 		String commasWithSpace = ", ";
 
@@ -839,6 +944,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String addCommaToBraces(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String curlyBraces = "\\} \\{";
 		String curlyBracesWithComma = "\\}, \\{";
 
@@ -849,18 +956,24 @@ public class TaskCatalystCommons {
 	}
 
 	private static String addCommaAfterTimeColon(String parsingInput) {
+		assert parsingInput != null;
+
 		String timeWithAmPm = "(?<!:)(\\d{2}:\\d{2}(am|pm)?)(?!:)(?![a-zA-Z])";
 
 		return parsingInput.replaceAll(timeWithAmPm, " $1,");
 	}
 
 	private static String addCommaAfterTimeAmPm(String parsingInput) {
+		assert parsingInput != null;
+
 		String timeWithColon = "(\\d{1,2}(am|pm))(\\s|$)(?![a-zA-Z])";
 
 		return parsingInput.replaceAll(timeWithColon, "$1,");
 	}
 
 	private static String replaceTodayShort(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String todayShort = "(\\s|^)(tdy)(\\s|$)";
 		String today = "today";
 
@@ -870,6 +983,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String replaceTomorrowShort(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String tomorrowShort = "(\\s|^)(tmr|tml)(\\s|$)";
 		String tomorrow = "tomorrow";
 
@@ -879,6 +994,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String replaceSpacesWithWildcard(String matchingExpression) {
+		assert matchingExpression != null;
+
 		String spaces = "\\s+";
 		String wildCard = "( |,|, )?(at|from|and)?( on)?( )";
 
@@ -886,50 +1003,73 @@ public class TaskCatalystCommons {
 	}
 
 	private static String removeAllAnds(String matchingExpression) {
+		assert matchingExpression != null;
+
 		return matchingExpression.replaceAll(" and ", " ");
 	}
 
-	private static String removeAllPrepositions(String friendlyString) {
+	private static String removeAllPrepositions(String displayString) {
+		assert displayString != null;
+
 		String prepositions = " (from|before|after|either|by|between) \\{";
-		friendlyString = friendlyString.replaceAll(prepositions, "\\{");
-		return friendlyString;
+		displayString = displayString.replaceAll(prepositions, "\\{");
+
+		return displayString;
 	}
 
 	private static String replaceCommasWithAnd(String parsingInput) {
+		assert parsingInput != null;
+
 		return parsingInput.replaceAll(",", " and ");
 	}
 
 	private static String removeConsecutiveAnds(String parsingInput) {
+		assert parsingInput != null;
+
 		return parsingInput.replaceAll("(\\b)(and)+", " and ");
 	}
 
 	private static String removeConsecutiveWhitespaces(String interpretedInput) {
+		assert interpretedInput != null;
+
 		return interpretedInput.replaceAll("\\s+", " ");
 	}
 
 	public static String removeCurlyBraces(String userInput) {
+		assert userInput != null;
+
 		return userInput.replaceAll("\\{|\\}", "");
 	}
 
-	private static String removeEmptyPrepositions(String friendlyString) {
+	private static String removeEmptyPrepositions(String displayString) {
+		assert displayString != null;
+
 		String emptyPrepositions = "\\}(\\s)?(,|to|and|or) \\{";
-		friendlyString = friendlyString.replaceAll(emptyPrepositions, "\\}\\{");
-		return friendlyString;
+		displayString = displayString.replaceAll(emptyPrepositions, "\\}\\{");
+
+		return displayString;
 	}
 
 	private static String removeEndingPunctuations(String tokenProcessed) {
+		assert tokenProcessed != null;
+
 		String endingPunctuations = "(,|\\.|\\?|!|:|;)+(\\s|$)";
 		tokenProcessed = tokenProcessed.replaceAll(endingPunctuations, "");
+
 		return tokenProcessed;
 	}
 
 	private static String removeHashtaggedWords(String parsingInput) {
+		assert parsingInput != null;
+
 		String hashtaggedWords = "(\\s|^)(#\\w+)(\\s|$)";
 
 		return parsingInput.replaceAll(hashtaggedWords, " ");
 	}
 
 	private static String removeNumberWords(String parsingInput) {
+		assert parsingInput != null;
+
 		String[] numberWords = { "one", "two", "three", "four", "five", "six",
 				"seven", "eight", "nine", "ten", "eleven", "twelve",
 				"thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
@@ -947,6 +1087,8 @@ public class TaskCatalystCommons {
 
 	private static String removePrepositionBeforeDateStrings(
 			String interpretedInput) {
+		assert interpretedInput != null;
+
 		interpretedInput = removePrepositionBeforeDateString(interpretedInput,
 				"on");
 		interpretedInput = removePrepositionBeforeDateString(interpretedInput,
@@ -957,6 +1099,9 @@ public class TaskCatalystCommons {
 
 	private static String removePrepositionBeforeDateString(
 			String interpretedInput, String preposition) {
+		assert interpretedInput != null;
+		assert preposition != null;
+
 		String wordBoundary = "(^|\\b)";
 		String openingCurlyBrace = "\\{";
 
@@ -965,6 +1110,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String removeRepeatedCommas(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String commas = ",";
 		String repeatedSpacesCommas = "\\s+,+";
 
@@ -975,9 +1122,10 @@ public class TaskCatalystCommons {
 	}
 
 	private static void removeRepeatedDates(List<Date> dates) {
+		assert dates != null;
+
 		int j = 0;
 		while (j < dates.size() - 1) {
-
 			// This is necessary because PrettyTime may return varying
 			// milliseconds.
 			boolean isSameDate = TaskCatalystCommons.isSameDate(dates.get(j),
@@ -994,55 +1142,81 @@ public class TaskCatalystCommons {
 	}
 
 	private static String removeRepeatedHashtags(String tokenProcessed) {
+		assert tokenProcessed != null;
+
 		String repeatedStartingHashtags = "(\\s|^)#+";
 		tokenProcessed = tokenProcessed.replaceAll(repeatedStartingHashtags,
 				"#");
+
 		return tokenProcessed;
 	}
 
 	private static String removeRepeatedPrepositions(String userInput,
 			String kept, String removed) {
+		assert userInput != null;
+		assert kept != null;
+		assert removed != null;
+
 		String rightPattern = kept + " \\{";
 		String wrongPattern = rightPattern + removed + " ";
 
 		return userInput.replaceAll(wrongPattern, rightPattern);
 	}
 
-	private static String removeSpacesBeforeCommas(String friendlyString) {
+	private static String removeSpacesBeforeCommas(String displayString) {
+		assert displayString != null;
+
 		String spaceBeforeCommas = "\\s+,+";
-		friendlyString = friendlyString.replaceAll(spaceBeforeCommas, ",");
-		return friendlyString;
+		displayString = displayString.replaceAll(spaceBeforeCommas, ",");
+
+		return displayString;
 	}
 
-	private static String removeSpacesBeforeFullstops(String friendlyString) {
+	private static String removeSpacesBeforeFullstops(String displayString) {
+		assert displayString != null;
+
 		String spaceBeforeFullstops = "\\s+\\.";
-		friendlyString = friendlyString.replaceAll(spaceBeforeFullstops, "\\.");
-		return friendlyString;
+		displayString = displayString.replaceAll(spaceBeforeFullstops, "\\.");
+
+		return displayString;
 	}
 
 	private static String removeSensitiveParsingWords(String parsingInput) {
+		assert parsingInput != null;
+
 		String sensitiveWords = "(\\b)(at|in|from|on)(\\b|$)";
 
 		return parsingInput.replaceAll(sensitiveWords, " ");
 	}
 
 	private static String removeSurroundingSpaces(String friendlyString) {
+		assert friendlyString != null;
+
 		return friendlyString.trim();
 	}
 
 	public static String removeSquareBrackets(String userInput) {
+		assert userInput != null;
+
 		return userInput.replaceAll("\\[|\\]", "");
 	}
 
 	private static String removeWordsInBrackets(String interpretedInput) {
+		assert interpretedInput != null;
+
 		return interpretedInput.replaceAll("(\\[|\\{)(.*?)(\\]|\\})", "");
 	}
 
 	private static String removeWordsInCurlyBraces(String interpretedInput) {
+		assert interpretedInput != null;
+
 		return interpretedInput.replaceAll("(\\{)(.*?)(\\})", "");
 	}
 
 	private static String ignoreBasedOnRegex(String input, String regex) {
+		assert input != null;
+		assert regex != null;
+
 		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
 		String ignoredString = input;
 
@@ -1059,6 +1233,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String ignoreWordsContainingAted(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String notHashtagged = "(?<!#)";
 		String wordsContainingAted = notHashtagged + "\\w*ated\\w*";
 
@@ -1069,6 +1245,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String ignoreWordsContainingEst(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String notHashtagged = "(?<!#)";
 		String wordsContainingEst = notHashtagged
 				+ "\\w*(?<!y)est(?!erday)\\w*";
@@ -1081,6 +1259,8 @@ public class TaskCatalystCommons {
 
 	private static String ignoreWordsContainingFivePlusDigits(
 			String interpretedInput) {
+		assert interpretedInput != null;
+
 		String notHashtagged = "(?<!#)";
 		String fivePlusDigits = notHashtagged + "\\d{5,}";
 
@@ -1090,6 +1270,8 @@ public class TaskCatalystCommons {
 	}
 
 	private static String ignoreWordsEndingWithNumbers(String interpretedInput) {
+		assert interpretedInput != null;
+
 		String notHashtagged = "(?<!#)";
 		String endWithNumber = notHashtagged + "\\b[a-zA-Z-_$]+\\d+\\b";
 
