@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+//@author A0111890
 public class ListProcessorStub implements
 		moustachio.task_catalyst.ListProcessor {
 
@@ -38,13 +39,11 @@ public class ListProcessorStub implements
 
 	@Override
 	public List<Task> getOverlapping(List<Task> list) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public List<Task> getOverlapping(Task task, List<Task> list) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

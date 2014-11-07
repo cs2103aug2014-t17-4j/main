@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.ArrayList;
 
-// @author A0111890
+//@author A0111890
 public class ActionHintSystemActual implements ActionHintSystem {
 	private static final String ERROR_ACTION_UNDEFINED = "Undefined Action Encountered.";
 	private static final String FORMAT_PARTIAL_SUGGESTIONS = "Do you mean %s?";

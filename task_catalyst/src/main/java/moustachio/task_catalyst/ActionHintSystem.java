@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import moustachio.task_catalyst.Message;
 
-// @author A0111890
+//@author A0111890
 public interface ActionHintSystem {
 	public void testMode();
 

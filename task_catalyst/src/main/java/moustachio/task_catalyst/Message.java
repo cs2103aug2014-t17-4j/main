@@ -1,5 +1,6 @@
 package moustachio.task_catalyst;
 
+//@author A0111890
 public class Message {
 	MessageType messageType;
 	String message;

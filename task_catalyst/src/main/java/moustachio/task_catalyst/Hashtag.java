@@ -1,6 +1,6 @@
 package moustachio.task_catalyst;
 
-// @author A0111890
+//@author A0111890
 public class Hashtag extends Action {
 	private static final String HINT_MESSAGE = "Hashtag: Hit enter after typing a valid hashtag to continue.";
 

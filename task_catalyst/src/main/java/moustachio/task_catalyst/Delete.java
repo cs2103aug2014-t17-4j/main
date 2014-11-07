@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-// @author A0111890
+//@author A0111890
 public class Delete extends Action {
 	private static final String[] DICTIONARY = { "delete", "rm", "del" };
 
