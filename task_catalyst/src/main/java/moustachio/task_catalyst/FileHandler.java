@@ -66,7 +66,7 @@ public class FileHandler {
 	private void makeFolder() throws IOException {
 		File folder = new File(FOLDER_TASK_CATALYST);
 		if (folder.exists() && folder.isFile()) {
-			System.out.println(MESSAGE_IO_FAULT_DIR);	
+			printMessage(MESSAGE_IO_FAULT_DIR);	
 		} else {
 			if (!folder.exists())
 			{
@@ -108,7 +108,7 @@ public class FileHandler {
 		try {
 			makeFolder();
 		} catch (IOException e) {
-			System.out.println(MESSAGE_IO_FAULT_DIR_READ);
+			printMessage(MESSAGE_IO_FAULT_DIR_READ);
 		}
 	}
 
@@ -288,5 +288,9 @@ public class FileHandler {
 		Matcher matcher = pattern.matcher(name);
 		boolean isMatch = matcher.matches();
 		return !isMatch;
+	}
+	
+	private void printMessage(String message){
+		System.out.println(message);
 	}
 }
