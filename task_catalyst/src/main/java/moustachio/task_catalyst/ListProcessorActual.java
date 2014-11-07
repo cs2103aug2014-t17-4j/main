@@ -38,14 +38,42 @@ public class ListProcessorActual implements ListProcessor {
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
 		List<Task> searchList = new ArrayList<Task>();
-		List<Date> dates = TaskCatalystCommons.getInferredDates(keyword);
+		boolean strict = false;
+		String interpretedString = TaskCatalystCommons.getInterpretedString(keyword, strict);
+		List<Date> dates = TaskCatalystCommons.getAllDates(interpretedString);
+		Collections.sort(dates);
+		boolean hasTo = TaskCatalystCommons.hasWordBeforeDates(interpretedString, "to");
+		boolean hasBetween = TaskCatalystCommons.hasWordBetweenDates(interpretedString, "between");
+		boolean hasKeyword = (hasTo || hasBetween);
+		boolean hasAtLeastTwoDates = dates.size() > 1;
+		boolean isRanged = hasKeyword && hasAtLeastTwoDates;
 		for (Task task : list) {
-			for (Date date : dates) {
-				if (task.hasKeyword(keyword) || task.hasDate(date)) {
+			if (task.hasKeyword(keyword)) {
+				searchList.add(task);
+			}
+		}
+		
+		if(isRanged) {
+			Date start = dates.get(0);
+			Date end = dates.get(dates.size() - 1);
+			for (Task task : list) {
+				if (task.isBetweenDates(start, end) && !searchList.contains(task)) {
 					searchList.add(task);
 				}
 			}
 		}
+		else {
+			for (Task task : list) {
+				for (Date date : dates) {
+					if (task.hasDate(date) && !searchList.contains(task)) {
+						searchList.add(task);
+					}
+				}
+			}
+		}
+		
+		Collections.sort(searchList);
+		
 		return searchList;
 	}
 
