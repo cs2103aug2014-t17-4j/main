@@ -256,4 +256,26 @@ public class ListProcessorActual implements ListProcessor {
 		}
 		return false;
 	}
+
+	@Override
+	public List<Task> searchByDate(List<Task> list, Date date) {
+		List<Task> searchList = new ArrayList<Task>();
+		for (Task task : list) {
+			if (task.hasDate(date)) {
+				searchList.add(task);
+			}
+		}
+		return searchList;
+	}
+
+	@Override
+	public List<Task> searchByDateRange(List<Task> list, Date start, Date end) {
+		List<Task> searchList = new ArrayList<Task>();
+		for (Task task : list) {
+			if (task.isBetweenDates(start, end)) {
+				searchList.add(task);
+			}
+		}
+		return searchList;
+	}
 }

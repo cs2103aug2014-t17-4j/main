@@ -2,6 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 //@author A0111890
@@ -44,6 +45,16 @@ public class ListProcessorStub implements
 
 	@Override
 	public List<Task> getOverlapping(Task task, List<Task> list) {
+		return null;
+	}
+
+	@Override
+	public List<Task> searchByDate(List<Task> list, Date date) {
+		return null;
+	}
+
+	@Override
+	public List<Task> searchByDateRange(List<Task> list, Date start, Date end) {
 		return null;
 	}
 
