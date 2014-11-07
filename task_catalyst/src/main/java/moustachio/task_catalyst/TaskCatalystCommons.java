@@ -386,7 +386,7 @@ public class TaskCatalystCommons {
 		}
 	}
 
-	private static void truncateDateWithoutTime(List<Date> dates) {
+	public static void truncateDateWithoutTime(List<Date> dates) {
 		for (Date date : dates) {
 			// This is necessary because PrettyTime may return varying
 			// milliseconds.
@@ -395,16 +395,24 @@ public class TaskCatalystCommons {
 					date);
 
 			if (isSameTime) {
-				truncateTime(date);
+				truncateTimeToOne(date);
 			}
 		}
 	}
 
 	@SuppressWarnings("deprecation")
-	private static Date truncateTime(Date date) {
+	public static Date truncateTimeToOne(Date date) {
 		date.setHours(0);
 		date.setMinutes(0);
 		date.setSeconds(1);
+		return date;
+	}
+
+	@SuppressWarnings("deprecation")
+	public static Date truncateTimeToZero(Date date) {
+		date.setHours(0);
+		date.setMinutes(0);
+		date.setSeconds(0);
 		return date;
 	}
 
@@ -754,6 +762,17 @@ public class TaskCatalystCommons {
 	}
 
 	// Date Time Libraries
+
+	public static List<Date> getInferredDates(String keyword) {
+		List<Date> dates = new ArrayList<Date>();
+		List<DateGroup> dateGroups = prettyTimeParser.parseSyntax(keyword);
+
+		for (DateGroup dateGroup : dateGroups) {
+			dates.addAll(dateGroup.getDates());
+		}
+
+		return dates;
+	}
 
 	public static boolean isSameTime(Date date, Date date2) {
 		if (date == null || date2 == null) {

@@ -131,6 +131,39 @@ public class TaskAdvanced implements Task {
 		return nextDate;
 	}
 
+	@Override
+	public boolean hasDate(Date date) {
+		boolean hasDate = false;
+
+		boolean isFloatingTask = (allDates == null);
+
+		if (isFloatingTask) {
+			hasDate = false;
+		} else if (isRange()) {
+			boolean isSameStartDate = TaskCatalystCommons.isSameDate(
+					getDateStart(), date);
+			boolean isSameStartEnd = TaskCatalystCommons.isSameDate(
+					getDateEnd(), date);
+			boolean isAfterStartDate = date.after(getDateStart());
+			boolean isBeforeEndDate = date.before(getDateEnd());
+			boolean isBetweenDates = (isAfterStartDate && isBeforeEndDate);
+
+			hasDate = (isSameStartDate || isSameStartEnd || isBetweenDates);
+		} else {
+			for (Date eachDate : allDates) {
+				boolean isSameDate = TaskCatalystCommons.isSameDate(eachDate,
+						date);
+
+				if (isSameDate) {
+					hasDate = true;
+					break;
+				}
+			}
+		}
+
+		return hasDate;
+	}
+
 	// Hashtag / Search Methods
 
 	@Override

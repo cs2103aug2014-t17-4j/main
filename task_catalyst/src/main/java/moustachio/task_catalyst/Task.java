@@ -26,6 +26,8 @@ public interface Task extends Comparable<Task> {
 
 	public Date getNextDate();
 
+	public boolean hasDate(Date date);
+
 	public List<String> getHashtags();
 
 	public boolean hasHashtag(String hashtag);
@@ -43,7 +45,7 @@ public interface Task extends Comparable<Task> {
 	public boolean isOverdue();
 
 	public boolean isOverlapping();
-	
+
 	public boolean isPriority();
 
 	public boolean isRange();
