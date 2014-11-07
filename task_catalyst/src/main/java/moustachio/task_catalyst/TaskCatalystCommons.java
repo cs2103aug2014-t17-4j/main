@@ -70,12 +70,10 @@ public class TaskCatalystCommons {
 	}
 
 	public static String removeFirstWord(String userCommand) {
-
-		String invalidCharacters = "(\\[|\\]|\\\\|\\{|\\})";
 		String blank = "";
 
 		String firstWord = getFirstWord(userCommand);
-		firstWord = firstWord.replaceAll(invalidCharacters, blank);
+		firstWord = Pattern.quote(firstWord);
 		String removedFirstWord = userCommand.replaceFirst(firstWord, blank);
 		String removedFirstWordTrimmed = removedFirstWord.trim();
 
@@ -168,7 +166,7 @@ public class TaskCatalystCommons {
 		String interpretedInput = userInput;
 		interpretedInput = interpretedInput.replaceAll("\\} \\{", "\\}, \\{");
 		interpretedInput = interpretedInput.replaceAll(",", ", ");
-		interpretedInput = interpretedInput.replaceAll("\\s+,+",",");
+		interpretedInput = interpretedInput.replaceAll("\\s+,+", ",");
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				wordsContainingEst);
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
