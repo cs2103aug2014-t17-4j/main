@@ -158,9 +158,9 @@ public class FileHandler {
 	 * future.
 	 * There is no setting to save for users but it can be useful for future if users set preferences. 
 	 * 
-	 * @author A0112764J -unused 
-	 * 
 	 */
+	
+	//@author A0112764J -unused 
 	public boolean writeSetting(String name, String fileName, String value) {
 		assert (fileName !=null && name !=null && value !=null);
 		Boolean isSuccess = false;
@@ -177,6 +177,7 @@ public class FileHandler {
 		return isSuccess;
 	}
 
+	//@author A0112764J -unused 
 	private void checkWriteSettingParameters(String name, String fileName,
 			String value) throws Error {
 		if (isInvalidFileFormat(fileName) || isInvalidName(name)
@@ -185,7 +186,8 @@ public class FileHandler {
 			throw new Error(MESSAGE_INVALID_FILE_FORMAT);
 		}
 	}
-
+	
+	//@author A0112764J -unused 
 	private Boolean writeSettingTofile(String name, String fileName,
 			String value) throws IOException {
 		assert (value != null && name != null);
@@ -204,8 +206,9 @@ public class FileHandler {
 	 * future.
 	 * There is no setting to save for users but it can be useful for future if users set preferences. 
 	 * 
-	 * @author A0112764J -unused 
 	 */
+	
+	//@author A0112764J -unused 
 	public String readSetting(String name, String fileName) {
 		assert (name != null && fileName !=null);
 
@@ -232,6 +235,7 @@ public class FileHandler {
 		return value;
 	}
 
+	//@author A0112764J -unused 
 	private void checkReadSettingParameters(String name, String fileName)
 			throws Error {
 		if (isInvalidFileFormat(fileName) || isInvalidName(name)) {
