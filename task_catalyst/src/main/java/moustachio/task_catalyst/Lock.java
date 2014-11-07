@@ -11,14 +11,13 @@ import java.util.logging.Logger;
 /**
  * This class is to create lock for global hotkeys. 
  * 
- * @author A0112764J -reused
- * 
  * This was adapted from a post from Rumato Estorsky posted 20th July 2012 on following blog:
  * 
  * @url http://nerdydevel.blogspot.com/2012/07/run-only-single-java-application-instance.html
  *
  */
 
+//@author A0112764J -reused
 public class Lock {
 	private static final String EXTENSION_APP_LOCK = ".app_lock";
 	private static final String EXTIONSION_LOCK = ".lock";

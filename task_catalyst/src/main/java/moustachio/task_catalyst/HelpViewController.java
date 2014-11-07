@@ -23,11 +23,10 @@ import javafx.stage.StageStyle;
  * 
  * Users can use hotkey "Ctrl+H" to launch quick guide window and use "Ctrl+H" to close 
  * Task Catalyst while it is running.
- * 
- * @author A0112764J
  *
  */
 
+//@author A0112764J
 public class HelpViewController {
 	@FXML
 	private TabPane helpPane;

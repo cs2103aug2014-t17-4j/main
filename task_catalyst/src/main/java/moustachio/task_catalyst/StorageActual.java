@@ -7,10 +7,10 @@ import java.util.List;
  * This program  is implements Storage for Task Catalyst system. 
  * 
  * This program makes use of FileHandler to handle saving and loading tasks or setting. 
- * 
- * @author A0112764J
  *
  */
+
+//@author A0112764J
 public class StorageActual implements Storage {
 
 	private static BlackBox blackbox = BlackBox.getInstance();
