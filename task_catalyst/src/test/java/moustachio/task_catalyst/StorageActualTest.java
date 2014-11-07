@@ -2,17 +2,10 @@ package moustachio.task_catalyst;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
-import java.nio.file.NoSuchFileException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
-
-import javafx.scene.shape.Path;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
