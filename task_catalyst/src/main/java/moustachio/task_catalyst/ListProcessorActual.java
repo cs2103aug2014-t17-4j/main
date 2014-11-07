@@ -1,3 +1,4 @@
+//@author A0112584J
 package moustachio.task_catalyst;
 
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ public class ListProcessorActual implements ListProcessor {
 		case "tmr":
 			return searchByHashtagTomorrow(list);
 		case "upc":
-			return searchByHashTagUpcoming(list);
+			return searchByHashtagUpcoming(list);
 		case "smd":
 			return searchByHashtagSomeday(list);
 		case "dne":
@@ -37,9 +38,12 @@ public class ListProcessorActual implements ListProcessor {
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
 		List<Task> searchList = new ArrayList<Task>();
+		List<Date> dates = TaskCatalystCommons.getInferredDate(keyword);
 		for (Task task : list) {
-			if (task.hasKeyword(keyword)) {
-				searchList.add(task);
+			for (Date date : dates) {
+				if (task.hasKeyword(keyword) || task.hasDate(date)) {
+					searchList.add(task);
+				}
 			}
 		}
 		return searchList;
@@ -147,7 +151,7 @@ public class ListProcessorActual implements ListProcessor {
 		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
 	}
 
-	private List<Task> searchByHashTagUpcoming(List<Task> list) {
+	private List<Task> searchByHashtagUpcoming(List<Task> list) {
 		List<Task> filteredList = new ArrayList<Task>();
 		for (Task task : list) {
 			if (!task.isDone()
