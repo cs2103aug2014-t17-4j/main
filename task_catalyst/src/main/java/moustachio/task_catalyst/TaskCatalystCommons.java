@@ -27,12 +27,16 @@ public class TaskCatalystCommons {
 	private static PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
 	private static Calendar cal1 = Calendar.getInstance();
 	private static Calendar cal2 = Calendar.getInstance();
+	private static BlackBox blackBox = BlackBox.getInstance();
 
 	// Command Parsing Methods
 
 	public static CommandType getCommandType(String userCommand) {
+		blackBox.info("User Typed: " + userCommand);
+
 		if (userCommand == null
 				|| removeSurroundingSpaces(userCommand).isEmpty()) {
+			blackBox.info("Command is invalid.");
 			return CommandType.INVALID;
 		}
 
@@ -43,25 +47,31 @@ public class TaskCatalystCommons {
 
 		boolean noParameters = parametersTrimmed.isEmpty();
 
+		CommandType commandType;
+
 		if (Hashtag.isThisAction(commandLowerCase) && noParameters) {
-			return CommandType.HASHTAG;
+			commandType = CommandType.HASHTAG;
 		} else if (Delete.isThisAction(commandLowerCase)) {
-			return CommandType.DELETE;
+			commandType = CommandType.DELETE;
 		} else if (Done.isThisAction(commandLowerCase)) {
-			return CommandType.DONE;
+			commandType = CommandType.DONE;
 		} else if (Edit.isThisAction(commandLowerCase)) {
-			return CommandType.EDIT;
+			commandType = CommandType.EDIT;
 		} else if (Redo.isThisAction(commandLowerCase) && noParameters) {
-			return CommandType.REDO;
+			commandType = CommandType.REDO;
 		} else if (Search.isThisAction(commandLowerCase)) {
-			return CommandType.SEARCH;
+			commandType = CommandType.SEARCH;
 		} else if (Undo.isThisAction(commandLowerCase) && noParameters) {
-			return CommandType.UNDO;
+			commandType = CommandType.UNDO;
 		} else if (Undone.isThisAction(commandLowerCase)) {
-			return CommandType.UNDONE;
+			commandType = CommandType.UNDONE;
 		} else {
-			return CommandType.ADD;
+			commandType = CommandType.ADD;
 		}
+
+		blackBox.info("Command interpreted: " + commandType);
+
+		return commandType;
 	}
 
 	public static String getFirstWord(String userCommand) {
@@ -133,6 +143,8 @@ public class TaskCatalystCommons {
 			throws UnsupportedOperationException {
 		assert userInput != null;
 
+		blackBox.fine("User Input: " + userInput);
+
 		String interpretedString = userInput;
 		interpretedString = getInterpretedStringSingleIteration(interpretedString);
 		interpretedString = removeCurlyBraces(interpretedString);
@@ -146,6 +158,7 @@ public class TaskCatalystCommons {
 			exceptionIfDescriptionEmpty(interpretedString);
 		}
 
+		blackBox.fine("InterpretedString: " + interpretedString);
 		return interpretedString;
 	}
 
@@ -290,6 +303,7 @@ public class TaskCatalystCommons {
 		boolean isMixedTypes = isRange && isMoreThanTwoDates;
 
 		if (isMixedTypes) {
+			blackBox.fine("Invalid Range: " + interpretedString);
 			throw new UnsupportedOperationException(ERROR_MIX_TYPES);
 		}
 	}
@@ -313,6 +327,7 @@ public class TaskCatalystCommons {
 			boolean isOverlapping = isSameDate && isSameTime;
 
 			if (isOverlapping) {
+				blackBox.fine("Overlapping Internally: " + interpretedString);
 				throw new UnsupportedOperationException(
 						ERROR_OVERLAPPING_INTERNALLY);
 			} else {
@@ -345,6 +360,7 @@ public class TaskCatalystCommons {
 		}
 
 		if (isContainsDefaultHashtag) {
+			blackBox.fine("Default Hashtags Used: " + interpretedString);
 			throw new UnsupportedOperationException(ERROR_DEFAULT_HASHTAGS);
 		}
 	}
@@ -367,6 +383,7 @@ public class TaskCatalystCommons {
 		boolean isMultipleChunk = processingString.matches(textBetweenCurly);
 
 		if (isMultipleChunk) {
+			blackBox.fine("Multiple Chunks Encountered: " + interpretedString);
 			throw new UnsupportedOperationException(ERROR_MULTIPLE_CHUNKS);
 		}
 	}
@@ -385,6 +402,7 @@ public class TaskCatalystCommons {
 		boolean isOnlyContainsDate = withoutDates.isEmpty();
 
 		if (isOnlyContainsDate) {
+			blackBox.fine("Contains Only Dates: " + interpretedString);
 			throw new UnsupportedOperationException(ERROR_NO_DESCRIPTION);
 		}
 	}

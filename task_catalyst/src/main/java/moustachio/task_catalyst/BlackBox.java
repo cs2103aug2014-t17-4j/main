@@ -30,14 +30,22 @@ public class BlackBox {
 
 	private void initializeLogger() {
 		logger = Logger.getLogger(BlackBox.class.getName());
-		logger.setLevel(Level.ALL);
+		logger.setLevel(Level.SEVERE);
 	}
 
 	private void initializeHandler() throws IOException {
-		String fileName = DEFAULT_LOG_FILE_NAME;
-		boolean appendToFile = true;
-		Handler handler = new FileHandler(fileName, appendToFile);
+		String path = DEFAULT_LOG_FILE_NAME;
+		boolean append = true;
+		int limit = 1024000;
+		int numFiles = 2;
+
+		Handler handler = new FileHandler(path, limit, numFiles, append);
+
 		logger.addHandler(handler);
+	}
+
+	public void setLevel(Level level) {
+		logger.setLevel(level);
 	}
 
 	public void severe(String string) {

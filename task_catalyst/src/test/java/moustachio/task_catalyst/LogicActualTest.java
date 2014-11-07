@@ -24,6 +24,7 @@ public class LogicActualTest {
 
 	@After
 	public void tearDown() throws Exception {
+		BlackBox.getInstance().close();
 	}
 
 	// Basic Add
@@ -212,8 +213,7 @@ public class LogicActualTest {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 2 ");
 		assertEquals(MessageType.HINT, message.getType());
-		assertEquals(
-				"Invalid task number specified.\nExample: edit 1",
+		assertEquals("Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -256,8 +256,7 @@ public class LogicActualTest {
 		logic.processCommand("item 1");
 		Message message = logic.getMessageTyping("edit 2 item 1");
 		assertEquals(MessageType.HINT, message.getType());
-		assertEquals(
-				"Invalid task number specified.\nExample: edit 1",
+		assertEquals("Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -397,8 +396,7 @@ public class LogicActualTest {
 	public void editTc1() {
 		Message message = logic.processCommand("edit 1 after!");
 		assertEquals(MessageType.ERROR, message.getType());
-		assertEquals(
-				"Invalid task number specified.\nExample: edit 1",
+		assertEquals("Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -407,8 +405,7 @@ public class LogicActualTest {
 	public void editTc2() {
 		Message message = logic.processCommand("edit");
 		assertEquals(MessageType.ERROR, message.getType());
-		assertEquals(
-				"Invalid task number specified.\nExample: edit 1",
+		assertEquals("Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -418,8 +415,7 @@ public class LogicActualTest {
 		logic.processCommand("hello kitty!");
 		Message message = logic.processCommand("edit");
 		assertEquals(MessageType.ERROR, message.getType());
-		assertEquals(
-				"Invalid task number specified.\nExample: edit 1",
+		assertEquals("Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 

@@ -16,6 +16,7 @@ public class TaskBuilderAdvancedTest {
 
 	@After
 	public void tearDown() throws Exception {
+		BlackBox.getInstance().close();
 	}
 
 	// Test for basic date recognition.

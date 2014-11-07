@@ -39,6 +39,7 @@ public class StorageActualTest {
 	public void tearDown() throws Exception {
 		Files.deleteIfExists(Paths.get(fileName));
 		Files.createFile(Paths.get(fileName));
+		BlackBox.getInstance().close();
 	}
 
 	/*** Check fileName ***/

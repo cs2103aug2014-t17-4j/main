@@ -8,12 +8,20 @@ import java.util.List;
 //@author A0111890
 public class TaskBuilderAdvanced implements TaskBuilder {
 
-	SimpleDateFormat formatter = new SimpleDateFormat("dd MMM yyyy KK:mm:ss a");
+	BlackBox blackBox;
+	SimpleDateFormat formatter;
+
+	public TaskBuilderAdvanced() {
+		formatter = new SimpleDateFormat("dd MMM yyyy KK:mm:ss a");
+		blackBox = BlackBox.getInstance();
+	}
 
 	public List<Task> createTask(String userInput) {
 		if (userInput == null || userInput.trim().isEmpty()) {
 			return null;
 		}
+
+		blackBox.info("User Entered: " + userInput);
 
 		Task task = createOneTask(userInput);
 
@@ -22,8 +30,15 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 		boolean isTaskValid = (task != null);
 
 		if (isTaskValid) {
+			blackBox.info("Task built with description: "
+					+ task.getDescriptionRaw());
+
 			tasks = splitIntoMultipleTasks(task);
+
+			blackBox.info("Task split into " + tasks.size() + " tasks.");
 		} else {
+			blackBox.info("Task not built successfully.");
+
 			tasks = null;
 		}
 

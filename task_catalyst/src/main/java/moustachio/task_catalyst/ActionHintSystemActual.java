@@ -10,10 +10,12 @@ public class ActionHintSystemActual implements ActionHintSystem {
 			+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.";
 
 	ActionInvoker actionInvoker;
+	BlackBox blackBox;
 
 	public ActionHintSystemActual() {
 		actionInvoker = ActionInvoker.getInstance();
 		actionInvoker.setDefaultMessage(HINT_MESSAGE_DEFAULT);
+		blackBox = BlackBox.getInstance();
 	}
 
 	public void testMode() {
@@ -45,39 +47,39 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		Message message;
 
 		switch (COMMAND_TYPE) {
-		case ADD:
+		case ADD :
 			message = getHintPartialAdd(userCommand);
 			break;
 
-		case DELETE:
+		case DELETE :
 			message = Delete.getHint(userCommand);
 			break;
 
-		case DONE:
+		case DONE :
 			message = Done.getHint(userCommand);
 			break;
 
-		case EDIT:
+		case EDIT :
 			message = Edit.getHint(userCommand);
 			break;
 
-		case HASHTAG:
+		case HASHTAG :
 			message = Hashtag.getHint(userCommand);
 			break;
 
-		case REDO:
+		case REDO :
 			message = Redo.getHint(userCommand);
 			break;
 
-		case SEARCH:
+		case SEARCH :
 			message = Search.getHint(userCommand);
 			break;
 
-		case UNDO:
+		case UNDO :
 			message = Undo.getHint(userCommand);
 			break;
 
-		case UNDONE:
+		case UNDONE :
 			message = Undone.getHint(userCommand);
 			break;
 
@@ -96,43 +98,43 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		Action action = null;
 
 		switch (COMMAND_TYPE) {
-		case ADD:
+		case ADD :
 			action = new Add(userCommand);
 			break;
 
-		case DELETE:
+		case DELETE :
 			action = new Delete(userCommand);
 			break;
 
-		case DONE:
+		case DONE :
 			action = new Done(userCommand);
 			break;
 
-		case EDIT:
+		case EDIT :
 			action = new Edit(userCommand);
 			break;
 
-		case HASHTAG:
+		case HASHTAG :
 			action = new Hashtag(userCommand);
 			break;
 
-		case REDO:
+		case REDO :
 			action = new Redo(userCommand);
 			break;
 
-		case SEARCH:
+		case SEARCH :
 			action = new Search(userCommand);
 			break;
 
-		case UNDO:
+		case UNDO :
 			action = new Undo(userCommand);
 			break;
 
-		case UNDONE:
+		case UNDONE :
 			action = new Undone(userCommand);
 			break;
 
-		case INVALID:
+		case INVALID :
 			action = null;
 			break;
 
