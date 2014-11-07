@@ -118,17 +118,19 @@ public class TaskCatalystCommons {
 
 	// High-Level Interpreted String Parsing Methods
 
-	public static String getInterpretedString(String userInput)
+	public static String getInterpretedString(String userInput, boolean strict)
 			throws UnsupportedOperationException {
 		String interpretedString = userInput;
 		interpretedString = getInterpretedStringSingleIteration(interpretedString);
 		interpretedString = removeCurlyBraces(interpretedString);
 		interpretedString = getInterpretedStringSingleIteration(interpretedString);
-		exceptionIfInvalidRange(interpretedString);
-		exceptionIfOverlappingDates(interpretedString);
-		exceptionIfContainsDefaultHashtag(interpretedString);
-		exceptionIfMultipleChunks(interpretedString);
-		exceptionIfDescriptionEmpty(interpretedString);
+		if (strict) {
+			exceptionIfInvalidRange(interpretedString);
+			exceptionIfOverlappingDates(interpretedString);
+			exceptionIfContainsDefaultHashtag(interpretedString);
+			exceptionIfMultipleChunks(interpretedString);
+			exceptionIfDescriptionEmpty(interpretedString);
+		}
 		return interpretedString;
 	}
 
@@ -704,8 +706,9 @@ public class TaskCatalystCommons {
 	public static String getFriendlyString(String userCommand)
 			throws UnsupportedOperationException {
 		boolean isAlwaysShowTime = false;
-		String interpretedString = TaskCatalystCommons
-				.getInterpretedString(userCommand);
+		boolean strict = true;
+		String interpretedString = TaskCatalystCommons.getInterpretedString(
+				userCommand, strict);
 		String prettyString = TaskCatalystCommons.getPrettyString(
 				interpretedString, isAlwaysShowTime);
 		String friendlyString = TaskCatalystCommons
@@ -762,16 +765,28 @@ public class TaskCatalystCommons {
 	}
 
 	// Date Time Libraries
+	public static boolean hasWordBetweenDates(String interpretedString,
+			String word) {
+		String openingBrace = ".*\\}.*(\\b";
+		String closingBrace = "\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
+		String matchingCriteria = openingBrace + word + closingBrace;
 
-	public static List<Date> getInferredDates(String keyword) {
-		List<Date> dates = new ArrayList<Date>();
-		List<DateGroup> dateGroups = prettyTimeParser.parseSyntax(keyword);
+		boolean hasWordBetweenDates = interpretedString
+				.matches(matchingCriteria);
 
-		for (DateGroup dateGroup : dateGroups) {
-			dates.addAll(dateGroup.getDates());
-		}
+		return hasWordBetweenDates;
+	}
 
-		return dates;
+	public static boolean hasWordBeforeDates(String interpretedString,
+			String word) {
+		String openingBrace = ".*(\\b(";
+		String closingBrace = ")\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
+		String matchingCriteria = openingBrace + word + closingBrace;
+
+		boolean hasWordBeforeDates = interpretedString
+				.matches(matchingCriteria);
+
+		return hasWordBeforeDates;
 	}
 
 	public static boolean isBetweenDates(Date start, Date end, Date check) {

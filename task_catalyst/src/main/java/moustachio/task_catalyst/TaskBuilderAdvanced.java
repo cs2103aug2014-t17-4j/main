@@ -30,8 +30,9 @@ public class TaskBuilderAdvanced implements TaskBuilder {
 		Task task;
 
 		try {
+			boolean strict = true;
 			String interpretedString = TaskCatalystCommons
-					.getInterpretedString(userInput);
+					.getInterpretedString(userInput, strict);
 			task = new TaskAdvanced(interpretedString);
 		} catch (UnsupportedOperationException e) {
 			task = null;

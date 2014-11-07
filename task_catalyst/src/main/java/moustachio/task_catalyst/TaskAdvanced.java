@@ -242,7 +242,8 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isBlocking() {
-		boolean hasOr = hasWordBetweenDates("or");
+		boolean hasOr = TaskCatalystCommons.hasWordBetweenDates(
+				getDescriptionRaw(), "or");
 		boolean isBlocking = (!isDone() && hasOr);
 
 		return isBlocking;
@@ -250,8 +251,10 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isDeadline() {
-		boolean hasBefore = hasWordBeforeDates("before");
-		boolean hasBy = hasWordBeforeDates("by");
+		boolean hasBefore = TaskCatalystCommons.hasWordBeforeDates(
+				getDescriptionRaw(), "before");
+		boolean hasBy = TaskCatalystCommons.hasWordBeforeDates(
+				getDescriptionRaw(), "by");
 		boolean hasKeywords = (hasBefore || hasBy);
 		boolean isDeadline = (!isDone() && hasKeywords);
 
@@ -265,7 +268,8 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isMultiple() {
-		boolean isMultiple = hasWordBetweenDates("and");
+		boolean isMultiple = TaskCatalystCommons.hasWordBetweenDates(
+				getDescriptionRaw(), "and");
 
 		return isMultiple;
 	}
@@ -305,28 +309,9 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public boolean isRange() {
-		boolean isRange = hasWordBetweenDates("to");
+		boolean isRange = TaskCatalystCommons.hasWordBetweenDates(
+				getDescriptionRaw(), "to");
 		return isRange;
-	}
-
-	private boolean hasWordBetweenDates(String word) {
-		String openingBrace = ".*\\}.*(\\b";
-		String closingBrace = "\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
-		String matchingCriteria = openingBrace + word + closingBrace;
-
-		boolean hasWordBetweenDates = description.matches(matchingCriteria);
-
-		return hasWordBetweenDates;
-	}
-
-	private boolean hasWordBeforeDates(String word) {
-		String openingBrace = ".*(\\b(";
-		String closingBrace = ")\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
-		String matchingCriteria = openingBrace + word + closingBrace;
-
-		boolean hasWordBeforeDates = description.matches(matchingCriteria);
-
-		return hasWordBeforeDates;
 	}
 
 	@Override
