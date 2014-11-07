@@ -140,28 +140,48 @@ public class TaskAdvanced implements Task {
 		if (isFloatingTask) {
 			hasDate = false;
 		} else if (isRange()) {
-			boolean isSameStartDate = TaskCatalystCommons.isSameDate(
-					getDateStart(), date);
-			boolean isSameStartEnd = TaskCatalystCommons.isSameDate(
+			hasDate = TaskCatalystCommons.isBetweenDates(getDateStart(),
 					getDateEnd(), date);
-			boolean isAfterStartDate = date.after(getDateStart());
-			boolean isBeforeEndDate = date.before(getDateEnd());
-			boolean isBetweenDates = (isAfterStartDate && isBeforeEndDate);
-
-			hasDate = (isSameStartDate || isSameStartEnd || isBetweenDates);
 		} else {
 			for (Date eachDate : allDates) {
-				boolean isSameDate = TaskCatalystCommons.isSameDate(eachDate,
-						date);
+				hasDate = TaskCatalystCommons.isSameDate(eachDate, date);
 
-				if (isSameDate) {
-					hasDate = true;
+				if (hasDate) {
 					break;
 				}
 			}
 		}
 
 		return hasDate;
+	}
+
+	@Override
+	public boolean isBetweenDates(Date start, Date end) {
+		boolean isBetweenDates = false;
+
+		boolean isFloatingTask = (allDates == null);
+
+		if (isFloatingTask) {
+			isBetweenDates = false;
+		} else if (isRange()) {
+			boolean startIsBetween = TaskCatalystCommons.isBetweenDates(start,
+					end, getDateStart());
+			boolean endIsBetween = TaskCatalystCommons.isBetweenDates(start,
+					end, getDateEnd());
+
+			isBetweenDates = (startIsBetween || endIsBetween);
+		} else {
+			for (Date eachDate : allDates) {
+				isBetweenDates = TaskCatalystCommons.isBetweenDates(start, end,
+						eachDate);
+
+				if (isBetweenDates) {
+					break;
+				}
+			}
+		}
+
+		return isBetweenDates;
 	}
 
 	// Hashtag / Search Methods

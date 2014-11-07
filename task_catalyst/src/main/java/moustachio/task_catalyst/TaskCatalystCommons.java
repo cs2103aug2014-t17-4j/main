@@ -774,6 +774,17 @@ public class TaskCatalystCommons {
 		return dates;
 	}
 
+	public static boolean isBetweenDates(Date start, Date end, Date check) {
+		boolean isSameStartDate = TaskCatalystCommons.isSameDate(start, check);
+		boolean isSameStartEnd = TaskCatalystCommons.isSameDate(end, check);
+		boolean isAfterStartDate = check.after(start);
+		boolean isBeforeEndDate = check.before(end);
+		boolean isBetweenStartAndEnd = (isAfterStartDate && isBeforeEndDate);
+
+		boolean isBetweenDates = (isSameStartDate || isSameStartEnd || isBetweenStartAndEnd);
+		return isBetweenDates;
+	}
+
 	public static boolean isSameTime(Date date, Date date2) {
 		if (date == null || date2 == null) {
 			return false;

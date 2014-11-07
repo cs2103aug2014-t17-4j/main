@@ -28,6 +28,8 @@ public interface Task extends Comparable<Task> {
 
 	public boolean hasDate(Date date);
 
+	public boolean isBetweenDates(Date start, Date end);
+
 	public List<String> getHashtags();
 
 	public boolean hasHashtag(String hashtag);
@@ -51,5 +53,4 @@ public interface Task extends Comparable<Task> {
 	public boolean isRange();
 
 	public boolean isDeadline();
-
 }
