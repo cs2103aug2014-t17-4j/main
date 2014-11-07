@@ -178,7 +178,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit");
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
-				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
+				"Edit: Hit space or enter after typing a valid task number to continue.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -189,7 +189,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit ");
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
-				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
+				"Edit: Hit space or enter after typing a valid task number to continue.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -201,7 +201,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit 2");
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
-				"Edit: Hit space or enter after typing a valid task number to continue.\nSyntax: edit <task number>",
+				"Edit: Hit space or enter after typing a valid task number to continue.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -213,7 +213,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit 2 ");
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
-				"Invalid task number specified.\nSyntax: edit <task number>",
+				"Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -245,7 +245,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit 1 item 1");
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
-				"item 1\nEdit: Hit enter after making your changes.\nSyntax: edit <task number>",
+				"item 1\nEdit: Hit enter after making your changes.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -257,7 +257,7 @@ public class LogicActualTest {
 		Message message = logic.getMessageTyping("edit 2 item 1");
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
-				"Invalid task number specified.\nSyntax: edit <task number>",
+				"Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -398,7 +398,7 @@ public class LogicActualTest {
 		Message message = logic.processCommand("edit 1 after!");
 		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
-				"Invalid task number specified.\nSyntax: edit <task number>",
+				"Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -408,7 +408,7 @@ public class LogicActualTest {
 		Message message = logic.processCommand("edit");
 		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
-				"Invalid task number specified.\nSyntax: edit <task number>",
+				"Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 
@@ -419,7 +419,7 @@ public class LogicActualTest {
 		Message message = logic.processCommand("edit");
 		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
-				"Invalid task number specified.\nSyntax: edit <task number>",
+				"Invalid task number specified.\nExample: edit 1",
 				message.getMessage());
 	}
 

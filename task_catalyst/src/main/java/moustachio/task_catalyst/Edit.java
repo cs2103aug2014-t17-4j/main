@@ -4,27 +4,25 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+// @author A0111890
 public class Edit extends Action {
-
-	private static final String HINT_SYNTAX = "\nSyntax: edit <task number>";
-
-	private static final String FORMAT_AUTOCOMPLETE = "edit %d %s";
-
-	private static final String HINT_VALID_TASK = "\nEdit: Hit enter after making your changes."
-			+ HINT_SYNTAX;
-
-	private static final String HINT_INVALID_TASK = "Invalid task number specified."
-			+ HINT_SYNTAX;
-
-	private static final String HINT_MESSAGE = "Edit: Hit space or enter after typing a valid task number to continue."
-			+ HINT_SYNTAX;
-
 	private static final String[] DICTIONARY = { "edit" };
 
 	private static final String EXECUTE_ERROR = "Invalid task number specified.";
 	private static final String EXECUTE_SUCCESS = "Task successfully edited: %s";
+
 	private static final String UNDO_ERROR = "There was an error restoring the task.";
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
+
+	private static final String FORMAT_AUTOCOMPLETE = "edit %d %s";
+
+	private static final String HINT_EXAMPLES = "\nExample: edit 1";
+	private static final String HINT_VALID_TASK = "\nEdit: Hit enter after making your changes."
+			+ HINT_EXAMPLES;
+	private static final String HINT_INVALID_TASK = "Invalid task number specified."
+			+ HINT_EXAMPLES;
+	private static final String HINT_MESSAGE = "Edit: Hit space or enter after typing a valid task number to continue."
+			+ HINT_EXAMPLES;
 
 	private TaskBuilder taskBuilder;
 	private static TaskManager taskManager = TaskManagerActual.getInstance();
@@ -34,58 +32,89 @@ public class Edit extends Action {
 
 	private int taskNumber;
 
-	private String descriptionEdit;
+	private String parameters;
+	private String targetDescriptionEdit;
+	private String replacementDescriptionEdit;
 
-	private String originalDescription;
-	private String newDescription;
+	// Initialization Methods
 
 	public Edit(String userCommand) {
-		taskBuilder = new TaskBuilderAdvanced();
+		initializeComponents();
+		initializeParameters(userCommand);
+		populateTargetTasks();
+		populateReplacementTasks();
+	}
 
-		String taskNumberAndContent = TaskCatalystCommons
-				.removeFirstWord(userCommand);
+	private void initializeParameters(String userCommand) {
+		this.parameters = TaskCatalystCommons.removeFirstWord(userCommand);
+	}
+
+	private void initializeComponents() {
+		this.taskBuilder = new TaskBuilderAdvanced();
+	}
+
+	private void populateTargetTasks() {
 		String taskNumberString = TaskCatalystCommons
-				.getFirstWord(taskNumberAndContent);
-		taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
+				.getFirstWord(this.parameters);
 
-		Task targetTask = taskManager.getDisplayTask(taskNumber);
-		if (targetTask != null) {
-			descriptionEdit = targetTask.getDescriptionEdit();
-			originalDescription = targetTask.getDescription();
-			targetTasks = new ArrayList<Task>();
-			targetTasks.add(targetTask);
-		}
+		this.taskNumber = TaskCatalystCommons
+				.parsePositiveInt(taskNumberString);
 
-		String userInput = TaskCatalystCommons
-				.removeFirstWord(taskNumberAndContent);
+		Task targetTask = taskManager.getDisplayTask(this.taskNumber);
 
-		try {
-			replacementTasks = taskBuilder.createTask(userInput);
-			newDescription = TaskCatalystCommons.getFriendlyString(userInput);
-		} catch (UnsupportedOperationException e) {
-			replacementTasks = null;
-			newDescription = null;
+		boolean isTargetTaskValid = targetTask != null;
+
+		if (isTargetTaskValid) {
+			this.targetDescriptionEdit = targetTask.getDescriptionEdit();
+			this.targetTasks = new ArrayList<Task>();
+			this.targetTasks.add(targetTask);
 		}
 	}
 
+	private void populateReplacementTasks() {
+		String taskDescriptionString = TaskCatalystCommons
+				.removeFirstWord(this.parameters);
+
+		try {
+			this.replacementTasks = this.taskBuilder
+					.createTask(taskDescriptionString);
+			this.replacementDescriptionEdit = taskDescriptionString;
+		} catch (UnsupportedOperationException e) {
+			this.replacementTasks = null;
+			this.replacementDescriptionEdit = null;
+		}
+	}
+
+	// Execution/Undo Methods
+
 	@Override
 	public Message execute() {
+		MessageType messageType;
+		String message;
 
-		if (targetTasks != null && replacementTasks == null) {
-			MessageType messageType = MessageType.AUTOCOMPLETE;
-			String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
-					descriptionEdit);
+		boolean isTargetTaskValid = (this.targetTasks != null);
+		boolean isReplacementTaskValid = (this.replacementTasks != null);
+		boolean isNeedAutocomplete = (isTargetTaskValid && !isReplacementTaskValid);
+		boolean isWrongTaskNumber = !isTargetTaskValid;
+
+		if (isNeedAutocomplete) {
+			messageType = MessageType.AUTOCOMPLETE;
+			message = String.format(FORMAT_AUTOCOMPLETE, this.taskNumber,
+					this.targetDescriptionEdit);
 
 			return new Message(messageType, message);
 		}
 
-		if (targetTasks == null) {
-			MessageType messageType = MessageType.ERROR;
-			String message = String.format(EXECUTE_ERROR) + HINT_SYNTAX;
+		if (isWrongTaskNumber) {
+			messageType = MessageType.ERROR;
+			message = String.format(EXECUTE_ERROR) + HINT_EXAMPLES;
 
 			return new Message(messageType, message);
 		}
-		String taskDescription = newDescription;
+
+		String taskDescription = TaskCatalystCommons
+				.getFriendlyString(this.replacementDescriptionEdit);
+
 		return replace(this.targetTasks, this.replacementTasks,
 				taskDescription, EXECUTE_SUCCESS, EXECUTE_ERROR);
 	}
@@ -93,7 +122,7 @@ public class Edit extends Action {
 	@Override
 	public Message undo() {
 		String taskDescription = TaskCatalystCommons
-				.getFriendlyString(originalDescription);
+				.getFriendlyString(this.targetDescriptionEdit);
 
 		return replace(this.replacementTasks, this.targetTasks,
 				taskDescription, UNDO_SUCCESS, UNDO_ERROR);
@@ -102,16 +131,17 @@ public class Edit extends Action {
 	private Message replace(List<Task> targetTasks,
 			List<Task> replacementTasks, String taskDescription,
 			String successFormat, String errorFormat) {
-
-		int tasksDeleted = taskManager.removeTasks(targetTasks);
-		boolean isDeleteSuccess = tasksDeleted > 0;
-		int tasksAdded = taskManager.addTasks(replacementTasks);
-		boolean isAddSuccess = tasksAdded > 0;
-
 		MessageType messageType;
 		String message;
 
-		if (isDeleteSuccess && isAddSuccess) {
+		int tasksDeleted = taskManager.removeTasks(targetTasks);
+		int tasksAdded = taskManager.addTasks(replacementTasks);
+
+		boolean isDeleteSuccess = tasksDeleted > 0;
+		boolean isAddSuccess = tasksAdded > 0;
+		boolean isSuccess = isDeleteSuccess && isAddSuccess;
+
+		if (isSuccess) {
 			messageType = MessageType.SUCCESS;
 			message = String.format(successFormat, taskDescription);
 		} else {
@@ -126,60 +156,105 @@ public class Edit extends Action {
 		MessageType messageType;
 		String message;
 
-		messageType = MessageType.HINT;
-		message = HINT_MESSAGE;
+		int taskNumber = getTaskNumber(userCommand);
+		String description = getDescription(userCommand);
+		Task targetTask = getTargetTask(taskNumber);
 
-		String taskNumberString;
-		taskNumberString = TaskCatalystCommons.removeFirstWord(userCommand);
-		taskNumberString = TaskCatalystCommons.getFirstWord(taskNumberString);
-		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
-
-		Task editTask = taskManager.getDisplayTask(taskNumber);
-
-		String furtherParameters;
-		furtherParameters = TaskCatalystCommons.removeFirstWord(userCommand);
-		furtherParameters = TaskCatalystCommons
-				.removeFirstWord(furtherParameters);
-		furtherParameters = furtherParameters.trim();
-
-		boolean hasFurtherParameters = !furtherParameters.isEmpty();
-		boolean endsWithSpace = userCommand.endsWith(" ");
-		boolean isValidTask = editTask != null;
+		boolean isHasDescription = !description.isEmpty();
+		boolean isEndsWithSpace = userCommand.endsWith(" ");
+		boolean isValidTask = targetTask != null;
 		boolean isPositiveTaskNumber = taskNumber > 0;
-
 		boolean isInvalidTask = !isValidTask && isPositiveTaskNumber
-				&& (endsWithSpace || hasFurtherParameters);
-		boolean isAutocomplete = isValidTask && endsWithSpace
-				&& !hasFurtherParameters;
-		boolean isBeingEdited = isValidTask && hasFurtherParameters;
+				&& (isEndsWithSpace || isHasDescription);
+		boolean isAutocomplete = isValidTask && isEndsWithSpace
+				&& !isHasDescription;
+		boolean isBeingEdited = isValidTask && isHasDescription;
 
 		if (isInvalidTask) {
-			message = HINT_INVALID_TASK;
+			messageType = MessageType.HINT;
+			message = getInvalidTaskMessage();
 		} else if (isAutocomplete) {
-			String taskDescription = editTask.getDescriptionEdit();
-
 			messageType = MessageType.AUTOCOMPLETE;
-			message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
-					taskDescription);
+			message = getAutocompleteMessage(taskNumber, targetTask);
 		} else if (isBeingEdited) {
 			try {
-				message = TaskCatalystCommons.getFriendlyString(userCommand
-						.replace("edit " + taskNumber + " ", ""));
 				messageType = MessageType.HINT;
+				message = getLiveTaskPreviewMessage(userCommand, taskNumber);
 			} catch (UnsupportedOperationException e) {
-				message = e.getMessage();
 				messageType = MessageType.ERROR;
+				message = getErrorMessage(e);
 			}
-
-			messageType = MessageType.HINT;
 			message += HINT_VALID_TASK;
+		} else {
+			messageType = MessageType.HINT;
+			message = HINT_MESSAGE;
 		}
 
 		return new Message(messageType, message);
 	}
 
+	private static Task getTargetTask(int taskNumber) {
+		return taskManager.getDisplayTask(taskNumber);
+	}
+
+	private static int getTaskNumber(String userCommand) {
+		String taskNumberString;
+		taskNumberString = TaskCatalystCommons.removeFirstWord(userCommand);
+		taskNumberString = TaskCatalystCommons.getFirstWord(taskNumberString);
+
+		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
+
+		return taskNumber;
+	}
+
+	private static String getInvalidTaskMessage() {
+		String message = HINT_INVALID_TASK;
+
+		return message;
+	}
+
+	private static String getAutocompleteMessage(int taskNumber, Task targetTask) {
+		String taskDescription = targetTask.getDescriptionEdit();
+
+		String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
+				taskDescription);
+
+		return message;
+	}
+
+	private static String getLiveTaskPreviewMessage(String userCommand,
+			int taskNumber) {
+		String editAndTaskNumber = "edit " + taskNumber + " ";
+		String userInput = userCommand.replace(editAndTaskNumber, "");
+		String liveTaskPreviewMessage = TaskCatalystCommons
+				.getFriendlyString(userInput);
+
+		return liveTaskPreviewMessage;
+	}
+
+	private static String getErrorMessage(UnsupportedOperationException e) {
+		String errorMessage = e.getMessage();
+
+		return errorMessage;
+	}
+
+	private static String getDescription(String userCommand) {
+		String description;
+		description = TaskCatalystCommons.removeFirstWord(userCommand);
+		description = TaskCatalystCommons.removeFirstWord(description);
+		description = description.trim();
+
+		return description;
+	}
+
+	// Other Methods
+
 	public static boolean isThisAction(String command) {
-		return Arrays.asList(DICTIONARY).contains(command);
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
 	}
 
 	public static String[] getDictionary() {

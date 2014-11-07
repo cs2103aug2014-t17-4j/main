@@ -1,9 +1,10 @@
 package moustachio.task_catalyst;
 
 import java.util.Arrays;
+import java.util.List;
 
+// @author A0111890
 public class Undo extends Action {
-
 	private static final String[] DICTIONARY = { "undo" };
 
 	private static final String EXECUTE_SUCCESS = "Undo: %s";
@@ -19,16 +20,18 @@ public class Undo extends Action {
 
 	@Override
 	public Message execute() {
-		Message message = actionInvoker.undoLastAction();
-		if (message != null) {
+		Message returnMessage = actionInvoker.undoLastAction();
+
+		if (returnMessage != null) {
 			String appendedMessage = String.format(EXECUTE_SUCCESS,
-					message.getMessage());
-			message.setMessage(appendedMessage);
+					returnMessage.getMessage());
+			returnMessage.setMessage(appendedMessage);
 		} else {
 			MessageType messageType = MessageType.SUCCESS;
-			message = new Message(messageType, EXECUTE_ERROR);
+			returnMessage = new Message(messageType, EXECUTE_ERROR);
 		}
-		return message;
+
+		return returnMessage;
 	}
 
 	@Override
@@ -38,12 +41,18 @@ public class Undo extends Action {
 
 	public static Message getHint(String userCommand) {
 		MessageType messageType = MessageType.HINT;
+
 		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
 		return returnMessage;
 	}
 
 	public static boolean isThisAction(String command) {
-		return Arrays.asList(DICTIONARY).contains(command);
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
 	}
 
 	public static String[] getDictionary() {

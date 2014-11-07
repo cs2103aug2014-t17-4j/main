@@ -147,18 +147,10 @@ public class ActionHintSystemActual implements ActionHintSystem {
 
 	private boolean isInvalidCommand(String userCommand) {
 		boolean isNullCommand = (userCommand == null);
+		boolean isEmptyCommand = !isNullCommand && userCommand.trim().isEmpty();
+		boolean isInvalidCommand = isNullCommand || isEmptyCommand;
 
-		if (isNullCommand) {
-			return true;
-		}
-
-		boolean isEmptyCommand = userCommand.trim().isEmpty();
-
-		if (isEmptyCommand) {
-			return true;
-		}
-
-		return false;
+		return isInvalidCommand;
 	}
 
 	private Message getHintPartialAdd(String userCommand) {

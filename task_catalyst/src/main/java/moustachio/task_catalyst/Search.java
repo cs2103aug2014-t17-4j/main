@@ -1,9 +1,10 @@
 package moustachio.task_catalyst;
 
 import java.util.Arrays;
+import java.util.List;
 
+// @author A0111890
 public class Search extends Action {
-
 	private static final String[] DICTIONARY = { "search", "find" };
 
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
@@ -16,38 +17,54 @@ public class Search extends Action {
 	String keyword;
 
 	public Search(String userCommand) {
-		taskManager = TaskManagerActual.getInstance();
-		keyword = TaskCatalystCommons.removeFirstWord(userCommand);
+		this.taskManager = TaskManagerActual.getInstance();
+		this.keyword = TaskCatalystCommons.removeFirstWord(userCommand);
 	}
 
 	@Override
 	public Message execute() {
 		MessageType messageType;
 		String message;
-		if (keyword.isEmpty()) {
+
+		boolean isKeywordEmpty = this.keyword.isEmpty();
+
+		if (isKeywordEmpty) {
 			messageType = MessageType.ERROR;
 			message = String.format(EXECUTE_ERROR);
 		} else {
-			taskManager.setDisplayModeKeyword(DisplayMode.SEARCH, keyword);
+			DisplayMode displayMode = DisplayMode.SEARCH;
+			this.taskManager.setDisplayModeKeyword(displayMode, this.keyword);
+
 			messageType = MessageType.SUCCESS;
-			message = String.format(EXECUTE_SUCCESS, keyword);
+			message = String.format(EXECUTE_SUCCESS, this.keyword);
 		}
-		return new Message(messageType, message);
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
 	}
 
 	@Override
 	public Message undo() {
-		return execute();
+		Message returnMessage = execute();
+
+		return returnMessage;
 	}
 
 	public static Message getHint(String userCommand) {
 		MessageType messageType = MessageType.HINT;
+
 		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
 		return returnMessage;
 	}
 
 	public static boolean isThisAction(String command) {
-		return Arrays.asList(DICTIONARY).contains(command);
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
 	}
 
 	public static String[] getDictionary() {

@@ -2,14 +2,15 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
+// @author A0111890
 public class Add extends Action {
+	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
+	private static final String EXECUTE_ERROR = "There was an error adding the task.";
+
+	private static final String UNDO_SUCCESS = "Task successfully removed: %s";
+	private static final String UNDO_ERROR = "There was an error removing the task.";
 
 	private static final String HINT_MESSAGE = "\nAdd: You can include date information. Use []s to ignore processing.";
-
-	private static final String EXECUTE_ERROR = "There was an error adding the task.";
-	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
-	private static final String UNDO_ERROR = "There was an error removing the task.";
-	private static final String UNDO_SUCCESS = "Task successfully removed: %s";
 
 	private TaskBuilder taskBuilder;
 	private TaskManager taskManager;
@@ -17,70 +18,82 @@ public class Add extends Action {
 	private String userCommand;
 
 	public Add(String userCommand) {
-		taskBuilder = new TaskBuilderAdvanced();
-		taskManager = TaskManagerActual.getInstance();
-		tasks = taskBuilder.createTask(userCommand);
+		this.taskBuilder = new TaskBuilderAdvanced();
+		this.taskManager = TaskManagerActual.getInstance();
+		this.tasks = this.taskBuilder.createTask(userCommand);
 		this.userCommand = userCommand;
 	}
 
 	@Override
 	public Message execute() {
-		if (tasks == null) {
-			MessageType messageType = MessageType.ERROR;
-			String message = String.format(EXECUTE_ERROR) + HINT_MESSAGE;
+		MessageType messageType;
+		String message;
+
+		boolean isNullTask = (this.tasks == null);
+
+		if (isNullTask) {
+			messageType = MessageType.ERROR;
+			message = String.format(EXECUTE_ERROR);
+			message = message + HINT_MESSAGE;
 
 			return new Message(messageType, message);
 		}
 
-		int tasksAdded = taskManager.addTasks(tasks);
-		boolean addSuccess = tasksAdded > 0;
-		MessageType messageType;
-		String message;
-		if (addSuccess) {
+		int tasksAdded = this.taskManager.addTasks(this.tasks);
+
+		boolean isSuccess = tasksAdded > 0;
+
+		if (isSuccess) {
 			String taskDescription = TaskCatalystCommons
-					.getFriendlyString(userCommand);
+					.getFriendlyString(this.userCommand);
 			messageType = MessageType.SUCCESS;
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else {
 			messageType = MessageType.ERROR;
-			message = String.format(EXECUTE_ERROR) + HINT_MESSAGE;
+			message = String.format(EXECUTE_ERROR);
+			message = message + HINT_MESSAGE;
 		}
+
 		return new Message(messageType, message);
 	}
 
 	@Override
 	public Message undo() {
-		int tasksRemoved = taskManager.removeTasks(tasks);
-		boolean isSuccess = tasksRemoved > 0;
 		MessageType messageType;
 		String message;
+
+		int tasksRemoved = this.taskManager.removeTasks(this.tasks);
+
+		boolean isSuccess = tasksRemoved > 0;
+
 		if (isSuccess) {
 			String taskDescription = TaskCatalystCommons
-					.getFriendlyString(userCommand);
+					.getFriendlyString(this.userCommand);
 			messageType = MessageType.SUCCESS;
 			message = String.format(UNDO_SUCCESS, taskDescription);
 		} else {
 			messageType = MessageType.ERROR;
 			message = String.format(UNDO_ERROR);
 		}
+
 		return new Message(messageType, message);
 	}
 
 	public static Message getHint(String userCommand) {
-
-		String messageString;
 		MessageType messageType;
+		String message;
 
 		try {
-			messageString = TaskCatalystCommons.getFriendlyString(userCommand);
+			message = TaskCatalystCommons.getFriendlyString(userCommand);
 			messageType = MessageType.HINT;
 		} catch (UnsupportedOperationException e) {
-			messageString = e.getMessage();
+			message = e.getMessage();
 			messageType = MessageType.ERROR;
 		}
-		messageString += HINT_MESSAGE;
 
-		Message returnMessage = new Message(messageType, messageString);
+		message = message + HINT_MESSAGE;
+
+		Message returnMessage = new Message(messageType, message);
 
 		return returnMessage;
 	}
