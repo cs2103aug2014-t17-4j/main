@@ -47,7 +47,7 @@ public class TaskAdvanced implements Task {
 		String interpretedString = getDescriptionRaw();
 
 		String description = TaskCatalystCommons
-				.getPrettyStringWithoutDate(interpretedString);
+				.getDisplayStringWithoutDate(interpretedString);
 
 		return description;
 	}
@@ -58,7 +58,7 @@ public class TaskAdvanced implements Task {
 
 		boolean isAlwaysShowTime = true;
 
-		String prettyString = TaskCatalystCommons.getPrettyString(
+		String prettyString = TaskCatalystCommons.getRelativeString(
 				interpretedString, isAlwaysShowTime);
 
 		String descriptionEdit = TaskCatalystCommons
@@ -191,7 +191,7 @@ public class TaskAdvanced implements Task {
 		String interpretedString = getDescriptionRaw();
 
 		List<String> hashtags = TaskCatalystCommons
-				.extractHashtags(interpretedString);
+				.getAllHashtags(interpretedString);
 
 		return hashtags;
 	}

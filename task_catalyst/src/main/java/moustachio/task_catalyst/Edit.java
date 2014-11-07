@@ -113,7 +113,7 @@ public class Edit extends Action {
 		}
 
 		String taskDescription = TaskCatalystCommons
-				.getFriendlyString(this.replacementDescriptionEdit);
+				.getDisplayString(this.replacementDescriptionEdit);
 
 		return replace(this.targetTasks, this.replacementTasks,
 				taskDescription, EXECUTE_SUCCESS, EXECUTE_ERROR);
@@ -122,7 +122,7 @@ public class Edit extends Action {
 	@Override
 	public Message undo() {
 		String taskDescription = TaskCatalystCommons
-				.getFriendlyString(this.targetDescriptionEdit);
+				.getDisplayString(this.targetDescriptionEdit);
 
 		return replace(this.replacementTasks, this.targetTasks,
 				taskDescription, UNDO_SUCCESS, UNDO_ERROR);
@@ -227,7 +227,7 @@ public class Edit extends Action {
 		String editAndTaskNumber = "edit " + taskNumber + " ";
 		String userInput = userCommand.replace(editAndTaskNumber, "");
 		String liveTaskPreviewMessage = TaskCatalystCommons
-				.getFriendlyString(userInput);
+				.getDisplayString(userInput);
 
 		return liveTaskPreviewMessage;
 	}

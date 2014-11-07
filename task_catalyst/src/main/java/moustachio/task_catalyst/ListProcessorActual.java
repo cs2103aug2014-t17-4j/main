@@ -12,23 +12,23 @@ public class ListProcessorActual implements ListProcessor {
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
 		switch (hashtag) {
-		case "all":
+		case "all" :
 			return searchByHashtagAll(list);
-		case "pri":
+		case "pri" :
 			return searchByHashtagPriority(list);
-		case "ovd":
+		case "ovd" :
 			return searchByHashtagOverdue(list);
-		case "tdy":
+		case "tdy" :
 			return searchByHashtagToday(list);
-		case "tmr":
+		case "tmr" :
 			return searchByHashtagTomorrow(list);
-		case "upc":
+		case "upc" :
 			return searchByHashtagUpcoming(list);
-		case "smd":
+		case "smd" :
 			return searchByHashtagSomeday(list);
-		case "dne":
+		case "dne" :
 			return searchByHashtagDone(list);
-		case "olp":
+		case "olp" :
 			return getOverlapping(list);
 		default:
 			return searchByHashTagUserDefined(list, hashtag);
@@ -38,14 +38,55 @@ public class ListProcessorActual implements ListProcessor {
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
 		List<Task> searchList = new ArrayList<Task>();
-		List<Date> dates = TaskCatalystCommons.getInferredDates(keyword);
+
+		boolean strict = false;
+
+		String interpretedString = TaskCatalystCommons.getInterpretedString(
+				keyword, strict);
+
+		List<Date> dates = TaskCatalystCommons.getAllDates(interpretedString);
+
+		Collections.sort(dates);
+
+		boolean hasTo = TaskCatalystCommons.hasWordBeforeDates(
+				interpretedString, "to");
+
+		boolean hasBetween = TaskCatalystCommons.hasWordBeforeDates(
+				interpretedString, "between");
+
+		boolean hasKeyword = (hasTo || hasBetween);
+
+		boolean hasAtLeastTwoDates = dates.size() > 1;
+
+		boolean isRanged = hasKeyword && hasAtLeastTwoDates;
+
 		for (Task task : list) {
-			for (Date date : dates) {
-				if (task.hasKeyword(keyword) || task.hasDate(date)) {
+			if (task.hasKeyword(keyword)) {
+				searchList.add(task);
+			}
+		}
+
+		if (isRanged) {
+			Date start = dates.get(0);
+			Date end = dates.get(dates.size() - 1);
+			for (Task task : list) {
+				if (task.isBetweenDates(start, end)
+						&& !searchList.contains(task)) {
 					searchList.add(task);
 				}
 			}
+		} else {
+			for (Task task : list) {
+				for (Date date : dates) {
+					if (task.hasDate(date) && !searchList.contains(task)) {
+						searchList.add(task);
+					}
+				}
+			}
 		}
+
+		Collections.sort(searchList);
+
 		return searchList;
 	}
 
@@ -202,9 +243,8 @@ public class ListProcessorActual implements ListProcessor {
 	}
 
 	private boolean isOverlapping(Task task1, Task task2) {
-		if (task1.isDeadline() || task2.isDeadline() 
-				|| task1.isAllDay() || task2.isAllDay() 
-				|| task1.isDone() || task2.isDone() 
+		if (task1.isDeadline() || task2.isDeadline() || task1.isAllDay()
+				|| task2.isAllDay() || task1.isDone() || task2.isDone()
 				|| task1.getAllDates().isEmpty()
 				|| task2.getAllDates().isEmpty() || task1.equals(task2)) {
 			return false;

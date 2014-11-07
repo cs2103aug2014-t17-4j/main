@@ -45,7 +45,7 @@ public class Add extends Action {
 
 		if (isSuccess) {
 			String taskDescription = TaskCatalystCommons
-					.getFriendlyString(this.userCommand);
+					.getDisplayString(this.userCommand);
 			messageType = MessageType.SUCCESS;
 			message = String.format(EXECUTE_SUCCESS, taskDescription);
 		} else {
@@ -68,7 +68,7 @@ public class Add extends Action {
 
 		if (isSuccess) {
 			String taskDescription = TaskCatalystCommons
-					.getFriendlyString(this.userCommand);
+					.getDisplayString(this.userCommand);
 			messageType = MessageType.SUCCESS;
 			message = String.format(UNDO_SUCCESS, taskDescription);
 		} else {
@@ -84,7 +84,7 @@ public class Add extends Action {
 		String message;
 
 		try {
-			message = TaskCatalystCommons.getFriendlyString(userCommand);
+			message = TaskCatalystCommons.getDisplayString(userCommand);
 			messageType = MessageType.HINT;
 		} catch (UnsupportedOperationException e) {
 			message = e.getMessage();
