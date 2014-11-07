@@ -38,7 +38,7 @@ public class ListProcessorActual implements ListProcessor {
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
 		List<Task> searchList = new ArrayList<Task>();
-		List<Date> dates = TaskCatalystCommons.getInferredDate(keyword);
+		List<Date> dates = TaskCatalystCommons.getInferredDates(keyword);
 		for (Task task : list) {
 			for (Date date : dates) {
 				if (task.hasKeyword(keyword) || task.hasDate(date)) {
