@@ -35,8 +35,8 @@ public class FileHandler {
 	private static final String STRING_SPACE = " ";
 	private static final String STRING_WRITE_SETTING = "%1$s,%2$s";
 	private static final String STRING_EMPTY = "";
-	private static final String VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
-	private static final String VALID_PATTERN = "(?i)^\\w+|\\d+$";
+	private static final String REGEX_VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
+	private static final String REGEX_VALID_PATTERN = "(?i)^\\w+|\\d+$";
 	
 	private static final String MESSAGE_NOT_FOUND = "The file is not found!";
 	private static final String MESSAGE_INCORRECT_FORMAT = "Incorrect format has been found";
@@ -51,10 +51,8 @@ public class FileHandler {
 	private static BlackBox blackBox = BlackBox.getInstance();
 
 	public void writeTask(Task task, String fileName) throws IOException {
-		assert (task != null);
-
+		assert (task != null && fileName !=null);
 		checkTaskFileFormat(fileName);
-
 		try {
 			makeFolder();
 			writeJSONFile(task, fileName);
@@ -88,6 +86,7 @@ public class FileHandler {
 	}
 	
 	public List<Task> readTask(String fileName) {
+		assert (fileName !=null);
 		List<Task> list = new ArrayList<Task>();
 
 		checkTaskFileFormat(fileName);
@@ -163,6 +162,7 @@ public class FileHandler {
 	 * 
 	 */
 	public boolean writeSetting(String name, String fileName, String value) {
+		assert (fileName !=null && name !=null && value !=null);
 		Boolean isSuccess = false;
 
 		checkWriteSettingParameters(name, fileName, value);
@@ -207,7 +207,7 @@ public class FileHandler {
 	 * @author A0112764J -unused 
 	 */
 	public String readSetting(String name, String fileName) {
-		assert (name != null);
+		assert (name != null && fileName !=null);
 
 		checkReadSettingParameters(name, fileName);
 
@@ -277,14 +277,14 @@ public class FileHandler {
 	}
 
 	public boolean isInvalidFileFormat(String fileName) {
-		Pattern pattern = Pattern.compile(VALID_FILE_FORMAT);
+		Pattern pattern = Pattern.compile(REGEX_VALID_FILE_FORMAT);
 		Matcher matcher = pattern.matcher(fileName);
 		boolean isMatch = matcher.matches();
 		return !isMatch;
 	}
 
 	public boolean isInvalidName(String name) {
-		Pattern pattern = Pattern.compile(VALID_PATTERN);
+		Pattern pattern = Pattern.compile(REGEX_VALID_PATTERN);
 		Matcher matcher = pattern.matcher(name);
 		boolean isMatch = matcher.matches();
 		return !isMatch;
