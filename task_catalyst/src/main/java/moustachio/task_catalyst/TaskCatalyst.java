@@ -76,13 +76,14 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		try {
 			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
 				throw new RuntimeException(MULTIPLE_INSTANCE_EXCEPTION_MESSAGE);
+			} else {
+				launch(args);
 			}
-			launch(args);
 		} finally {
 			Lock.releaseLock();
 		}
 	}
-	
+
 	/**
 	 * @author A0112764J
 	 */
@@ -97,8 +98,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		primaryStage.setHeight(height);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 * 
 	 * @author A0111921W
 	 */
 	@Override
@@ -112,7 +116,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			startHotKeys();
 			FXMLLoader loader = new FXMLLoader(
 					TaskCatalyst.class.getResource(UI_FXML_PATH));
-			Parent root = loader.load();
+			Parent root = null;
+			root = loader.load();
 			Scene scene = new Scene(root);
 			controller = loader.getController();
 			controller.connectWithMainTaskCatalyst(this);
@@ -129,8 +134,9 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			this.primaryStage.setAlwaysOnTop(true);
 			this.primaryStage.show();
 
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
+			stop();
 		}
 	}
 
@@ -451,16 +457,16 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	@Override
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
-			case java.awt.event.KeyEvent.VK_M:
+		case java.awt.event.KeyEvent.VK_M :
 			toggleStage();
-				break;
-			case java.awt.event.KeyEvent.VK_D:
+			break;
+		case java.awt.event.KeyEvent.VK_D :
 			pasteClipboard();
-				break;
+			break;
 		}
 	}
-	
-	//@author A0111890
+
+	// @author A0111890
 	private void pasteClipboard() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -475,8 +481,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			}
 		});
 	}
-	
-	//@author A0112764J
+
+	// @author A0112764J
 	private void toggleStage() {
 		if (primaryStage.isShowing()) {
 			Platform.runLater(new Runnable() {
