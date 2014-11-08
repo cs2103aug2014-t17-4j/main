@@ -35,11 +35,10 @@ import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
+//@author A0111921W
 /**
- * @author A0111921W
- *
+ * This class instantiates the JavaFX UI and caters for hotkeys and single instance locking.
  */
-
 public class TaskCatalyst extends Application implements HotKeyListener {
 
 	Clipboard clipboard = Clipboard.getSystemClipboard();
