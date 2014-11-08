@@ -10,7 +10,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowFocusListener;
-import java.io.IOException;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
@@ -27,17 +27,20 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+
 import javax.swing.JDialog;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.KeyStroke;
+
 import com.tulskiy.keymaster.common.HotKey;
 import com.tulskiy.keymaster.common.HotKeyListener;
 import com.tulskiy.keymaster.common.Provider;
 
 //@author A0111921W
 /**
- * This class instantiates the JavaFX UI and caters for hotkeys and single instance locking.
+ * This class instantiates the JavaFX UI and caters for hotkeys and single
+ * instance locking.
  */
 public class TaskCatalyst extends Application implements HotKeyListener {
 
@@ -68,7 +71,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private static final String CSS_PATH = "/css/DarkTheme.css";
 	private static final String SYSTEM_TRAY_IMAGE_PATH = "/images/moustachio.png";
 
-	//@author A0112764J
+	// @author A0112764J
 	public static void main(String[] args) {
 		try {
 			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
@@ -81,23 +84,18 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}
 	}
 
-	//@author A0112764J
+	// @author A0112764J
 	Stage getStage() {
 		return this.primaryStage;
 	}
 
-	//@author A0111921W
+	// @author A0111921W
 	public void setStageHeight(double height) {
 		primaryStage.setHeight(height);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see javafx.application.Application#start(javafx.stage.Stage)
-	 * 
-	 * @author A0111921W
-	 */
+	// @author A0111921W - adapted from oracles
+	// http://docs.oracle.com/javase/8/javase-clienttechnologies.htm
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -112,10 +110,13 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			Parent root = null;
 			root = loader.load();
 			Scene scene = new Scene(root);
+
 			controller = loader.getController();
 			controller.connectWithMainTaskCatalyst(this);
+
 			addHotKeysListeners(primaryStage, scene);
 			addDragListeners(root);
+
 			// set stylesheet
 			scene.getStylesheets().add(
 					getClass().getResource(CSS_PATH).toExternalForm());
@@ -133,10 +134,9 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}
 	}
 
+	// @author A0112764J
 	/**
 	 * This function registers the global hotkeys: Ctrl+M and Ctrl+D.
-	 * 
-	 * @author A0112764J
 	 */
 	private void startHotKeys() {
 		TaskCatalyst tc = this;
@@ -155,9 +155,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 	/**
 	 * This function disables the global hotkeys.
-	 * 
-	 * @author A0112764J
 	 */
+	// @author A0112764J
 	private static void stopHotKeys() {
 		new Thread(new Runnable() {
 			@Override
@@ -170,15 +169,13 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}).start();
 	}
 
+	// @author A0112764J
 	/**
 	 * This function creates hotkeys for the actions. The hotkeys are to undo
 	 * (Ctrl+Z), redo (Ctrl+Y), exit (Ctrl+E), launch help window (Ctrl+H),
 	 * scroll up tasks' list (Shift+Up), scroll down tasks' list (Shift+Down),
 	 * scroll up hashtag list (Alt+Down), and scroll down hashtag list (Alt+Up).
-	 * 
-	 * @author A0112764J
 	 */
-
 	private void addHotKeysListeners(Stage stage, Scene scene) {
 		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z,
 				KeyCodeCombination.CONTROL_DOWN);
@@ -234,11 +231,11 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				});
 	}
 
+	//@author A0111921W - adapted from
+	//http://stackoverflow.com/questions/18792822/dragging-an-undecorated-stage-in-javafx
 	/**
 	 * This function enables the UI to be draggable.
-	 * 
-	 * @author A0111921W
-	 */
+	 */ 
 	private void addDragListeners(final Node mainUI) {
 
 		mainUI.setOnMousePressed(new EventHandler<MouseEvent>() {
@@ -270,11 +267,10 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		});
 	}
 
+	//@author A0112764J
 	/**
 	 * This function is to exit the program and also keeps logging.
-	 * 
-	 * @author A0112764J
-	 */
+	 */ 
 	@Override
 	public void stop() {
 		BlackBox.getInstance().close();
@@ -286,10 +282,12 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		System.exit(0);
 	}
 
+	//@author A0112764J - adapted from 
+	//http://docs.oracle.com/javase/tutorial/uiswing/misc/systemtray.html
+	//https://weblogs.java.net/blog/2006/05/04/using-jpopupmenu-trayicon
 	/**
 	 * This function creates a system tray with 2 popup menu Launch and Exit.
 	 * 
-	 * @author A0111921W
 	 * @param stage
 	 */
 	private static void loadSystemTray(Stage stage) {
@@ -306,10 +304,6 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 		// popupmenu
 		JPopupMenu trayPopupMenu = new JPopupMenu();
-
-		/**
-		 * @author A0112764J
-		 */
 
 		// 1st menuitem for popupmenu
 		JMenuItem launch = new JMenuItem(ACTION_LAUNCH);
@@ -435,6 +429,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		});
 	}
 
+	//@author A0112764J
 	/**
 	 * This function is to execute global hot key Ctrl+M that minimizes
 	 * application while it is running, and to relaunch application while it is
@@ -443,23 +438,22 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	 * It is also used for another global hot key Ctrl+D to paste in command
 	 * bar.
 	 * 
-	 * @author A0112764J
-	 * 
-	 * @param hotKey The hotkey received by the listener.
+	 * @param hotKey
+	 *            The hotkey received by the listener.
 	 */
 	@Override
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
-		case java.awt.event.KeyEvent.VK_M :
+		case java.awt.event.KeyEvent.VK_M:
 			toggleStage();
 			break;
-		case java.awt.event.KeyEvent.VK_D :
+		case java.awt.event.KeyEvent.VK_D:
 			pasteClipboard();
 			break;
 		}
 	}
 
-	// @author A0111890
+	//@author A0111890
 	private void pasteClipboard() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -475,7 +469,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		});
 	}
 
-	// @author A0112764J
+	//@author A0112764J
 	private void toggleStage() {
 		if (primaryStage.isShowing()) {
 			Platform.runLater(new Runnable() {
@@ -496,10 +490,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	}
 }
 
-/**
- * @author A0111921W
- */
-
+//@author A0111921W
+//DarkTheme.css
 // #exitButton {
 // -fx-background-image: url("../images/close24.png");
 // -fx-background-size: 24.0 24.0;
