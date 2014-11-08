@@ -29,9 +29,8 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
-/**
- * @author A0111921W
- */
+//@author A0111921W
+
 public class UIController {
 	@FXML
 	private BorderPane rootBorderPane;
@@ -90,11 +89,10 @@ public class UIController {
 	}
 
 	/**
-	 * This function handles ChangeListener for ListView to look for change in
-	 * focus & display task
-	 * 
-	 * @author A0111921W
+	 * This method add a ChangeListener for ListView to look for change in focus
+	 * & display task
 	 */
+
 	private void listChangeListener() {
 
 		hashTagList.getSelectionModel().selectedItemProperty()
@@ -113,6 +111,10 @@ public class UIController {
 				});
 	}
 
+	/**
+	 * This method add a ChangeListener for statusMessage to look for change in
+	 * height and adjust stage height accordingly
+	 */
 	private void labelChangeListener() {
 
 		statusMessage.heightProperty().addListener(
@@ -126,7 +128,6 @@ public class UIController {
 	}
 
 	private void initializeForms() {
-		initializeTable();
 		statusMessage.setWrapText(true);
 		taskScrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		Platform.runLater(new Runnable() {
@@ -149,35 +150,50 @@ public class UIController {
 					return;
 				}
 
-				VBox vbox = (VBox) taskScrollPane.getContent();
-
-				TaskGrid taskGrid = null;
-
-				for (int i = index; i < vbox.getChildren().size(); i++) {
-					if (vbox.getChildren().get(i) instanceof TaskGrid) {
-						taskGrid = (TaskGrid) vbox.getChildren().get(i);
-						if (taskGrid.getTaskGridID() == index) {
-							break;
-						}
-					}
-				}
-
-				taskGrid.highlight();
-
-				double height = taskScrollPane.getContent().getBoundsInLocal()
-						.getHeight();
-
-				double y = taskGrid.getBoundsInParent().getMaxY();
-				if (y < 10) {
-					setFocusForTaskTable(index);
-					return;
-				}
-				y = y + ((y / height) - 0.5) * taskScrollPane.getHeight()
-						- taskGrid.getHeight() / 2;
-
-				taskScrollPane.setVvalue(y / height);
+				TaskGrid taskGrid = highlightID(index);
+				scrollToTask(index, taskGrid);
 			}
 		});
+	}
+
+	private void scrollToTask(int index, TaskGrid taskGrid) {
+		// get vbox's height
+		double height = taskScrollPane.getContent().getBoundsInLocal()
+				.getHeight();
+
+		double y = taskGrid.getBoundsInParent().getMaxY();
+
+		if (y < 10) {
+			setFocusForTaskTable(index);
+			return;
+		}
+
+		y = y + ((y / height) - 0.5) * taskScrollPane.getHeight()
+				- taskGrid.getHeight() / 2;
+
+		taskScrollPane.setVvalue(y / height);
+	}
+
+	private TaskGrid highlightID(int index) {
+		VBox taskContainer = (VBox) taskScrollPane.getContent();
+
+		TaskGrid taskGrid = null;
+
+		// get task ID label location
+		for (int i = index; i < taskContainer.getChildren().size(); i++) {
+			if (taskContainer.getChildren().get(i) instanceof TaskGrid) {
+				taskGrid = (TaskGrid) taskContainer.getChildren().get(i);
+				
+				if (taskGrid.getTaskGridID() == index) {
+					break;
+				}
+			}
+		}
+
+		// highlight id label
+		taskGrid.highlight();
+		
+		return taskGrid;
 	}
 
 	private void setFocusForTaskTableList(List<Integer> list) {
@@ -194,12 +210,6 @@ public class UIController {
 				hashTagList.getSelectionModel().select(index);
 			}
 		});
-	}
-
-	private void initializeTable() {
-		// Enable multiple selection for the table
-		// taskTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
-		// taskTable.setPlaceholder(new Text(EMPTY_TASKVIEW_MESSAGE));
 	}
 
 	/**
@@ -220,50 +230,29 @@ public class UIController {
 	 */
 	private void handleMessage(Message message) {
 		switch (message.getType()) {
-		case SUCCESS:
-			statusMessage.setText(message.getMessage());
-			setFocusForHashTable(logic.getHashtagSelected());
-			setFocusForTaskTableList(logic.getTasksSelected());
-			displayHashTags();
-			displayTasks();
-			clearForm();
-			break;
-		case AUTOCOMPLETE:
-			commandBar.setText(message.getMessage());
-			commandBar.positionCaret(commandBar.getText().length());
-			break;
-		case ERROR:
-			statusMessage.setText(message.getMessage());
-			break;
+			case SUCCESS:
+				statusMessage.setText(message.getMessage());
+				setFocusForHashTable(logic.getHashtagSelected());
+				setFocusForTaskTableList(logic.getTasksSelected());
+				displayHashTags();
+				displayTasks();
+				commandBar.clear();
+				break;
+			case AUTOCOMPLETE:
+				commandBar.setText(message.getMessage());
+				commandBar.positionCaret(commandBar.getText().length());
+				break;
+			case ERROR:
+				statusMessage.setText(message.getMessage());
+				break;
+			default:
+				break;
 		}
 	}
 
 	/**
-	 * 
-	 * @author A0112764J
+	 * For hotkey to scroll up tasks list
 	 */
-
-	public void connectWithMainTaskCatalyst(TaskCatalyst tc) {
-		this.tc = tc;
-	}
-
-	/**
-	 * This function handles hotKey to execute a desired action that is done by
-	 * user.
-	 * 
-	 * @param associatedText
-	 * @author A0112764J
-	 */
-	public void handleHotKeys(final String associatedText) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				Message message = logic.processCommand(associatedText);
-				handleMessage(message);
-			}
-		});
-	}
-
 	public void scrollTaskUp() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -280,6 +269,9 @@ public class UIController {
 		});
 	}
 
+	/**
+	 * For hotkey to scroll down tasks list
+	 */
 	public void scrollTaskDown() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -297,6 +289,9 @@ public class UIController {
 		});
 	}
 
+	/**
+	 * For hotkey to scroll up hashtag list
+	 */
 	public void scrollHashtagUp() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -306,7 +301,7 @@ public class UIController {
 			}
 		});
 	}
-
+	
 	public void scrollHashtagDown() {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -316,7 +311,10 @@ public class UIController {
 			}
 		});
 	}
-
+	
+	/**
+	 * For CTRL + D, this method will paste the text into command bar
+	 */
 	public void setCommandBar(String pasted) {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -336,6 +334,8 @@ public class UIController {
 	 * 
 	 */
 	public void handleTextFieldWhileUserTyping(KeyEvent event) {
+		// status message will be displayed when user didn't press enter or
+		// control
 		if (!event.getCode().equals(KeyCode.ENTER)
 				&& !event.getCode().equals(KeyCode.CONTROL)) {
 			Message message = logic.getMessageTyping(commandBar.getText());
@@ -352,6 +352,10 @@ public class UIController {
 		}
 	}
 
+	/**
+	 * This method handles displaying of date category and tasks and set into
+	 * the scroll pane
+	 */
 	private void displayTasks() {
 		VBox taskContainer = new VBox();
 		String dateCategory;
@@ -359,9 +363,6 @@ public class UIController {
 		String currentDate = null;
 		Date startDate;
 		List<Task> task = logic.getList();
-
-		taskContainer.setSpacing(10);
-		// taskContainer.getStyleClass().add("vbox");
 
 		if (task.isEmpty()) {
 			StackPane container = new StackPane();
@@ -372,8 +373,8 @@ public class UIController {
 				Task currentTask = task.get(i);
 
 				if (currentTask.getDateStart() != null) {
-
-					// is it StartTime to endTime?
+					// isRange: Task with start and end date
+					// isBlocking: Task with multiple date
 					if (currentTask.isRange()) {
 						startDate = currentTask.getDateStart();
 					} else if (currentTask.isBlocking()) {
@@ -385,19 +386,7 @@ public class UIController {
 						startDate = currentTask.getDateStart();
 					}
 
-					String formatString = "dd MMMM yyyy";
-
-					if (TaskCatalystCommons.isYesterday(startDate)) {
-						formatString += "' (Yesterday)'";
-					} else if (TaskCatalystCommons.isToday(startDate)) {
-						formatString += "' (Today)'";
-					} else if (TaskCatalystCommons.isTomorrow(startDate)) {
-						formatString += "' (Tomorrow)'";
-					} else if (TaskCatalystCommons.isThisWeek(startDate)) {
-						formatString += " (E)";
-					}
-					dateCategory = new SimpleDateFormat(formatString)
-							.format(startDate);
+					dateCategory = setDateCategory(startDate);
 
 				} else {
 					// Floating task
@@ -405,6 +394,7 @@ public class UIController {
 				}
 				currentDate = dateCategory;
 
+				// Ignore repeated dates
 				if (!currentDate.equals(prevDate)) {
 					Label dateCategoryLabel = new Label(dateCategory);
 					dateCategoryLabel.setMaxWidth(Double.MAX_VALUE);
@@ -413,12 +403,30 @@ public class UIController {
 				}
 
 				prevDate = currentDate;
-				taskContainer.getChildren().add(new TaskGrid(i, task.get(i)));
+
+				taskContainer.setSpacing(10);
 				taskContainer.getStyleClass().add("vbox");
-				// taskContainer.setAlignment(javafx.geometry.Pos.CENTER);
+				taskContainer.getChildren().add(new TaskGrid(i, task.get(i)));
 				taskScrollPane.setContent(taskContainer);
 			}
 		}
+	}
+
+	private String setDateCategory(Date startDate) {
+		String dateCategory;
+		String formatString = "dd MMMM yyyy";
+
+		if (TaskCatalystCommons.isYesterday(startDate)) {
+			formatString += "' (Yesterday)'";
+		} else if (TaskCatalystCommons.isToday(startDate)) {
+			formatString += "' (Today)'";
+		} else if (TaskCatalystCommons.isTomorrow(startDate)) {
+			formatString += "' (Tomorrow)'";
+		} else if (TaskCatalystCommons.isThisWeek(startDate)) {
+			formatString += " (E)";
+		}
+		dateCategory = new SimpleDateFormat(formatString).format(startDate);
+		return dateCategory;
 	}
 
 	private StackPane createEmptyMessageLabel(StackPane container) {
@@ -431,10 +439,6 @@ public class UIController {
 
 	private void displayHashTags() {
 		hashTagList.setItems(getHashTagFromList());
-	}
-
-	private void clearForm() {
-		commandBar.clear();
 	}
 
 	private ObservableList<String> getHashTagFromList() {
@@ -455,10 +459,9 @@ public class UIController {
 		assert commandBar != null : "fx:id=\"commandBar\" was not injected: check your FXML file 'interface.fxml'.";
 		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'interface.fxml'.";
 	}
-
-	/**
-	 * This function opens settings window (NOT IMPLEMENTED)
-	 */
+	
+	// @author A0111921W - unused
+	// There was too little settings to implement
 	@FXML
 	private void openSettingsWindow() {
 		Pane myPane;
@@ -471,8 +474,31 @@ public class UIController {
 			e.printStackTrace();
 		}
 	}
+
+	// @author A0112764J
+	public void connectWithMainTaskCatalyst(TaskCatalyst tc) {
+		this.tc = tc;
+	}
+
+	/**
+	 * This function handles hotKey to execute a desired action that is done by
+	 * user.
+	 * 
+	 * @param associatedText
+	 */
+	// @author A0112764J
+	public void handleHotKeys(final String associatedText) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Message message = logic.processCommand(associatedText);
+				handleMessage(message);
+			}
+		});
+	}
 }
 
+// @author A0111921W
 // <?xml version="1.0" encoding="UTF-8"?>
 //
 // <?import javafx.scene.paint.*?>
