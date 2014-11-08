@@ -4,7 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 //@author A0111890
-public class Search extends Action {
+/**
+ * Search Action parses the user's input and sets the TaskManager to use the
+ * specified hashtag and the correct display mode.
+ */
+public class Search implements Action {
 	private static final String[] DICTIONARY = { "search", "find" };
 
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";

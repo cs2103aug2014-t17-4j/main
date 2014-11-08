@@ -5,7 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 //@author A0111890
-public class Undone extends Action {
+/**
+ * Undone Action relies on the TaskManager for retrieving and restoring tasks.
+ * It is able to restore lists of tasks based on search string and task numbers.
+ * The user can also use "all" to restore everything.
+ */
+public class Undone implements Action {
 	private static final String[] DICTIONARY = { "undone", "uncomplete",
 			"restore" };
 

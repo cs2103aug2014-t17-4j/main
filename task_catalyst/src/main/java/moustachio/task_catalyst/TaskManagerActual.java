@@ -6,6 +6,13 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 
 //@author A0111890
+/**
+ * TaskManagerActual implements the TaskManager interface to provide logical
+ * storage capabilities for the system. It relies on ListProcessor for
+ * filtering, and Storage for physical storage. It maintains the state of
+ * display (display mode, display type) and is able to provide functionality for
+ * adding, deleting, completing and restoring multiple tasks.
+ */
 public class TaskManagerActual implements TaskManager {
 	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#ovd",
 			"#tdy", "#tmr", "#upc", "#smd", "#olp", "#dne" };
@@ -390,12 +397,12 @@ public class TaskManagerActual implements TaskManager {
 
 	private void refreshDisplayList() {
 		switch (displayMode) {
-		case HASHTAG:
+		case HASHTAG :
 			displayList = listProcessor.searchByHashtag(taskList,
 					displayKeyword);
 			break;
 
-		case SEARCH:
+		case SEARCH :
 			displayList = listProcessor.searchByKeyword(taskList,
 					displayKeyword);
 			break;

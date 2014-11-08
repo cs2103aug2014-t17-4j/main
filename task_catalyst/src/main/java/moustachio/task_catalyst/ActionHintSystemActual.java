@@ -3,6 +3,11 @@ package moustachio.task_catalyst;
 import java.util.ArrayList;
 
 //@author A0111890
+/**
+ * ActionHintSystemActual applies the Command pattern, using Action and
+ * ActionInvoker classes. When new Actions are added into the system, it must be
+ * added into the getMessageTyping() and generateAction() methods.
+ */
 public class ActionHintSystemActual implements ActionHintSystem {
 	private static final String ERROR_ACTION_UNDEFINED = "Undefined Action Encountered.";
 	private static final String FORMAT_PARTIAL_SUGGESTIONS = "Do you mean %s?";

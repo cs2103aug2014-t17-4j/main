@@ -20,14 +20,14 @@ import org.json.simple.parser.ParseException;
  * This program is to manage writing and reading tasks in a specific text file.
  * 
  * The description of a task is converted into JSON object before saving it in
- * the file. 
+ * the file.
  * 
- * Likewise, the saved task is converted again to text for the purpose
- * of editing or displaying.
+ * Likewise, the saved task is converted again to text for the purpose of
+ * editing or displaying.
  * 
  */
 
-//@author A0112764J
+// @author A0112764J
 public class FileHandler {
 
 	private static final String FOLDER_TASK_CATALYST = "Task Catalyst";
@@ -37,7 +37,7 @@ public class FileHandler {
 	private static final String STRING_EMPTY = "";
 	private static final String REGEX_VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
 	private static final String REGEX_VALID_PATTERN = "(?i)^\\w+|\\d+$";
-	
+
 	private static final String MESSAGE_NOT_FOUND = "The file is not found!";
 	private static final String MESSAGE_INCORRECT_FORMAT = "Incorrect format has been found";
 	private static final String MESSAGE_EMPTY_FILE = "The file is empty.";
@@ -47,11 +47,10 @@ public class FileHandler {
 	private static final String MESSAGE_INVALID_FILE_FORMAT = "Invalid file format!";
 	private static final String MESSAGE_IO_FAULT_DIR_READ = "IO fault has been encountered during making folder to read task.";
 
-	
 	private static BlackBox blackBox = BlackBox.getInstance();
 
 	public void writeTask(Task task, String fileName) throws IOException {
-		assert (task != null && fileName !=null);
+		assert (task != null && fileName != null);
 		checkTaskFileFormat(fileName);
 		try {
 			createFolder();
@@ -60,21 +59,21 @@ public class FileHandler {
 			blackBox.info(MESSAGE_IO_FAULT_WRITE);
 		}
 	}
-	
+
 	private void createFolder() throws IOException {
 		File folder = new File(FOLDER_TASK_CATALYST);
 		if (folder.exists() && folder.isFile()) {
-			printMessage(MESSAGE_IO_FAULT_DIR);	
+			printMessage(MESSAGE_IO_FAULT_DIR);
 		} else {
-			if (!folder.exists())
-			{
-			    folder.mkdir();
+			if (!folder.exists()) {
+				folder.mkdir();
 			}
 		}
 	}
-	
+
 	private void writeJSONFile(Task task, String fileName) throws IOException {
-		FileWriter jsonFile = new FileWriter(PATH_TASK_CATALYST +fileName, true);
+		FileWriter jsonFile = new FileWriter(PATH_TASK_CATALYST + fileName,
+				true);
 		BufferedWriter writer = new BufferedWriter(jsonFile);
 		JSONObject object = new JSONObject();
 		JSONConverter objCodec = new JSONConverter();
@@ -84,21 +83,21 @@ public class FileHandler {
 		writer.flush();
 		writer.close();
 	}
-	
+
 	public List<Task> readTask(String fileName) {
-		assert (fileName !=null);
+		assert (fileName != null);
 		List<Task> list = new ArrayList<Task>();
 
 		checkTaskFileFormat(fileName);
 		doActionToCreateFolder();
-		
-		File file = new File(PATH_TASK_CATALYST +fileName);
-		
-		if (!file.exists() || isEmptyFile(PATH_TASK_CATALYST +fileName)) {
+
+		File file = new File(PATH_TASK_CATALYST + fileName);
+
+		if (!file.exists() || isEmptyFile(PATH_TASK_CATALYST + fileName)) {
 			createNewTextFile(fileName);
 			return new ArrayList<Task>();
 		} else {
-			readJSONFile(PATH_TASK_CATALYST +fileName, list);
+			readJSONFile(PATH_TASK_CATALYST + fileName, list);
 		}
 		return list;
 	}
@@ -112,7 +111,7 @@ public class FileHandler {
 	}
 
 	private void createNewTextFile(String fileName) {
-		File newfileName = new File(PATH_TASK_CATALYST +fileName);
+		File newfileName = new File(PATH_TASK_CATALYST + fileName);
 		try {
 			writeEmpty(newfileName.getPath());
 		} catch (FileNotFoundException e) {
@@ -152,17 +151,20 @@ public class FileHandler {
 		}
 		breader.close();
 	}
-	
+
+	// @author A0112764J -unused
 	/**
 	 * This function is implemented for the purpose of storing setting in
-	 * future.
-	 * There is no setting to save for users but it can be useful for future if users set preferences. 
+	 * future. There is no setting to save for users but it can be useful for
+	 * future if users set preferences.
 	 * 
+	 * @param name The name of the setting used.
+	 * @param fileName The filename used to save.
+	 * @param value The value of the setting.
+	 * @return Returns true if successful, false otherwise.
 	 */
-	
-	//@author A0112764J -unused 
 	public boolean writeSetting(String name, String fileName, String value) {
-		assert (fileName !=null && name !=null && value !=null);
+		assert (fileName != null && name != null && value != null);
 		Boolean isSuccess = false;
 
 		checkWriteSettingParameters(name, fileName, value);
@@ -177,7 +179,7 @@ public class FileHandler {
 		return isSuccess;
 	}
 
-	//@author A0112764J -unused 
+	// @author A0112764J -unused
 	private void checkWriteSettingParameters(String name, String fileName,
 			String value) throws Error {
 		if (isInvalidFileFormat(fileName) || isInvalidName(name)
@@ -186,12 +188,12 @@ public class FileHandler {
 			throw new Error(MESSAGE_INVALID_FILE_FORMAT);
 		}
 	}
-	
-	//@author A0112764J -unused 
+
+	// @author A0112764J -unused
 	private Boolean writeSettingTofile(String name, String fileName,
 			String value) throws IOException {
 		assert (value != null && name != null);
-		Boolean isSuccess=false;
+		Boolean isSuccess = false;
 		BufferedWriter writer = new BufferedWriter(new FileWriter(fileName,
 				true));
 		writer.write(String.format(STRING_WRITE_SETTING, name, value));
@@ -201,16 +203,18 @@ public class FileHandler {
 		return isSuccess;
 	}
 
+	// @author A0112764J -unused
 	/**
 	 * This function is implemented for the purpose of reading setting in
-	 * future.
-	 * There is no setting to save for users but it can be useful for future if users set preferences. 
+	 * future. There is no setting to save for users but it can be useful for
+	 * future if users set preferences.
 	 * 
+	 * @param name The name of the setting to load.
+	 * @param fileName The name of the file to load from.
+	 * @return Returns true the setting is found successful, null otherwise.
 	 */
-	
-	//@author A0112764J -unused 
 	public String readSetting(String name, String fileName) {
-		assert (name != null && fileName !=null);
+		assert (name != null && fileName != null);
 
 		checkReadSettingParameters(name, fileName);
 
@@ -235,7 +239,7 @@ public class FileHandler {
 		return value;
 	}
 
-	//@author A0112764J -unused 
+	// @author A0112764J -unused
 	private void checkReadSettingParameters(String name, String fileName)
 			throws Error {
 		if (isInvalidFileFormat(fileName) || isInvalidName(name)) {
@@ -267,7 +271,7 @@ public class FileHandler {
 
 	public void clear(String fileName) {
 		try {
-			writeEmpty(PATH_TASK_CATALYST +fileName);
+			writeEmpty(PATH_TASK_CATALYST + fileName);
 		} catch (FileNotFoundException e) {
 			blackBox.info(MESSAGE_NOT_FOUND);
 		}
@@ -293,8 +297,8 @@ public class FileHandler {
 		boolean isMatch = matcher.matches();
 		return !isMatch;
 	}
-	
-	private void printMessage(String message){
+
+	private void printMessage(String message) {
 		System.out.println(message);
 	}
 }

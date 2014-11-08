@@ -4,7 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 //@author A0111890
-public class Redo extends Action {
+/**
+ * Redo Action relies on ActionInvoker for the actual redo operation, and
+ * appends or generates the appropriate messages based on the outcome.
+ */
+public class Redo implements Action {
 	private static final String[] DICTIONARY = { "redo" };
 
 	private static final String EXECUTE_SUCCESS = "Redo: %s";

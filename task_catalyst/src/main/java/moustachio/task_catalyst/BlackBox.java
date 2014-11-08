@@ -7,6 +7,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 //@author A0111890
+/**
+ * BlackBox provides the logging functionality for the system. It applies the
+ * Singleton pattern to prevent multiple access to the logging file. Do remember
+ * to close this logger after using it to release resources.
+ */
 public class BlackBox {
 
 	private static final String DEFAULT_LOG_FILE_NAME = "Task Catalyst/blackbox.log";

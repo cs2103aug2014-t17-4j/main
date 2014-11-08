@@ -1,7 +1,11 @@
 package moustachio.task_catalyst;
 
 //@author A0111890
-public class Hashtag extends Action {
+/**
+ * Hashtag Action parses the user's input and sets the TaskManager to use the
+ * specified hashtag and the correct display mode.
+ */
+public class Hashtag implements Action {
 	private static final String HINT_MESSAGE = "Hashtag: Hit enter after typing a valid hashtag to continue.";
 
 	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: #%s.";

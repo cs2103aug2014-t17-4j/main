@@ -3,6 +3,12 @@ package moustachio.task_catalyst;
 import java.util.Stack;
 
 //@author A0111890
+/**
+ * ActionInvoker is used by ActionHintSystemActual for executing commands as
+ * well as maintaining stacks for undo/redo functionality. It applies the
+ * Singleton pattern as there should not be multiple action queues operation on
+ * the same file.
+ */
 public class ActionInvoker {
 	Stack<Action> undos;
 	Stack<Action> redos;

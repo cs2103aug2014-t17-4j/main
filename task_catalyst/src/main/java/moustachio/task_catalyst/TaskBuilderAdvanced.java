@@ -6,6 +6,11 @@ import java.util.Date;
 import java.util.List;
 
 //@author A0111890
+/**
+ * TaskBuilderAdvanced implements the TaskBuilder interface and is able to build
+ * tasks based on user input. It is also able to split tasks if a task contains
+ * multiple dates.
+ */
 public class TaskBuilderAdvanced implements TaskBuilder {
 
 	BlackBox blackBox;

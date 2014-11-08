@@ -13,8 +13,7 @@ import java.util.logging.Logger;
  * 
  * This was adapted from a post from Rumato Estorsky posted 20th July 2012 on following blog:
  * 
- * @url http://nerdydevel.blogspot.com/2012/07/run-only-single-java-application-instance.html
- *
+ * http://nerdydevel.blogspot.com/2012/07/run-only-single-java-application-instance.html
  */
 
 //@author A0112764J -reused

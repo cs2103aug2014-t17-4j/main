@@ -4,7 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 //@author A0111890
-public class Undo extends Action {
+/**
+ * Undo Action relies on ActionInvoker for the actual undo operation, and
+ * appends or generates the appropriate messages based on the outcome.
+ */
+public class Undo implements Action {
 	private static final String[] DICTIONARY = { "undo" };
 
 	private static final String EXECUTE_SUCCESS = "Undo: %s";

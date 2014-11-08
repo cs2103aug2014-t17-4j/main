@@ -69,9 +69,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private static final String CSS_PATH = "/css/DarkTheme.css";
 	private static final String SYSTEM_TRAY_IMAGE_PATH = "/images/moustachio.png";
 
-	/**
-	 * @author A0112764J
-	 */
+	//@author A0112764J
 	public static void main(String[] args) {
 		try {
 			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
@@ -84,16 +82,12 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}
 	}
 
-	/**
-	 * @author A0112764J
-	 */
+	//@author A0112764J
 	Stage getStage() {
 		return this.primaryStage;
 	}
 
-	/**
-	 * @author A0111921W
-	 */
+	//@author A0111921W
 	public void setStageHeight(double height) {
 		primaryStage.setHeight(height);
 	}
@@ -452,7 +446,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	 * 
 	 * @author A0112764J
 	 * 
-	 * @param hotKey
+	 * @param hotKey The hotkey received by the listener.
 	 */
 	@Override
 	public void onHotKey(HotKey hotKey) {
