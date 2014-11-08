@@ -319,6 +319,7 @@ public class UIController {
 	
 	/**
 	 * For CTRL + D, this method will paste the text into command bar
+	 * @param pasted The text copied from clipboard.
 	 */
 	public void setCommandBar(String pasted) {
 		Platform.runLater(new Runnable() {
@@ -489,7 +490,7 @@ public class UIController {
 	 * This function handles hotKey to execute a desired action that is done by
 	 * user.
 	 * 
-	 * @param associatedText
+	 * @param associatedText The command associated to the hotkey.
 	 */
 	//@author A0112764J
 	public void handleHotKeys(final String associatedText) {
