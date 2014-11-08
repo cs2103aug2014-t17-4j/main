@@ -233,7 +233,9 @@ public class TaskCatalystCommons {
 		interpretedInput = ignoreWordsContainingEst(interpretedInput);
 		interpretedInput = ignoreWordsContainingAted(interpretedInput);
 		interpretedInput = ignoreWordsContainingFivePlusDigits(interpretedInput);
+		//interpretedInput = ignoreFourDigitsStartingWithZero(interpretedInput);
 		interpretedInput = ignoreWordsEndingWithNumbers(interpretedInput);
+		interpretedInput = replaceDateAmericanWithBritish(interpretedInput);
 		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
 
 		return interpretedInput;
@@ -1077,6 +1079,12 @@ public class TaskCatalystCommons {
 		return parsingInput.replaceAll(timeWithColon, "$1,");
 	}
 
+	private static String replaceCommasWithAnd(String parsingInput) {
+		assert parsingInput != null;
+
+		return parsingInput.replaceAll(",", " and ");
+	}
+
 	private static String replaceTodayShort(String interpretedInput) {
 		assert interpretedInput != null;
 
@@ -1108,6 +1116,18 @@ public class TaskCatalystCommons {
 		return matchingExpression.replaceAll(spaces, wildCard);
 	}
 
+	private static String replaceDateAmericanWithBritish(
+			String interpretedString) {
+		assert interpretedString != null;
+
+		String americanDate = "\\b([1-9]|[1-2][0-9]|3[0-1])\\/([1-9]|1[1-2])\\b";
+		String britishDate = "$2/$1";
+		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
+
+		return interpretedString.replaceAll(americanDate + onlyOutsideBrackets,
+				britishDate);
+	}
+
 	private static String removeAllAnds(String matchingExpression) {
 		assert matchingExpression != null;
 
@@ -1121,12 +1141,6 @@ public class TaskCatalystCommons {
 		displayString = displayString.replaceAll(prepositions, "\\{");
 
 		return displayString;
-	}
-
-	private static String replaceCommasWithAnd(String parsingInput) {
-		assert parsingInput != null;
-
-		return parsingInput.replaceAll(",", " and ");
 	}
 
 	private static String removeConsecutiveAnds(String parsingInput) {
@@ -1371,6 +1385,19 @@ public class TaskCatalystCommons {
 		String fivePlusDigits = notHashtagged + "\\d{5,}";
 
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, fivePlusDigits);
+
+		return interpretedInput;
+	}
+
+	private static String ignoreFourDigitsStartingWithZero(
+			String interpretedInput) {
+		assert interpretedInput != null;
+
+		String notHashtagged = "(?<!#)";
+		String fourDigitsStartingWithZero = notHashtagged + "(?=0)\\d{4,}";
+
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				fourDigitsStartingWithZero);
 
 		return interpretedInput;
 	}
