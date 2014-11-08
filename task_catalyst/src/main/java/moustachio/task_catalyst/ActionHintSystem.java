@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import moustachio.task_catalyst.Message;
 
-//@author A0111890
+//@author A0111890L
 /**
  * ActionHintSystem is used to process commands and provide live
  * hints based on the user's input.

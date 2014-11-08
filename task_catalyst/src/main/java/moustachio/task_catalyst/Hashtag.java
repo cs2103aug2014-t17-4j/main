@@ -1,6 +1,6 @@
 package moustachio.task_catalyst;
 
-//@author A0111890
+//@author A0111890L
 /**
  * Hashtag Action parses the user's input and sets the TaskManager to use the
  * specified hashtag and the correct display mode.

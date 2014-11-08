@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * ListProcessor is used to process lists of tasks to implement features like
  * Search and the Overlap Warning System.

@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * TaskBuilderAdvanced implements the TaskBuilder interface and is able to build
  * tasks based on user input. It is also able to split tasks if a task contains

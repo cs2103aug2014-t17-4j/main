@@ -453,7 +453,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}
 	}
 
-	//@author A0111890
+	//@author A0111890L
 	private void pasteClipboard() {
 		Platform.runLater(new Runnable() {
 			@Override

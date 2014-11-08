@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * Done Action relies on the TaskManager for retrieving and completing tasks. It
  * is able to complete lists of tasks based on search string and task numbers.

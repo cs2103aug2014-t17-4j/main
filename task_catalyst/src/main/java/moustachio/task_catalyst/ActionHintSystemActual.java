@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.ArrayList;
 
-//@author A0111890
+//@author A0111890L
 /**
  * ActionHintSystemActual applies the Command pattern, using Action and
  * ActionInvoker classes. When new Actions are added into the system, it must be

@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
-//@author A0111890
+//@author A0111890L
 /**
  * This class contains parsing and interpretation methods shared across multiple
  * classes in the system. It provides methods for parsing commands as well as

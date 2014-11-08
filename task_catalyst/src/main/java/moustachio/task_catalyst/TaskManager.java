@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * TaskManager maintains the state of display (display type and keyword), as
  * well as the tasks and hashtags to highlight.

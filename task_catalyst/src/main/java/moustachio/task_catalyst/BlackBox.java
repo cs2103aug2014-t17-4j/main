@@ -6,7 +6,7 @@ import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-//@author A0111890
+//@author A0111890L
 /**
  * BlackBox provides the logging functionality for the system. It applies the
  * Singleton pattern to prevent multiple access to the logging file. Do remember

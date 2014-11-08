@@ -1,6 +1,6 @@
 package moustachio.task_catalyst;
 
-//@author A0111890
+//@author A0111890L
 /**
  * This enumerates the various commands used in the system. New actions need to
  * be added here to be parsed successfully.

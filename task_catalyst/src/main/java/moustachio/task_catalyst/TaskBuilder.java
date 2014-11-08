@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * TaskBuilder is used for creating a list of tasks based on user input.
  */

@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * Logic is the main link between the front-end GUI and the back-end classes.
  * Logic provides functionality for parsing commands, providing hints, providing

@@ -5,7 +5,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * This is the stub ListProcessor used for unit testing of LogicActual.
  */

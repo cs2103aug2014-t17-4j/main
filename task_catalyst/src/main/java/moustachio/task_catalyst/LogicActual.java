@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * LogicActual implements the Logic interface and provides all functionality by
  * applying the facade pattern and relaying commands to the ActionHintSystem as

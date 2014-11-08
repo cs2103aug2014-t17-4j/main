@@ -2,7 +2,7 @@ package moustachio.task_catalyst;
 
 import java.util.Stack;
 
-//@author A0111890
+//@author A0111890L
 /**
  * ActionInvoker is used by ActionHintSystemActual for executing commands as
  * well as maintaining stacks for undo/redo functionality. It applies the

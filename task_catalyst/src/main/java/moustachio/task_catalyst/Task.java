@@ -3,7 +3,7 @@ package moustachio.task_catalyst;
 import java.util.Date;
 import java.util.List;
 
-//@author A0111890
+//@author A0111890L
 /**
  * Task is used to encapsulate everything that is needed to know about a Task
  * and is the main object used throughout the application.
