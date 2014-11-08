@@ -463,8 +463,8 @@ public class UIController {
 		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'interface.fxml'.";
 	}
 	
-	// @author A0111921W - unused
-	// There was too little settings to implement
+	//@author A0111921W - unused
+	//There was too little settings to implement
 	@FXML
 	private void openSettingsWindow() {
 		Pane myPane;
@@ -478,7 +478,7 @@ public class UIController {
 		}
 	}
 
-	// @author A0112764J
+	//@author A0112764J
 	public void connectWithMainTaskCatalyst(TaskCatalyst tc) {
 		this.tc = tc;
 	}
@@ -489,7 +489,7 @@ public class UIController {
 	 * 
 	 * @param associatedText
 	 */
-	// @author A0112764J
+	//@author A0112764J
 	public void handleHotKeys(final String associatedText) {
 		Platform.runLater(new Runnable() {
 			@Override
@@ -501,7 +501,7 @@ public class UIController {
 	}
 }
 
-// @author A0111921W
+//@author A0111921W
 // <?xml version="1.0" encoding="UTF-8"?>
 //
 // <?import javafx.scene.paint.*?>
