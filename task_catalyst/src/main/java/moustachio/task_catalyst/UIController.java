@@ -30,13 +30,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 //@author A0111921W
-<<<<<<< HEAD
 
-=======
 /**
  * UIController is the main controller for the TaskCatalyst UI.
  */
->>>>>>> branch 'master' of https://xantoh@github.com/cs2103aug2014-t17-4j/main.git
+
 public class UIController {
 	@FXML
 	private BorderPane rootBorderPane;
@@ -98,7 +96,6 @@ public class UIController {
 	 * This method add a ChangeListener for ListView to look for change in focus
 	 * & display task
 	 */
-
 	private void listChangeListener() {
 
 		hashTagList.getSelectionModel().selectedItemProperty()
@@ -256,34 +253,9 @@ public class UIController {
 		}
 	}
 
-<<<<<<< HEAD
 	/**
 	 * For hotkey to scroll up tasks list
 	 */
-=======
-	//@author A0112764J
-	public void connectWithMainTaskCatalyst(TaskCatalyst tc) {
-		this.tc = tc;
-	}
-
-	/**
-	 * This function handles hotKey to execute a desired action that is done by
-	 * user.
-	 * 
-	 * @param associatedText The command associated with the hotkey.
-	 * @author A0112764J
-	 */
-	public void handleHotKeys(final String associatedText) {
-		Platform.runLater(new Runnable() {
-			@Override
-			public void run() {
-				Message message = logic.processCommand(associatedText);
-				handleMessage(message);
-			}
-		});
-	}
-
->>>>>>> branch 'master' of https://xantoh@github.com/cs2103aug2014-t17-4j/main.git
 	public void scrollTaskUp() {
 		Platform.runLater(new Runnable() {
 			@Override
