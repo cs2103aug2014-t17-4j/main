@@ -400,4 +400,11 @@ public class TaskBuilderAdvancedTest {
 		task = taskBuilder.createOneTask("Something today");
 		assertEquals(false, task.isDeadline());
 	}
+
+	// Test for deadline
+	@Test
+	public void tc50() {
+		Task task = taskBuilder.createOneTask("Something 21/6");
+		assertEquals("Sat Jun 21 00:00:01 SGT 2014", task.getDateStart().toString());
+	}
 }
