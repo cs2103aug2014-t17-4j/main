@@ -45,7 +45,7 @@
                      <children>
                         <ImageView fx:id="basicFeatures" fitHeight="402.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../images/basic.jpg" />
+                              <Image url="@../images/basic1.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
             </content>
@@ -67,7 +67,7 @@
                      <children>
                         <ImageView fitHeight="377.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/hotkeys.jpg" />
+                              <Image url="@../images/hotkeys1.jpg" />
                            </image>
                         </ImageView>
                      </children></AnchorPane>
