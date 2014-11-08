@@ -96,6 +96,8 @@ public class UIController {
 	 * This method add a ChangeListener for ListView to look for change in focus
 	 * & display task
 	 */
+	//@author A0111921W - Adapted from ORACLE
+	//http://docs.oracle.com/javafx/2/ui_controls/list-view.htm
 	private void listChangeListener() {
 
 		hashTagList.getSelectionModel().selectedItemProperty()
