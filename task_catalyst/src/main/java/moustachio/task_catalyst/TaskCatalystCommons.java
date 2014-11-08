@@ -993,7 +993,7 @@ public class TaskCatalystCommons {
 		assert interpretedInput != null;
 
 		String todayShort = "(\\s|^)(tdy)(\\s|$)";
-		String today = " today";
+		String today = " today ";
 
 		interpretedInput = interpretedInput.replaceAll(todayShort, today);
 
@@ -1004,7 +1004,7 @@ public class TaskCatalystCommons {
 		assert interpretedInput != null;
 
 		String tomorrowShort = "(\\s|^)(tmr|tml)(\\s|$)";
-		String tomorrow = " tomorrow";
+		String tomorrow = " tomorrow ";
 
 		interpretedInput = interpretedInput.replaceAll(tomorrowShort, tomorrow);
 
