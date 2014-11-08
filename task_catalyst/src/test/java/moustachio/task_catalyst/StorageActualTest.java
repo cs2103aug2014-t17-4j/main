@@ -10,11 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-/**
- * 
- * @author A0112764J
- */
-
+//@author A0112764J
 public class StorageActualTest {
 
 	Storage data = new StorageActual();
@@ -55,6 +51,14 @@ public class StorageActualTest {
 	@Test
 	public void testInvalidName2() {
 		String name = "file ";
+		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+	
+
+	/* This is a boundary case for 'invalid regex' partition */
+	@Test
+	public void testInvalidName3() {
+		String name = "file@";
 		assertEquals(true, fileHandler.isInvalidName(name));
 	}
 
