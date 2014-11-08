@@ -87,7 +87,8 @@
 .iconLabelStyle{
 	-fx-alignment: center-right;
     -fx-font-size: 12.0px;
-	-fx-spacing	: 5px;   
+	-fx-spacing	: 5px;
+	-fx-padding: 5px;
 }
 
 .descTaskStyle{
