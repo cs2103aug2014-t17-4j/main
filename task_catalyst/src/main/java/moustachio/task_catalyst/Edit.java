@@ -5,7 +5,13 @@ import java.util.Arrays;
 import java.util.List;
 
 //@author A0111890
-public class Edit extends Action {
+/**
+ * Edit Action relies on the TaskManager for retrieving and replacing tasks. It
+ * is able to replace single tasks with multiple tasks if the user's task is
+ * split. It provides autocomplete functionality when certain patterns are
+ * matched, and uses Live Task Preview when the user is editing the task.
+ */
+public class Edit implements Action {
 	private static final String[] DICTIONARY = { "edit" };
 
 	private static final String EXECUTE_ERROR = "Invalid task number specified.";

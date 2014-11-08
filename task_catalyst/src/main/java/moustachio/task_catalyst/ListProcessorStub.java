@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.List;
 
 //@author A0111890
+/**
+ * This is the stub ListProcessor used for unit testing of LogicActual.
+ */
 public class ListProcessorStub implements
 		moustachio.task_catalyst.ListProcessor {
 

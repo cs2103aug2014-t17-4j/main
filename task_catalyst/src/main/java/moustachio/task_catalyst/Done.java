@@ -5,7 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 //@author A0111890
-public class Done extends Action {
+/**
+ * Done Action relies on the TaskManager for retrieving and completing tasks. It
+ * is able to complete lists of tasks based on search string and task numbers.
+ * The user can also use "all" to complete everything.
+ */
+public class Done implements Action {
 	private static final String[] DICTIONARY = { "done", "complete" };
 
 	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to complete.";

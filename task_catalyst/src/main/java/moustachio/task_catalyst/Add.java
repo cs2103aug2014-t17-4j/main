@@ -3,7 +3,12 @@ package moustachio.task_catalyst;
 import java.util.List;
 
 //@author A0111890
-public class Add extends Action {
+/**
+ * Add Action relies on the TaskBuilder for building tasks, and the TaskManager
+ * for logical storage. It also provides Live Task Preview when hints are
+ * requested.
+ */
+public class Add implements Action {
 	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
 	private static final String EXECUTE_ERROR = "There was an error adding the task.";
 

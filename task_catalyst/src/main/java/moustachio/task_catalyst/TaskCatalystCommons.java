@@ -13,6 +13,12 @@ import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
 //@author A0111890
+/**
+ * This class contains parsing and interpretation methods shared across multiple
+ * classes in the system. It provides methods for parsing commands as well as
+ * NLP conversion of user input into various formats (Interpreted String,
+ * Relative String, Display String, etc.).
+ */
 public class TaskCatalystCommons {
 
 	private static final String ERROR_OVERLAPPING_INTERNALLY = "Please resolve overlapping dates in the task.";
@@ -31,6 +37,13 @@ public class TaskCatalystCommons {
 
 	// Command Parsing Methods
 
+	/**
+	 * Parses and interprets the user's input and outputs the command type.
+	 * 
+	 * @param userCommand
+	 *            The entire string entered by the user.
+	 * @return A CommandType enumeration type.
+	 */
 	public static CommandType getCommandType(String userCommand) {
 		blackBox.info("User Typed: " + userCommand);
 
@@ -139,6 +152,22 @@ public class TaskCatalystCommons {
 
 	// High-Level Interpreted String Parsing Methods
 
+	/**
+	 * Parses the user's input into an Interpreted String which are specially
+	 * formatted strings with all dates replaced with absolute values enclosed
+	 * in curly braces, and all ignored text in square brackets. Interpreted
+	 * Strings are stored directly in the tasks, and then recomputed later into
+	 * Relative Strings, Display Strings, and Display Strings without Date.
+	 * 
+	 * @param userInput
+	 *            The user's input as typed.
+	 * @param strict
+	 *            Whether the parsing should raise an exception when invalid
+	 *            scenarios are encountered.
+	 * @return Interpreted String
+	 * @throws UnsupportedOperationException
+	 *             When strict mode is enabled and an invalid situation occurs.
+	 */
 	public static String getInterpretedString(String userInput, boolean strict)
 			throws UnsupportedOperationException {
 		assert userInput != null;
@@ -162,7 +191,7 @@ public class TaskCatalystCommons {
 		return interpretedString;
 	}
 
-	public static String getInterpretedStringSingleIteration(
+	private static String getInterpretedStringSingleIteration(
 			String interpretedString) {
 		assert interpretedString != null;
 
@@ -179,7 +208,7 @@ public class TaskCatalystCommons {
 		return interpretedString;
 	}
 
-	public static String getInterpretedStringSinglePass(String userInput)
+	private static String getInterpretedStringSinglePass(String userInput)
 			throws UnsupportedOperationException {
 		assert userInput != null;
 
@@ -407,7 +436,7 @@ public class TaskCatalystCommons {
 		}
 	}
 
-	public static void truncateDateWithoutTime(List<Date> dates) {
+	private static void truncateDateWithoutTime(List<Date> dates) {
 		assert dates != null;
 
 		for (Date date : dates) {
@@ -422,7 +451,7 @@ public class TaskCatalystCommons {
 	}
 
 	@SuppressWarnings("deprecation")
-	public static Date truncateTime(Date date) {
+	private static Date truncateTime(Date date) {
 		assert date != null;
 
 		date.setHours(0);
@@ -536,13 +565,25 @@ public class TaskCatalystCommons {
 
 	// High-Level Pretty String Parsing Methods
 
-	public static String getRelativeString(String userInput,
+	/**
+	 * Replaces all date blocks (enclosed in curly braces) of an Interpreted
+	 * String with strings representing relative date/time, such as "today",
+	 * "tomorrow", "Monday", and so on.
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @param isAlwaysShowTime
+	 *            Always print the time, even if adjacent dates are the same
+	 *            time.
+	 * @return Relative String
+	 */
+	public static String getRelativeString(String interpretedString,
 			boolean isAlwaysShowTime) {
-		assert userInput != null;
+		assert interpretedString != null;
 
-		String editedUserInput = userInput;
+		String relativeString = interpretedString;
 
-		List<DateGroup> dateGroups = getRelativeStringDateGroups(userInput);
+		List<DateGroup> dateGroups = getRelativeStringDateGroups(interpretedString);
 
 		Date previousDate = null;
 
@@ -560,17 +601,30 @@ public class TaskCatalystCommons {
 			SimpleDateFormat formatter = generateFormatter(previousDate,
 					currentDate, nextDate, isAlwaysShowTime);
 
-			editedUserInput = editedUserInput.replace(dateGroups.get(i)
-					.getText(), formatter.format(currentDate));
+			relativeString = relativeString.replace(
+					dateGroups.get(i).getText(), formatter.format(currentDate));
 
 			previousDate = currentDate;
 		}
 
-		editedUserInput = replaceRelativeStringPrepositions(editedUserInput);
+		relativeString = replaceRelativeStringPrepositions(relativeString);
 
-		return editedUserInput;
+		return relativeString;
 	}
 
+	/**
+	 * Automatically parses a user's input into an Interpreted String, then a
+	 * Relative String, and finally into a Display String. A Display String is a
+	 * Relative String with no square or curly brackets printed. This is useful
+	 * for Live Task Preview.
+	 * 
+	 * @param userInput
+	 *            The entire user's input exactly as he types it.
+	 * @return Display String
+	 * @throws UnsupportedOperationException
+	 *             This is thrown when the user enters an invalid combination of
+	 *             date and time.
+	 */
 	public static String getDisplayString(String userInput)
 			throws UnsupportedOperationException {
 		assert userInput != null;
@@ -714,6 +768,13 @@ public class TaskCatalystCommons {
 
 	// Interpreted String Operation Methods
 
+	/**
+	 * Parses an Interpreted String and returns all dates in an array.
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @return A List of Dates
+	 */
 	public static List<Date> getAllDates(String interpretedString) {
 		assert interpretedString != null;
 
@@ -735,6 +796,13 @@ public class TaskCatalystCommons {
 		return allDates;
 	}
 
+	/**
+	 * Parses an Interpreted String and returns all hashtags.
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @return A List of String Hashtags
+	 */
 	public static List<String> getAllHashtags(String interpretedString) {
 		assert interpretedString != null;
 
@@ -760,6 +828,16 @@ public class TaskCatalystCommons {
 		return hashtagList;
 	}
 
+	/**
+	 * Checks for words between dates to determine user intention (to, or, and,
+	 * etc.)
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @param word
+	 *            The word to be checked.
+	 * @return Returns true if it is found, false otherwise.
+	 */
 	public static boolean hasWordBetweenDates(String interpretedString,
 			String word) {
 		assert interpretedString != null;
@@ -775,6 +853,16 @@ public class TaskCatalystCommons {
 		return hasWordBetweenDates;
 	}
 
+	/**
+	 * Checks for words before dates to determine user intention (from, between,
+	 * etc.)
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @param word
+	 *            The word to be checked.
+	 * @return Returns true if it is found, false otherwise.
+	 */
 	public static boolean hasWordBeforeDates(String interpretedString,
 			String word) {
 		assert interpretedString != null;
@@ -790,6 +878,8 @@ public class TaskCatalystCommons {
 		return hasWordBeforeDates;
 	}
 
+	// Date Time Libraries
+
 	public static boolean isBetweenDates(Date start, Date end, Date check) {
 		assert start != null;
 		assert end != null;
@@ -804,8 +894,6 @@ public class TaskCatalystCommons {
 
 		return isBetweenDates;
 	}
-
-	// Date Time Libraries
 
 	public static boolean isSameTime(Date date, Date date2) {
 		if (date == null || date2 == null) {

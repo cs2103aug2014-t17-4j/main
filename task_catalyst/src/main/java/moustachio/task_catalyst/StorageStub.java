@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 //@author A0111890
+/**
+ * This is the stub Storage used for unit testing of LogicActual.
+ */
 public class StorageStub implements Storage {
 
 	List<Task> list;

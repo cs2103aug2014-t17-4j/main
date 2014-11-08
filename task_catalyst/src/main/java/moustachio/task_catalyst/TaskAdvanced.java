@@ -4,11 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 //@author A0111890
+/**
+ * TaskAdvanced is a Task object created by the TaskBuilderAdvanced. It stores
+ * information in the form of Interpreted Strings to facilitate Relative Date
+ * Display. Descriptions, dates and hashtags are populated upon initialization
+ * or modification of the stored description;
+ */
 public class TaskAdvanced implements Task {
 	String description;
 	Date dateStart;
 	Date dateEnd;
 	List<Date> allDates;
+	List<String> hashtags;
 
 	boolean isOverlapping;
 	boolean isDone;
@@ -24,10 +31,11 @@ public class TaskAdvanced implements Task {
 		this.isDone = false;
 	}
 
-	private void initializeDates() {
-		String descriptionRaw = getDescriptionRaw();
+	private void initializeFields() {
+		String interpretedString = getDescriptionRaw();
 
-		allDates = TaskCatalystCommons.getAllDates(descriptionRaw);
+		hashtags = TaskCatalystCommons.getAllHashtags(interpretedString);
+		allDates = TaskCatalystCommons.getAllDates(interpretedString);
 
 		boolean isFloatingTask = allDates.isEmpty();
 
@@ -77,7 +85,7 @@ public class TaskAdvanced implements Task {
 	@Override
 	public void setDescription(String description) {
 		initializeAttributes(description);
-		initializeDates();
+		initializeFields();
 	}
 
 	@Override
@@ -188,11 +196,6 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public List<String> getHashtags() {
-		String interpretedString = getDescriptionRaw();
-
-		List<String> hashtags = TaskCatalystCommons
-				.getAllHashtags(interpretedString);
-
 		return hashtags;
 	}
 

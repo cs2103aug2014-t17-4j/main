@@ -5,7 +5,12 @@ import java.util.Arrays;
 import java.util.List;
 
 //@author A0111890
-public class Delete extends Action {
+/**
+ * Delete Action relies on the TaskManager for retrieving and deleting tasks. It
+ * is able to delete lists of tasks based on search string and task numbers. The
+ * user can also use "all" to delete everything.
+ */
+public class Delete implements Action {
 	private static final String[] DICTIONARY = { "delete", "rm", "del" };
 
 	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to delete.";

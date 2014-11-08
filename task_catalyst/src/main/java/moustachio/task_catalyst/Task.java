@@ -4,6 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 //@author A0111890
+/**
+ * Task is used to encapsulate everything that is needed to know about a Task
+ * and is the main object used throughout the application.
+ */
 public interface Task extends Comparable<Task> {
 
 	public String getDescription();
