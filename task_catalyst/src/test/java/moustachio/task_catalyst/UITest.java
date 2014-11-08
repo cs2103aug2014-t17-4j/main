@@ -8,22 +8,11 @@ import java.io.IOException;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyCombination;
 
 import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 
-import javafx.scene.control.ListView;
-
-import org.junit.Test;
-import org.junit.experimental.categories.Category;
-import org.loadui.testfx.categories.TestFX;
-
-import static javafx.collections.FXCollections.observableArrayList;
-import static org.hamcrest.core.IsNot.not;
-import static org.loadui.testfx.controls.ListViews.containsRow;
-import static org.loadui.testfx.controls.ListViews.numberOfRowsIn;
-
+//@author A0111921W
 public class UITest extends GuiTest {
 	public Parent getRootNode() {
 		Parent root = null;
