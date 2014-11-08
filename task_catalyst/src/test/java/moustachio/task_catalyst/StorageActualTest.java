@@ -128,9 +128,9 @@ public class StorageActualTest {
 
 		List<Task> elist = new ArrayList<Task>();
 		elist = data.loadTasks(fileName);
-		assertTrue(list.get(0).getDescription()
-				.equals(elist.get(0).getDescription())
-				&& list.get(1).getDescription()
+		assertEquals(true,list.get(0).getDescription()
+				.equals(elist.get(0).getDescription()));
+		assertEquals(true, list.get(1).getDescription()
 						.equals(elist.get(1).getDescription()));
 	}
 
