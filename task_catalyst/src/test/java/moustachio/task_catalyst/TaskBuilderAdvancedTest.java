@@ -6,6 +6,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+//@author A0111890L
 public class TaskBuilderAdvancedTest {
 
 	TaskBuilderAdvanced taskBuilder = new TaskBuilderAdvanced();
@@ -160,21 +161,19 @@ public class TaskBuilderAdvancedTest {
 				task.getDescriptionEdit());
 	}
 
-	// Automatically remove preposition range.
+	// Automatically remove prepositions.
 	@Test
 	public void tc18() {
 		Task task = taskBuilder.createOneTask("At at at at at at at today 5pm");
 		assertEquals(null, task);
 	}
 
-	// Able to handle "at" and "from" between date/time specifications
+	// Able to prevent mixed date time formats.
 	@Test
 	public void tc19() {
-		try {
-			taskBuilder
+		Task task = taskBuilder
 					.createOneTask("Today at 5pm and tomorrow from 6pm to 7pm");
-		} catch (UnsupportedOperationException e) {
-		}
+		assertEquals(null, task);
 	}
 
 	// Test Range Recognition - No Range
@@ -195,7 +194,7 @@ public class TaskBuilderAdvancedTest {
 	@Test
 	public void tc22() {
 		Task task = taskBuilder.createOneTask("Meet boss from 5PM to 5PM");
-		assertEquals("Meet boss", task.getDescription());
+		assertEquals("Meet boss from today 5PM", task.getDescriptionEdit());
 	}
 
 	// Displaying dates when previous day == current day, and next time ==
@@ -204,21 +203,21 @@ public class TaskBuilderAdvancedTest {
 	public void tc23() {
 		Task task = taskBuilder
 				.createOneTask("Meet boss today 1pm, 5pm and tomorrow");
-		assertEquals("Meet boss", task.getDescription());
+		assertEquals("Meet boss today 1PM, 5PM and tomorrow 5PM", task.getDescriptionEdit());
 	}
 
 	// Repeated Date alternate.
 	@Test
 	public void tc24() {
 		Task task = taskBuilder.createOneTask("Meet boss 5PM and today.");
-		assertEquals("Meet boss.", task.getDescription());
+		assertEquals("Meet boss today 5PM.", task.getDescriptionEdit());
 	}
 
 	// Ignore parsing of number words
 	@Test
 	public void tc25() {
 		Task task = taskBuilder.createOneTask("Twenty four");
-		assertEquals("Twenty four", task.getDescription());
+		assertEquals("Twenty four", task.getDescriptionEdit());
 	}
 
 	// Ignore parsing of number words
@@ -226,7 +225,7 @@ public class TaskBuilderAdvancedTest {
 	public void tc26() {
 		Task task = taskBuilder
 				.createOneTask("one thing from 1 oct 2013 5pm to 1 oct 2013 6pm");
-		assertEquals("one thing", task.getDescription());
+		assertEquals("one thing from 1 Oct 2013 5PM to 6PM", task.getDescriptionEdit());
 	}
 
 	// Handle words like "a*", "h*", after a date range
@@ -234,7 +233,7 @@ public class TaskBuilderAdvancedTest {
 	public void tc27() {
 		Task task = taskBuilder
 				.createOneTask("Meet boss from 5 Oct 1pm to 2pm a");
-		assertEquals("Meet boss a", task.getDescription());
+		assertEquals("Meet boss from 5 Oct 1PM to 2PM a", task.getDescriptionEdit());
 	}
 
 	// Handle words like "test" after a date range
@@ -242,14 +241,14 @@ public class TaskBuilderAdvancedTest {
 	public void tc28() {
 		Task task = taskBuilder
 				.createOneTask("Meet boss from 5 Oct 1pm to 2pm test");
-		assertEquals("Meet boss test", task.getDescription());
+		assertEquals("Meet boss from 5 Oct 1PM to 2PM [test]", task.getDescriptionEdit());
 	}
 
 	// Handle words containing "ated" after a date range
 	@Test
 	public void tc29() {
 		Task task = taskBuilder.createOneTask("Get movie rated 1pm");
-		assertEquals("Get movie rated", task.getDescription());
+		assertEquals("Get movie [rated] today 1PM", task.getDescriptionEdit());
 	}
 
 	// Display Comma Separated Items Properly (artifact problem from multi-pass
@@ -257,7 +256,7 @@ public class TaskBuilderAdvancedTest {
 	@Test
 	public void tc30() {
 		Task task = taskBuilder.createOneTask("Meet boss 5pm 6pm 7pm.");
-		assertEquals("Meet boss.", task.getDescription());
+		assertEquals("Meet boss today 5PM, 6PM and 7PM.", task.getDescriptionEdit());
 	}
 
 	// Catch mixed date types in this situation.
@@ -275,109 +274,82 @@ public class TaskBuilderAdvancedTest {
 		assertEquals(null, task);
 	}
 
-	// Detect range "to" keyword with other intermediate words.
-	@Test
-	public void tc33() {
-		Task task = taskBuilder
-				.createOneTask("Meet boss at 5pm for fun to around 6pm.");
-		assertEquals(null, task);
-	}
-
 	// Catch invalid date range in the case of tc33.
 	@Test
-	public void tc34() {
+	public void tc33() {
 		Task task = taskBuilder
 				.createOneTask("Meet boss at 5pm for fun to around 6pm and then at 7pm.");
 		assertEquals(null, task);
 	}
 
-	// Do not consider a task ranged if the "to" is more than 2 words away from
-	// the time.
-	// For example, 5PM to do project and 6PM.
+		// Fixed a problem when a partial keyword is found between two valid dates.
 	@Test
-	public void tc35() {
-		Task task = taskBuilder
-				.createOneTask("Meet boss at 5pm to do project and 6pm for fun and then 7pm.");
-		assertEquals(null, task);
-	}
-
-	// Consider a task ranged if the "to" is less than 2 words away from the
-	// time.
-	@Test
-	public void tc36() {
-		Task task = taskBuilder
-				.createOneTask("Meet boss at 5pm to do project to around 6pm.");
-		assertEquals(null, task);
-	}
-
-	// Fixed a problem when a partial keyword is found between two valid dates.
-	@Test
-	public void tc37() {
+	public void tc34() {
 		Task task = taskBuilder.createOneTask("5pm mor 6pm mor 7pm.");
 		assertEquals(null, task);
 	}
 
-	// Alternate case to tc37.
+	// Alternate case to tc34.
 	@Test
-	public void tc38() {
+	public void tc35() {
 		Task task = taskBuilder.createOneTask("5pm mor even 6pm");
 		assertEquals(null, task);
 	}
 
 	// Catch mixed date types in repeated dates.
 	@Test
-	public void tc39() {
+	public void tc36() {
 		Task task = taskBuilder.createOneTask("5pm 5pm 5pm to 6pm and 7pm");
 		assertEquals(null, task);
 	}
 
 	// Fix "before on" preposition.
 	@Test
-	public void tc40() {
+	public void tc37() {
 		Task task = taskBuilder
 				.createOneTask("Complete the task before 5pm 13 Oct.");
-		assertEquals("Complete the task.", task.getDescription());
+		assertEquals("Complete the task before 13 Oct 5PM and today 5PM.", task.getDescriptionEdit());
 	}
 
 	// Friday should show up without dates.
 	@Test
-	public void tc41() {
+	public void tc38() {
 		Task task = taskBuilder.createOneTask("today");
 		assertEquals(null, task);
 	}
 
 	// Commas after dates should be parsable.
 	@Test
-	public void tc42() {
-		Task task = taskBuilder.createOneTask("Something mon and tue,");
-		assertEquals("Something,", task.getDescription());
+	public void tc39() {
+		Task task = taskBuilder.createOneTask("Something today and tomorrow,");
+		assertEquals("Something today and tomorrow, ", task.getDescriptionEdit());
 	}
 
 	// Fullstops after dates should be parsable.
 	@Test
-	public void tc43() {
+	public void tc40() {
 		Task task = taskBuilder
-				.createOneTask("Something mon and tue. then something else.");
-		assertEquals("Something. then something else.", task.getDescription());
+				.createOneTask("Something today and tomorrow. then something else.");
+		assertEquals("Something today and tomorrow. then something else.", task.getDescriptionEdit());
 	}
 
 	// Overlapping dates in the same task.
 	@Test
-	public void tc44() {
+	public void tc41() {
 		Task task = taskBuilder.createOneTask("Something 1pm 2pm 3pm then 1pm");
 		assertEquals(null, task);
 	}
 
 	// Overlapping dates in the same task.
 	@Test
-	public void tc45() {
+	public void tc42() {
 		Task task = taskBuilder.createOneTask("Something today");
 		assertEquals(true, task.isAllDay());
 	}
 
 	// Be able to take time without commas correctly
 	@Test
-	public void tc46() {
+	public void tc43() {
 		Task task = taskBuilder.createOneTask("Something tomorrow 1pm 2pm 3pm");
 		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
 				task.getDescriptionEdit());
@@ -385,7 +357,7 @@ public class TaskBuilderAdvancedTest {
 
 	// Be able to take time without commas correctly
 	@Test
-	public void tc48() {
+	public void tc44() {
 		Task task = taskBuilder
 				.createOneTask("Something tomorrow 13:00 14:00 15:00");
 		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
@@ -394,7 +366,7 @@ public class TaskBuilderAdvancedTest {
 
 	// Test for deadline
 	@Test
-	public void tc49() {
+	public void tc45() {
 		Task task = taskBuilder.createOneTask("Something by today");
 		assertEquals(true, task.isDeadline());
 		task = taskBuilder.createOneTask("Something today");
@@ -403,7 +375,7 @@ public class TaskBuilderAdvancedTest {
 
 	// Test for deadline
 	@Test
-	public void tc50() {
+	public void tc46() {
 		Task task = taskBuilder.createOneTask("Something 21/6");
 		assertEquals("Sat Jun 21 00:00:01 SGT 2014", task.getDateStart()
 				.toString());

@@ -10,6 +10,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+//@author A0111890L
 public class LogicActualTest {
 
 	private static final int NUM_OF_DEFAULT_HASHTAGS = 9;
