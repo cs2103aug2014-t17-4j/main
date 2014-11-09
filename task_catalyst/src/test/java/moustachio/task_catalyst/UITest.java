@@ -34,7 +34,7 @@ public class UITest extends GuiTest {
 	@Test
 	public void test1() {
 		verifyThat("#statusMessage",
-				hasText("Type something to begin adding a task.\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details."));
+				hasText("Type something to begin adding a task.\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details."));
 	}
 	
 	//delete all task added previously
