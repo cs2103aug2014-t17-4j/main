@@ -262,9 +262,10 @@ public class TaskCatalystCommons {
 
 	private static List<DateGroup> parseParsingInput(String parsingInput) {
 		assert parsingInput != null;
-
+		
+		List<DateGroup> dateGroups;
 		try {
-			List<DateGroup> dateGroups = prettyTimeParser
+			dateGroups = prettyTimeParser
 					.parseSyntax(parsingInput);
 		} catch (Exception e) {
 			throw new UnsupportedOperationException(ERROR_PRETTY_TIME_CRASH);
@@ -1285,8 +1286,9 @@ public class TaskCatalystCommons {
 		assert kept != null;
 		assert removed != null;
 
+		String caseInsensitive = "(?i)";
 		String rightPattern = kept + " \\{";
-		String wrongPattern = rightPattern + removed + " ";
+		String wrongPattern = rightPattern + caseInsensitive +removed + " ";
 
 		return userInput.replaceAll(wrongPattern, rightPattern);
 	}
