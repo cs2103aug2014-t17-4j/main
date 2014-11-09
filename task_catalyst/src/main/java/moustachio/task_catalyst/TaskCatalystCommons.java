@@ -1119,7 +1119,7 @@ public class TaskCatalystCommons {
 		assert matchingExpression != null;
 
 		String spaces = "\\s+";
-		String wildCard = "( |,|, )?(at|from|and)?( on)?( )";
+		String wildCard = "( |,|, )?(?i)(at|from|and)?( on)?( )";
 
 		return matchingExpression.replaceAll(spaces, wildCard);
 	}
@@ -1145,7 +1145,7 @@ public class TaskCatalystCommons {
 	private static String removeAllPrepositions(String displayString) {
 		assert displayString != null;
 
-		String prepositions = " (from|before|after|either|by|between) \\{";
+		String prepositions = " (?i)(from|before|after|either|by|between) \\{";
 		displayString = displayString.replaceAll(prepositions, "\\{");
 
 		return displayString;
@@ -1154,7 +1154,7 @@ public class TaskCatalystCommons {
 	private static String removeConsecutiveAnds(String parsingInput) {
 		assert parsingInput != null;
 
-		return parsingInput.replaceAll("(\\b)(and)+", " and ");
+		return parsingInput.replaceAll("(\\b)(?i)(and)+", " and ");
 	}
 
 	private static String removeConsecutiveWhitespaces(String interpretedInput) {
@@ -1172,7 +1172,7 @@ public class TaskCatalystCommons {
 	private static String removeEmptyPrepositions(String displayString) {
 		assert displayString != null;
 
-		String emptyPrepositions = "\\}(\\s)?(,|to|and|or) \\{";
+		String emptyPrepositions = "\\}(\\s)?(?i)(,|to|and|or) \\{";
 		displayString = displayString.replaceAll(emptyPrepositions, "\\}\\{");
 
 		return displayString;
@@ -1206,7 +1206,7 @@ public class TaskCatalystCommons {
 		String newParsingInput = parsingInput;
 
 		for (String numberWord : numberWords) {
-			newParsingInput = newParsingInput.replaceAll("(\\b)(" + numberWord
+			newParsingInput = newParsingInput.replaceAll("(\\b)(?i)(" + numberWord
 					+ ")( |$)", " ");
 		}
 
@@ -1314,7 +1314,7 @@ public class TaskCatalystCommons {
 	private static String removeSensitiveParsingWords(String parsingInput) {
 		assert parsingInput != null;
 
-		String sensitiveWords = "(\\b)(at|in|from|on)(\\b|$)";
+		String sensitiveWords = "(\\b)(?i)(at|in|from|on)(\\b|$)";
 
 		return parsingInput.replaceAll(sensitiveWords, " ");
 	}
@@ -1379,7 +1379,7 @@ public class TaskCatalystCommons {
 
 		String notHashtagged = "(?<!#)";
 		String wordsContainingEst = notHashtagged
-				+ "\\w*(?<!y)est(?!erday)\\w*";
+				+ "(?i)\\w*(?<!y)est(?!erday)\\w*";
 
 		interpretedInput = ignoreBasedOnRegex(interpretedInput,
 				wordsContainingEst);
