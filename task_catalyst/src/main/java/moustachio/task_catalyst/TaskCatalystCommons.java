@@ -21,6 +21,7 @@ import org.ocpsoft.prettytime.nlp.parse.DateGroup;
  */
 public class TaskCatalystCommons {
 
+	private static final String ERROR_PRETTY_TIME_CRASH = "Please check your date formats.";
 	private static final String ERROR_OVERLAPPING_INTERNALLY = "Please resolve overlapping dates in the task.";
 	private static final String ERROR_NO_DESCRIPTION = "Please type in some descriptions for the task.";
 	private static final String ERROR_MULTIPLE_CHUNKS = "Please keep all date information together.";
@@ -233,7 +234,6 @@ public class TaskCatalystCommons {
 		interpretedInput = ignoreWordsContainingEst(interpretedInput);
 		interpretedInput = ignoreWordsContainingAted(interpretedInput);
 		interpretedInput = ignoreWordsContainingFivePlusDigits(interpretedInput);
-		//interpretedInput = ignoreFourDigitsStartingWithZero(interpretedInput);
 		interpretedInput = ignoreWordsEndingWithNumbers(interpretedInput);
 		interpretedInput = replaceDateAmericanWithBritish(interpretedInput);
 		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
@@ -263,7 +263,14 @@ public class TaskCatalystCommons {
 	private static List<DateGroup> parseParsingInput(String parsingInput) {
 		assert parsingInput != null;
 
-		return prettyTimeParser.parseSyntax(parsingInput);
+		try {
+			List<DateGroup> dateGroups = prettyTimeParser
+					.parseSyntax(parsingInput);
+		} catch (Exception e) {
+			throw new UnsupportedOperationException(ERROR_PRETTY_TIME_CRASH);
+		}
+
+		return dateGroups;
 	}
 
 	private static String replaceDateStrings(String interpretedInput,
@@ -1386,19 +1393,6 @@ public class TaskCatalystCommons {
 		String fivePlusDigits = notHashtagged + "\\d{5,}";
 
 		interpretedInput = ignoreBasedOnRegex(interpretedInput, fivePlusDigits);
-
-		return interpretedInput;
-	}
-
-	private static String ignoreFourDigitsStartingWithZero(
-			String interpretedInput) {
-		assert interpretedInput != null;
-
-		String notHashtagged = "(?<!#)";
-		String fourDigitsStartingWithZero = notHashtagged + "(?=0)\\d{4,}";
-
-		interpretedInput = ignoreBasedOnRegex(interpretedInput,
-				fourDigitsStartingWithZero);
 
 		return interpretedInput;
 	}
