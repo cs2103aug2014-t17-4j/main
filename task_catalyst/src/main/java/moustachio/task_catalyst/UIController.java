@@ -65,8 +65,9 @@ public class UIController {
 	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task."
 			+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.";
 	private static final String EMPTY_TASKVIEW_MESSAGE = "No tasks to display in this view!";
+	
 	private static final int INITIAL_INDEX = 0;
-
+	private static final int STAGE_HEIGHT = 540;
 	/**
 	 * Initializes the controller class. This method is automatically called
 	 * after the fxml file has been loaded.
@@ -127,7 +128,7 @@ public class UIController {
 					@Override
 					public void changed(ObservableValue<? extends Number> ov,
 							Number t, Number t1) {
-						tc.setStageHeight(530 + container.getHeight());
+						tc.setStageHeight(STAGE_HEIGHT + container.getHeight());
 					}
 				});
 	}
