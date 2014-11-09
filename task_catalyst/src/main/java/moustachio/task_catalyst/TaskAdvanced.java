@@ -216,7 +216,7 @@ public class TaskAdvanced implements Task {
 		String keywordProcessed = keyword.toLowerCase();
 		keywordProcessed = TaskCatalystCommons.removeCurlyBraces(keywordProcessed);
 		keywordProcessed = TaskCatalystCommons.removeSquareBrackets(keywordProcessed);
-		String[] tokenizedKeywords = keywordProcessed.split(" ");
+		String[] tokenizedKeywords = keywordProcessed.split("\\s+");
 		boolean isKeywordFound = false;
 
 		for (String token : tokenizedKeywords) {
