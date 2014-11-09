@@ -266,7 +266,8 @@ public class ListProcessorActual implements ListProcessor {
 	}
 
 	private boolean isOverlapping(Task task1, Task task2) {
-		if (task1.isDeadline() || task2.isDeadline() || task1.isAllDay()
+		if (task1.isOverdue() || task2.isOverdue() || task1.isDeadline() 
+				|| task2.isDeadline() || task1.isAllDay()
 				|| task2.isAllDay() || task1.isDone() || task2.isDone()
 				|| task1.getAllDates().isEmpty()
 				|| task2.getAllDates().isEmpty() || task1.equals(task2)) {
