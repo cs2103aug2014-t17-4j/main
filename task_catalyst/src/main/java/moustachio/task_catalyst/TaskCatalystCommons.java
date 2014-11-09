@@ -262,11 +262,10 @@ public class TaskCatalystCommons {
 
 	private static List<DateGroup> parseParsingInput(String parsingInput) {
 		assert parsingInput != null;
-		
+
 		List<DateGroup> dateGroups;
 		try {
-			dateGroups = prettyTimeParser
-					.parseSyntax(parsingInput);
+			dateGroups = prettyTimeParser.parseSyntax(parsingInput);
 		} catch (Exception e) {
 			throw new UnsupportedOperationException(ERROR_PRETTY_TIME_CRASH);
 		}
@@ -1233,9 +1232,10 @@ public class TaskCatalystCommons {
 
 		String wordBoundary = "(^|\\b)";
 		String openingCurlyBrace = "\\{";
+		String caseInsensitive = "(?i)";
 
-		return interpretedInput.replaceAll(wordBoundary + preposition + " "
-				+ openingCurlyBrace, openingCurlyBrace);
+		return interpretedInput.replaceAll(wordBoundary + caseInsensitive
+				+ preposition + " " + openingCurlyBrace, openingCurlyBrace);
 	}
 
 	private static String removeRepeatedCommas(String interpretedInput) {
@@ -1288,7 +1288,7 @@ public class TaskCatalystCommons {
 
 		String caseInsensitive = "(?i)";
 		String rightPattern = kept + " \\{";
-		String wrongPattern = rightPattern + caseInsensitive +removed + " ";
+		String wrongPattern = rightPattern + caseInsensitive + removed + " ";
 
 		return userInput.replaceAll(wrongPattern, rightPattern);
 	}

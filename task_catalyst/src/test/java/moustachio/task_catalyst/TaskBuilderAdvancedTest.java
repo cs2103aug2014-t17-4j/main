@@ -160,11 +160,11 @@ public class TaskBuilderAdvancedTest {
 				task.getDescriptionEdit());
 	}
 
-	// Automatically match "wholeWord" at the correct range.
+	// Automatically remove preposition range.
 	@Test
 	public void tc18() {
 		Task task = taskBuilder.createOneTask("At at at at at at at today 5pm");
-		assertEquals("At today 5PM", task.getDescriptionEdit());
+		assertEquals(null, task);
 	}
 
 	// Able to handle "at" and "from" between date/time specifications
@@ -405,6 +405,7 @@ public class TaskBuilderAdvancedTest {
 	@Test
 	public void tc50() {
 		Task task = taskBuilder.createOneTask("Something 21/6");
-		assertEquals("Sat Jun 21 00:00:01 SGT 2014", task.getDateStart().toString());
+		assertEquals("Sat Jun 21 00:00:01 SGT 2014", task.getDateStart()
+				.toString());
 	}
 }
