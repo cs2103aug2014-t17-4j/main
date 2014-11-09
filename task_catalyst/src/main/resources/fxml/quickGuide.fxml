@@ -34,7 +34,7 @@
                      <children>
                         <ImageView fx:id="hashtags" fitHeight="369.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../images/hashtag.jpg" />
+                              <Image url="@../images/hashtag2.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
             </content>
@@ -45,7 +45,7 @@
                      <children>
                         <ImageView fx:id="basicFeatures" fitHeight="402.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../images/basic1.jpg" />
+                              <Image url="@../images/basic2.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
             </content>
@@ -56,7 +56,7 @@
                      <children>
                         <ImageView fx:id="specialFeatures" fitHeight="395.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-19.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                            <image>
-                              <Image url="@../images/special1.jpg" />
+                              <Image url="@../images/special2.jpg" />
                            </image></ImageView>
                      </children></AnchorPane>
                </content>
@@ -67,7 +67,7 @@
                      <children>
                         <ImageView fitHeight="377.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@../images/hotkeys1.jpg" />
+                              <Image url="@../images/hotkeys2.jpg" />
                            </image>
                         </ImageView>
                      </children></AnchorPane>
