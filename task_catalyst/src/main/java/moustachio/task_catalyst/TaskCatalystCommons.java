@@ -303,6 +303,7 @@ public class TaskCatalystCommons {
 
 		String connector;
 
+		matchingText = matchingText.toLowerCase();
 		boolean isContainsTo = matchingText.contains(" to ");
 		boolean isContainsOr = matchingText.contains(" or ");
 		boolean isContainsDash = matchingText.contains(" - ");
