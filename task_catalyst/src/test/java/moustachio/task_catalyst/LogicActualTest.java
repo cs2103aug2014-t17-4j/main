@@ -115,7 +115,7 @@ public class LogicActualTest {
 		assertEquals(MessageType.ERROR, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
@@ -127,7 +127,7 @@ public class LogicActualTest {
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
@@ -139,7 +139,7 @@ public class LogicActualTest {
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
@@ -150,7 +150,7 @@ public class LogicActualTest {
 		assertEquals(MessageType.HINT, message.getType());
 		assertEquals(
 				"Type something to begin adding a task."
-						+ "\nOther Commands: delete, edit, done, redo, undo, #, find. Press CTRL+H for more details.",
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
 				message.getMessage());
 	}
 
