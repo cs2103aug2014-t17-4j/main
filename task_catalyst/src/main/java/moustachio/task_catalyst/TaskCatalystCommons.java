@@ -401,7 +401,7 @@ public class TaskCatalystCommons {
 			throws UnsupportedOperationException {
 		assert interpretedString != null;
 
-		String prepositions = "(,|and|or|to) \\{";
+		String prepositions = "(?i)(,|and|or|to) \\{";
 		String spacesAfterBraces = "\\}(,)?(\\s)?";
 		String consecutiveCurly = "\\}\\{";
 		String textBetweenCurly = ".*\\}(.*?)\\{.*";
@@ -1067,7 +1067,7 @@ public class TaskCatalystCommons {
 	private static String addCommaAfterTimeColon(String parsingInput) {
 		assert parsingInput != null;
 
-		String timeWithAmPm = "(?<!:)(\\d{2}:\\d{2}(am|pm)?)(?!:)(?![a-zA-Z])";
+		String timeWithAmPm = "(?<!:)(\\d{2}:\\d{2}(?i)(am|pm)?)(?!:)(?![a-zA-Z])";
 
 		return parsingInput.replaceAll(timeWithAmPm, " $1,");
 	}
@@ -1075,7 +1075,7 @@ public class TaskCatalystCommons {
 	private static String addCommaAfterTimeAmPm(String parsingInput) {
 		assert parsingInput != null;
 
-		String timeWithColon = "(\\d{1,2}(am|pm))(\\s|$)(?![a-zA-Z])";
+		String timeWithColon = "(\\d{1,2}(?i)(am|pm))(\\s|$)(?![a-zA-Z])";
 
 		return parsingInput.replaceAll(timeWithColon, "$1,");
 	}
@@ -1089,7 +1089,7 @@ public class TaskCatalystCommons {
 	private static String replaceTodayShort(String interpretedInput) {
 		assert interpretedInput != null;
 
-		String todayShort = "(\\s|^)(tdy)(\\s|$)";
+		String todayShort = "(\\s|^)(?i)(tdy)(\\s|$)";
 		String today = " today ";
 
 		interpretedInput = interpretedInput.replaceAll(todayShort, today);
@@ -1100,7 +1100,7 @@ public class TaskCatalystCommons {
 	private static String replaceTomorrowShort(String interpretedInput) {
 		assert interpretedInput != null;
 
-		String tomorrowShort = "(\\s|^)(tmr|tml)(\\s|$)";
+		String tomorrowShort = "(\\s|^)(?i)(tmr|tml)(\\s|$)";
 		String tomorrow = " tomorrow ";
 
 		interpretedInput = interpretedInput.replaceAll(tomorrowShort, tomorrow);
