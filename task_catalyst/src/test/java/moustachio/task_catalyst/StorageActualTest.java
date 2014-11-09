@@ -52,7 +52,7 @@ public class StorageActualTest {
 		String name = "file ";
 		assertEquals(true, fileHandler.isInvalidName(name));
 	}
-	
+
 
 	/* This is a boundary case for 'invalid regex' partition */
 	@Test
@@ -61,28 +61,61 @@ public class StorageActualTest {
 		assertEquals(true, fileHandler.isInvalidName(name));
 	}
 
+	/* This is a boundary case for 'empty string' partition */
+	@Test
+	public void testInvalidName4() {
+		String name = "";
+		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+
+	/* This is a boundary case for 'valid name (alphaNumeric)' partition */
+	@Test
+	public void testValidName1() {
+		String name = "myTest1";
+		assertEquals(false, fileHandler.isInvalidName(name));
+	}
+
 	/* This is a boundary case for 'valid name' partition */
 	@Test
-	public void testValidName() {
-		String name = "myTest1";
+	public void testValidName2() {
+		String name = "my_Test1";
 		assertEquals(false, fileHandler.isInvalidName(name));
 	}
 
 	/*** Check format of text file ***/
 
-	/* This is a boundary case for 'invalid file format' partition */
+	/* This is a boundary case for 'invalid file format (no extension)' partition */
 	@Test
 	public void testInvalidFormat1() {
-		String name = "file.1";
+		String name = "file";
 		assertEquals(true, fileHandler.isInvalidFileFormat(name));
 	}
 
-	/* This is a boundary case for 'invalid file format (name)' partition */
+	/* This is a boundary case for 'invalid file format (incorrect regex)' partition */
 	@Test
 	public void testInvalidFormat2() {
 		String name = "file$.txt";
 		assertEquals(true, fileHandler.isInvalidFileFormat(name));
 	}
+
+	/*** Check format of text file ***/
+
+	/* This is a boundary case for 'invalid file format(extension)' partition */
+	@Test
+	public void testInvalidFormat3() {
+		String name = "file.doc";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+
+	/*** Check format of text file ***/
+
+	/* This is a boundary case for 'invalid file format (Empty fileName)' partition */
+	@Test
+	public void testInvalidFormat4() {
+		String name = "";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+
 
 	/* This is a boundary case for 'valid file format' partition */
 	@Test
@@ -113,7 +146,7 @@ public class StorageActualTest {
 		elist = data.loadTasks(fileName);
 		assertEquals(
 				list.get(0).getDescription()
-						.equals(elist.get(0).getDescription()), true);
+				.equals(elist.get(0).getDescription()), true);
 	}
 
 	/* This is a boundary case for 'load two tasks to file' partition */
@@ -130,7 +163,7 @@ public class StorageActualTest {
 		assertEquals(true,list.get(0).getDescription()
 				.equals(elist.get(0).getDescription()));
 		assertEquals(true, list.get(1).getDescription()
-						.equals(elist.get(1).getDescription()));
+				.equals(elist.get(1).getDescription()));
 	}
 
 	/*** Save task ***/
@@ -144,7 +177,7 @@ public class StorageActualTest {
 		assertEquals(data.saveTasks(list, fileName), true);
 	}
 
-	/* This is a boundary case for 'testOverwrite saving' partition */
+	/* This is a boundary case for 'Overwrite saving' partition */
 	@Test
 	public void testOverwriteSave() {
 		List<Task> list = new ArrayList<Task>();
@@ -157,7 +190,7 @@ public class StorageActualTest {
 		assertEquals(data.saveTasks(list, fileName), true);
 		assertEquals(
 				list.get(0).getDescription()
-						.equals(elist.get(0).getDescription()), true);
+				.equals(elist.get(0).getDescription()), true);
 	}
 
 	/*** Save Setting ***/
