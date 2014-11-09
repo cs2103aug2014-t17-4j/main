@@ -21,9 +21,9 @@ public class Done implements Action {
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
 	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
 
-	private static final String HINT_EXAMPLES = "\nExamples: done 1 2 3 4, done all, done apple";
+	private static final String HINT_EXAMPLES = "\nExamples: done 1 2 3 4, done all, done apple, done mon";
 	private static final String HINT_ALTERNATIVES = "\nAlternatives: done, complete";
-	private static final String HINT_MESSAGE = "Complete: Hit enter after typing the task numbers or keyword."
+	private static final String HINT_MESSAGE = "Complete: Hit enter after typing the task numbers or keyword. Use []s to ignore date processing."
 			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
 
 	private TaskManager taskManager;

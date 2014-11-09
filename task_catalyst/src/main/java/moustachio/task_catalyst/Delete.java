@@ -21,9 +21,9 @@ public class Delete implements Action {
 	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
 	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
 
-	private static final String HINT_EXAMPLES = "\nExamples: delete 1 2 3 4, delete all, delete apple";
+	private static final String HINT_EXAMPLES = "\nExamples: delete 1 2 3 4, delete all, delete apple, delete mon";
 	private static final String HINT_ALTERNATIVES = "\nAlternatives: rm, del, delete";
-	private static final String HINT_MESSAGE = "Delete: Hit enter after typing the task numbers or keyword."
+	private static final String HINT_MESSAGE = "Delete: Hit enter after typing the task numbers or keyword. Use []s to ignore date processing."
 			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
 
 	private TaskManager taskManager;

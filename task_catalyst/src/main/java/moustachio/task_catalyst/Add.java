@@ -15,7 +15,7 @@ public class Add implements Action {
 	private static final String UNDO_SUCCESS = "Task successfully removed: %s";
 	private static final String UNDO_ERROR = "There was an error removing the task.";
 
-	private static final String HINT_MESSAGE = "\nAdd: You can include date information. Use []s to ignore processing.";
+	private static final String HINT_MESSAGE = "\nAdd: You can include date information. Use []s to ignore date processing.";
 
 	private TaskBuilder taskBuilder;
 	private TaskManager taskManager;

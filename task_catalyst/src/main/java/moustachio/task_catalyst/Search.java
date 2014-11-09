@@ -9,13 +9,16 @@ import java.util.List;
  * specified hashtag and the correct display mode.
  */
 public class Search implements Action {
+
 	private static final String[] DICTIONARY = { "search", "find" };
 
 	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
 	private static final String EXECUTE_ERROR = "Please enter a valid search term.";
 
-	private static final String HINT_MESSAGE = "Search: Hit enter after typing a search term to continue."
-			+ "\nSyntax: search <search term>";
+	private static final String HINT_EXAMPLES = "\nExamples: search apple, search mon to fri, search tomorrow";
+	private static final String HINT_ALTERNATIVES = "\nAlternatives: search, find";
+	private static final String HINT_MESSAGE = "Search: Hit enter after typing a search term to continue. Use []s to ignore date processing."
+			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
 
 	TaskManager taskManager;
 	String keyword;

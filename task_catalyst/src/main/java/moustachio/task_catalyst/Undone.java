@@ -22,9 +22,9 @@ public class Undone implements Action {
 	private static final String UNDO_SUCCESS = "Task successfully completed: %s";
 	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully completed %d tasks.";
 
-	private static final String HINT_EXAMPLES = "\nExamples: undone 1 2 3 4, undone all, undone apple";
+	private static final String HINT_EXAMPLES = "\nExamples: undone 1 2 3 4, undone all, undone apple, undone mon";
 	private static final String HINT_ALTERNATIVES = "\nAlternatives: undone, uncomplete, restore";
-	private static final String HINT_MESSAGE = "Restore: Hit enter after typing the task numbers or keyword."
+	private static final String HINT_MESSAGE = "Restore: Hit enter after typing the task numbers or keyword. Use []s to ignore date processing."
 			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
 
 	private TaskManager taskManager;

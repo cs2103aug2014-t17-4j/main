@@ -213,8 +213,10 @@ public class TaskAdvanced implements Task {
 	@Override
 	public boolean hasKeyword(String keyword) {
 		String descriptionLowerCase = getDescription().toLowerCase();
-		String keywordLowerCase = keyword.toLowerCase();
-		String[] tokenizedKeywords = keywordLowerCase.split(" ");
+		String keywordProcessed = keyword.toLowerCase();
+		keywordProcessed = TaskCatalystCommons.removeCurlyBraces(keywordProcessed);
+		keywordProcessed = TaskCatalystCommons.removeSquareBrackets(keywordProcessed);
+		String[] tokenizedKeywords = keywordProcessed.split(" ");
 		boolean isKeywordFound = false;
 
 		for (String token : tokenizedKeywords) {
