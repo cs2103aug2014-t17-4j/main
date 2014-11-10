@@ -26,35 +26,35 @@ import javafx.scene.text.Text;
 //Task table ideas from t17-3j
 public class TaskGrid extends GridPane {
 
-	private static final int FIRST_COLUMN = 0;
-	private static final int SECOND_COLUMN = 1;
-	private static final int THIRD_COLUMN = 2;
+	private static final int COLUMN_FIRST = 0;
+	private static final int COLUMN_SECOND = 1;
+	private static final int COLUMN_THIRD = 2;
 
-	private static final int FIRST_ROW = 0;
-	private static final int SECOND_ROW = 1;
-	private static final int THIRD_ROW = 2;
+	private static final int ROW_FIRST = 0;
+	private static final int ROW_SECOND = 1;
+	private static final int ROW_THIRD = 2;
 
-	private static final int DESCRIPTION_WRAPPING_WIDTH = 335;
-	private static final int ALT_TEXT_WRAPPING_WIDTH = 300;
+	private static final int WRAPPING_WIDTH_DESCRIPTION = 335;
+	private static final int WRAPPING_WIDTH_ALT_TEXT = 300;
 
-	private static final String PRIORITY_ICON_IMAGE_PATH = "/images/priority.png";
-	private static final String OVERLAP_ICON_IMAGE_PATH = "/images/overlap.png";
-	private static final String OVERDUE_ICON_IMAGE_PATH = "/images/overdue.png";
-	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
-	private static final String BLOCKING_ICON_IMAGE_PATH = "/images/blocking.png";
-	private static final String DEADLINE_ICON_IMAGE_PATH = "/images/deadline1.png";
-	private static final String ERROR_ICON_IMAGE_PATH = "/images/error.png";
+	private static final String PATH_PRIORITY_ICON_IMAGE = "/images/priority.png";
+	private static final String PATH_OVERLAP_ICON_IMAGE = "/images/overlap.png";
+	private static final String PATH_OVERDUE_ICON_IMAGE = "/images/overdue.png";
+	private static final String PATH_DONE_ICON_IMAGE = "/images/done.png";
+	private static final String PATH_BLOCKING_ICON_IMAGE = "/images/blocking.png";
+	private static final String PATH_DEADLINE_ICON_IMAGE = "/images/deadline1.png";
+	private static final String PATH_ERROR_ICON_IMAGE = "/images/error.png";
 	
-	private static final String PRIORITY_LABEL_TEXT = "Priority";
-	private static final String OVERLAP_LABEL_TEXT = "Overlapping";
-	private static final String OVERDUE_LABEL_TEXT = "Overdue";
-	private static final String DONE_LABEL_TEXT = "Done";
-	private static final String BLOCKING_LABEL_TEXT = "Reserved";
-	private static final String DEADLINE_LABEL_TEXT = "Deadline";
-	private static final String ERROR_LABEL_TEXT = "Error";
+	private static final String LABEL_TEXT_PRIORITY = "Priority";
+	private static final String LABEL_TEXT_OVERLAP = "Overlapping";
+	private static final String LABEL_TEXT_OVERDUE = "Overdue";
+	private static final String LABEL_TEXT_DONE = "Done";
+	private static final String LABEL_TEXT_BLOCKING = "Reserved";
+	private static final String LABEL_TEXT_DEADLINE = "Deadline";
+	private static final String LABEL_TEXT_ERROR = "Error";
 	
-	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): \n";
-	private static final String ALL_DAY_TIME_FORMAT = "00:00:01";
+	private static final String TEXT_ALTERNATE_TIMING = "Alternate timing(s): \n";
+	private static final String TEXT_ALL_DAY_TIME_FORMAT = "00:00:01";
 	
 	private int id;
 	
@@ -89,7 +89,7 @@ public class TaskGrid extends GridPane {
 		idContainer = new Label(Integer.toString(id + 1));
 		idContainer.getStyleClass().add("idLabel");
 		this.setHalignment(idContainer, HPos.CENTER);
-		this.add(idContainer, FIRST_COLUMN, FIRST_ROW);
+		this.add(idContainer, COLUMN_FIRST, ROW_FIRST);
 	}
 
 	public void highlight() {
@@ -114,8 +114,8 @@ public class TaskGrid extends GridPane {
 
 	private void displayTime(Task task) {
 		String startTime, endTime, nextTiming, lastTiming;
-		String alternateTiming = ALTERNATE_TIMING_TEXT;
-		String allDayTimeFormat = ALL_DAY_TIME_FORMAT;
+		String alternateTiming = TEXT_ALTERNATE_TIMING;
+		String allDayTimeFormat = TEXT_ALL_DAY_TIME_FORMAT;
 
 		Date startDate = task.getDateStart();
 		Date endDate = task.getDateEnd();
@@ -137,11 +137,11 @@ public class TaskGrid extends GridPane {
 					}
 				}
 				
-				if (!alternateTiming.equals(ALTERNATE_TIMING_TEXT)) {
+				if (!alternateTiming.equals(TEXT_ALTERNATE_TIMING)) {
 					Text text = new Text(alternateTiming);
 					text.setFont(Font.font("System", FontWeight.BOLD, 12));
-					text.setWrappingWidth(ALT_TEXT_WRAPPING_WIDTH);
-					this.add(text, THIRD_COLUMN, SECOND_ROW);
+					text.setWrappingWidth(WRAPPING_WIDTH_ALT_TEXT);
+					this.add(text, COLUMN_THIRD, ROW_SECOND);
 				}
 				
 				addStartTimeLabel(nextTiming);
@@ -182,28 +182,28 @@ public class TaskGrid extends GridPane {
 	private void addStartTimeText(String text) {
 		Text container = new Text(text);
 		this.setHalignment(container, HPos.CENTER);
-		this.add(container, SECOND_COLUMN, FIRST_ROW);
+		this.add(container, COLUMN_SECOND, ROW_FIRST);
 	}
 
 	private void addEndTimeText(String text) {
 		Text container = new Text(text);
 		this.setHalignment(container, HPos.CENTER);
-		this.add(container, SECOND_COLUMN, SECOND_ROW);
+		this.add(container, COLUMN_SECOND, ROW_SECOND);
 	}
 
 	private void addStartTimeLabel(String text) {
 		Text container = new Text(text);
 		this.setHalignment(container, HPos.CENTER);
-		this.add(container, SECOND_COLUMN, FIRST_ROW);
+		this.add(container, COLUMN_SECOND, ROW_FIRST);
 	}
 
 	private void displayTaskDescription(Task task) {
 		Text description = new Text(task.getDescription());
 
-		description.setWrappingWidth(DESCRIPTION_WRAPPING_WIDTH);
+		description.setWrappingWidth(WRAPPING_WIDTH_DESCRIPTION);
 		description.getStyleClass().add("descTaskStyle");
 
-		this.add(description, THIRD_COLUMN, FIRST_ROW);
+		this.add(description, COLUMN_THIRD, ROW_FIRST);
 		this.setPrefHeight(0); // this fix unusual row height problems
 	}
 
@@ -212,40 +212,40 @@ public class TaskGrid extends GridPane {
 		HBox iconContainer = new HBox();
 
 		if (task.isBlocking()) {
-			iconRow = THIRD_ROW;
+			iconRow = ROW_THIRD;
 			iconContainer = createIconWithText(iconContainer,
-					BLOCKING_ICON_IMAGE_PATH, BLOCKING_LABEL_TEXT);
+					PATH_BLOCKING_ICON_IMAGE, LABEL_TEXT_BLOCKING);
 		} else {
-			iconRow = SECOND_ROW;
+			iconRow = ROW_SECOND;
 		}
 
 		if (task.isDone()) {
 			iconContainer = createIconWithText(iconContainer,
-					DONE_ICON_IMAGE_PATH, DONE_LABEL_TEXT);
+					PATH_DONE_ICON_IMAGE, LABEL_TEXT_DONE);
 		}
 		if (task.isPriority()) {
 			iconContainer = createIconWithText(iconContainer,
-					PRIORITY_ICON_IMAGE_PATH, PRIORITY_LABEL_TEXT);
+					PATH_PRIORITY_ICON_IMAGE, LABEL_TEXT_PRIORITY);
 		}
 		if (task.isOverdue()) {
 			iconContainer = createIconWithText(iconContainer,
-					OVERDUE_ICON_IMAGE_PATH, OVERDUE_LABEL_TEXT);
+					PATH_OVERDUE_ICON_IMAGE, LABEL_TEXT_OVERDUE);
 		}
 		if (task.isOverlapping()) {
 			iconContainer = createIconWithText(iconContainer,
-					OVERLAP_ICON_IMAGE_PATH, OVERLAP_LABEL_TEXT);
+					PATH_OVERLAP_ICON_IMAGE, LABEL_TEXT_OVERLAP);
 		}
 		if (task.isDeadline()) {
 			iconContainer = createIconWithText(iconContainer,
-					DEADLINE_ICON_IMAGE_PATH, DEADLINE_LABEL_TEXT);
+					PATH_DEADLINE_ICON_IMAGE, LABEL_TEXT_DEADLINE);
 		}
 		if (task.isError()) {
 			iconContainer = createIconWithText(iconContainer,
-					ERROR_ICON_IMAGE_PATH, ERROR_LABEL_TEXT);
+					PATH_ERROR_ICON_IMAGE, LABEL_TEXT_ERROR);
 		}
 		
 		iconContainer.getStyleClass().add("iconLabelStyle");
-		this.add(iconContainer, THIRD_COLUMN, iconRow);
+		this.add(iconContainer, COLUMN_THIRD, iconRow);
 	}
 
 	private HBox createIconWithText(HBox container, String imagePath,

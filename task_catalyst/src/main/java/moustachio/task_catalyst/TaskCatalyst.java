@@ -54,6 +54,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private UIController controller;
 	private Stage primaryStage;
 	private HelpViewController helpController = new HelpViewController();
+	
+	private static BlackBox blackbox = BlackBox.getInstance();
 
 	private static Provider hotKeys = null;
 	private static String toggleLaunchHK = "control M";
@@ -64,18 +66,20 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private static final String COMMAND_REDO = "redo";
 	private static final String COMMAND_UNDO = "undo";
 
-	private static final String MULTIPLE_INSTANCE_EXCEPTION_MESSAGE = "This application is single instance!";
-	private static final String SYSTEM_TRAY_ERROR_MESSAGE = "System tray is not supported!";
+	private static final String MESSAGE_MULTIPLE_INSTANCE_EXCEPTION = "This application is single instance!";
+	private static final String MESSAGE_FXML_LOAD_EXCEPTION = "Unable to load FXML";
+	private static final String MESSAGE_SYSTEM_TRAY_NOT_SUPPORTED = "System tray is not supported!";
+	private static final String MESSAGE_SYSTEM_TRAY_ERROR = "Error occur in system tray";
 
-	private static final String UI_FXML_PATH = "/fxml/userInterface.fxml";
-	private static final String CSS_PATH = "/css/DarkTheme.css";
-	private static final String SYSTEM_TRAY_IMAGE_PATH = "/images/moustachio.png";
+	private static final String PATH_UI_FXML = "/fxml/userInterface.fxml";
+	private static final String PATH_CSS = "/css/DarkTheme.css";
+	private static final String PATH_SYSTEM_TRAY_IMAGE = "/images/moustachio.png";
 
 	// @author A0112764J
 	public static void main(String[] args) {
 		try {
 			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
-				throw new RuntimeException(MULTIPLE_INSTANCE_EXCEPTION_MESSAGE);
+				blackbox.info(MESSAGE_MULTIPLE_INSTANCE_EXCEPTION);
 			} else {
 				launch(args);
 			}
@@ -100,13 +104,13 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
 		javafx.scene.image.Image applicationIcon = new javafx.scene.image.Image(
-				getClass().getResourceAsStream(SYSTEM_TRAY_IMAGE_PATH));
+				getClass().getResourceAsStream(PATH_SYSTEM_TRAY_IMAGE));
 		this.primaryStage.getIcons().add(applicationIcon);
 		try {
 			loadSystemTray(this.primaryStage);
 			startHotKeys();
 			FXMLLoader loader = new FXMLLoader(
-					TaskCatalyst.class.getResource(UI_FXML_PATH));
+					TaskCatalyst.class.getResource(PATH_UI_FXML));
 			Parent root = null;
 			root = loader.load();
 			Scene scene = new Scene(root);
@@ -119,7 +123,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 
 			// set stylesheet
 			scene.getStylesheets().add(
-					getClass().getResource(CSS_PATH).toExternalForm());
+					getClass().getResource(PATH_CSS).toExternalForm());
 
 			// set stage
 			Platform.setImplicitExit(false);
@@ -129,7 +133,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 			this.primaryStage.show();
 
 		} catch (Exception e) {
-			e.printStackTrace();
+			blackbox.info(MESSAGE_FXML_LOAD_EXCEPTION);
 			stop();
 		}
 	}
@@ -293,14 +297,14 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private static void loadSystemTray(Stage stage) {
 		// checking for support
 		if (!SystemTray.isSupported()) {
-			System.out.println(SYSTEM_TRAY_ERROR_MESSAGE);
+			System.out.println(MESSAGE_SYSTEM_TRAY_NOT_SUPPORTED);
 			return;
 		}
 		// get the systemTray of the system
 		SystemTray systemTray = SystemTray.getSystemTray();
 		// get default toolkit
 		Image image = Toolkit.getDefaultToolkit().getImage(
-				TaskCatalyst.class.getResource(SYSTEM_TRAY_IMAGE_PATH));
+				TaskCatalyst.class.getResource(PATH_SYSTEM_TRAY_IMAGE));
 
 		// popupmenu
 		JPopupMenu trayPopupMenu = new JPopupMenu();
@@ -347,7 +351,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		try {
 			systemTray.add(trayIcon);
 		} catch (AWTException awtException) {
-			awtException.printStackTrace();
+			blackbox.info(MESSAGE_SYSTEM_TRAY_ERROR);
 		}
 
 		JDialog hiddenDialog = new JDialog();
@@ -444,12 +448,12 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	@Override
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
-		case java.awt.event.KeyEvent.VK_M:
-			toggleStage();
-			break;
-		case java.awt.event.KeyEvent.VK_D:
-			pasteClipboard();
-			break;
+			case java.awt.event.KeyEvent.VK_M:
+				toggleStage();
+				break;
+			case java.awt.event.KeyEvent.VK_D:
+				pasteClipboard();
+				break;
 		}
 	}
 
