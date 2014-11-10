@@ -87,9 +87,14 @@ public class ActionHintSystemActual implements ActionHintSystem {
 		case UNDONE :
 			message = Undone.getHint(userCommand);
 			break;
+			
+		case INVALID :
+			message = getHintDefault();
+		break;
 
 		default:
-			message = getHintDefault();
+			blackBox.severe("Unknown CommandType enumeration encountered.");
+			message = null;
 			break;
 		}
 

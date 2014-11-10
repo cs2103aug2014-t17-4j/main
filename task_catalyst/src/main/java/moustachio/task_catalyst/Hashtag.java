@@ -9,6 +9,7 @@ public class Hashtag implements Action {
 	private static final String HINT_MESSAGE = "Hashtag: Hit enter after typing a valid hashtag to continue.";
 
 	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: #%s.";
+	private static final String EXECUTE_ERROR = "Please enter a valid hashtag.";
 
 	TaskManager taskManager;
 	String hashtag;
@@ -20,13 +21,23 @@ public class Hashtag implements Action {
 
 	@Override
 	public Message execute() {
+		MessageType messageType;
+		String message;
+
 		DisplayMode displayMode = DisplayMode.HASHTAG;
 		String keyword = this.hashtag;
 
-		this.taskManager.setDisplayModeKeyword(displayMode, keyword);
+		boolean isHashtagEmpty = this.hashtag.isEmpty();
 
-		MessageType messageType = MessageType.SUCCESS;
-		String message = String.format(EXECUTE_SUCCESS, keyword);
+		if (isHashtagEmpty) {
+			messageType = MessageType.ERROR;
+			message = EXECUTE_ERROR;
+		} else {
+			this.taskManager.setDisplayModeKeyword(displayMode, keyword);
+
+			messageType = MessageType.SUCCESS;
+			message = String.format(EXECUTE_SUCCESS, keyword);
+		}
 
 		Message returnMessage = new Message(messageType, message);
 
