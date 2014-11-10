@@ -17,11 +17,13 @@ public class StorageActual implements Storage {
 	private static final String MESSAGE_IO_FAULT = "IO fault has been enountered.";
 	FileHandler fileHandler = new FileHandler();
 
+	//pre-cond: The filename cannot be null.
 	@Override
 	public boolean saveTasks(List<Task> list, String fileName) {
 		return saveTasksToFile(list, fileName);
 	}
 
+	//pre-cond: The filename cannot be null.
 	@Override
 	public List<Task> loadTasks(String fileName) {
 		return fileHandler.readTask(fileName);
@@ -29,12 +31,14 @@ public class StorageActual implements Storage {
 
 	@Override
 	//@author A0112764J -unused 
+	//pre-cond: The filename, name and value cannot be null.
 	public boolean saveSetting(String name, String fileName, String value) {
 		return fileHandler.writeSetting(name, fileName, value) ;
 	}
-
+	
 	@Override
 	//@author A0112764J -unused 
+	//pre-cond: The filename and name cannot be null.
 	public String loadSetting(String name, String fileName) {
 		return fileHandler.readSetting(name, fileName);
 	}

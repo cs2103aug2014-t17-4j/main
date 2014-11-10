@@ -110,7 +110,7 @@ public class FileHandler {
 		}
 	}
 
-	private void createNewTextFile(String fileName) {
+	public void createNewTextFile(String fileName) {
 		File newfileName = new File(PATH_TASK_CATALYST + fileName);
 		try {
 			writeEmpty(newfileName.getPath());

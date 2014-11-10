@@ -17,8 +17,8 @@ public class ListProcessorActual implements ListProcessor {
 	private static final String KEYWORD_TO = "to";
 	private static final String KEYWORD_BETWEEN = "between";
 
-	//This method returns a list of tasks depending on the hastag user specifies (case-insensitive)
-	//pre-cond: The list is not null
+	//This method returns a list of tasks depending on the hastag that user keys in (case-insensitive).
+	//pre-cond: The list is not null.
 	@Override
 	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
 		assert list != null;
@@ -46,20 +46,26 @@ public class ListProcessorActual implements ListProcessor {
 		}
 	}
 
-	//This method returns a list of tasks containing the keyword user keys in (case-insensitive)
-	//This method can also search by single date, multiple dates, a date range (case-insensitive)
+	//This method returns a list of tasks containing the keyword user keys in (case-insensitive).
+	//This method can also search by single date, multiple dates, a date range (case-insensitive).
 	//Example of single date: 31 dec
 	//Example of multiple dates: today, 12 nov, 30 nov
 	//Examples of a date range: 12 nov to 30 nov
 	//							betweeen 12 nov and 30 nov
-	//pre-cond: The list is not null
+	//pre-cond: The list is not null.
+	//
 	@Override
 	public List<Task> searchByKeyword(List<Task> list, String keyword) {
 		assert list != null;
 		List<Task> searchList = new ArrayList<Task>();
 		boolean strict = false;
-		String interpretedString = TaskCatalystCommons.getInterpretedString(
+		String interpretedString;
+		try {
+		interpretedString = TaskCatalystCommons.getInterpretedString(
 				keyword, strict);
+		} catch (UnsupportedOperationException e) {
+			return searchList;
+		}
 		List<Date> dates = TaskCatalystCommons.getAllDates(interpretedString);
 		Collections.sort(dates);
 
@@ -83,8 +89,8 @@ public class ListProcessorActual implements ListProcessor {
 		return searchList;
 	}
 
-	//This method returns a list of tasks which is sorted chronologically
-	//pre-cond: The list is not null
+	//This method returns a list of tasks which is sorted chronologically.
+	//pre-cond: The list is not null.
 	@Override
 	public List<Task> sortByDate(List<Task> list) {
 		assert list != null;
@@ -93,8 +99,8 @@ public class ListProcessorActual implements ListProcessor {
 		return sortList;
 	}
 
-	//This method returns a list of tasks which a task in the list overlaps with at least one other task within the list
-	//pre-cond: The list is not null
+	//This method returns a list of tasks which a task in the list overlaps with at least one other task within the list.
+	//pre-cond: The list is not null.
 	@Override
 	public List<Task> getOverlapping(List<Task> list) {
 		assert list != null;
@@ -112,8 +118,8 @@ public class ListProcessorActual implements ListProcessor {
 		return new ArrayList<Task>(new LinkedHashSet<Task>(overlapList));
 	}
 
-	//This method returns a list of tasks which at least one task in the list overlaps with the task parameter
-	//pre-cond: The list is not null
+	//This method returns a list of tasks which at least one task in the list overlaps with the task parameter.
+	//pre-cond: The list is not null.
 	@Override
 	public List<Task> getOverlapping(Task task, List<Task> list) {
 		assert list != null;
