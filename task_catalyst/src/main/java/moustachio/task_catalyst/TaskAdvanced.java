@@ -19,6 +19,7 @@ public class TaskAdvanced implements Task {
 
 	boolean isOverlapping;
 	boolean isDone;
+	boolean isError;
 
 	// Initialization Methods
 
@@ -91,6 +92,11 @@ public class TaskAdvanced implements Task {
 	@Override
 	public void setDone(boolean isDone) {
 		this.isDone = isDone;
+	}
+
+	@Override
+	public void setError(boolean isError) {
+		this.isError = isError;
 	}
 
 	@Override
@@ -214,8 +220,10 @@ public class TaskAdvanced implements Task {
 	public boolean hasKeyword(String keyword) {
 		String descriptionLowerCase = getDescription().toLowerCase();
 		String keywordProcessed = keyword.toLowerCase();
-		keywordProcessed = TaskCatalystCommons.removeCurlyBraces(keywordProcessed);
-		keywordProcessed = TaskCatalystCommons.removeSquareBrackets(keywordProcessed);
+		keywordProcessed = TaskCatalystCommons
+				.removeCurlyBraces(keywordProcessed);
+		keywordProcessed = TaskCatalystCommons
+				.removeSquareBrackets(keywordProcessed);
 		String[] tokenizedKeywords = keywordProcessed.split("\\s+");
 		boolean isKeywordFound = false;
 
@@ -272,6 +280,11 @@ public class TaskAdvanced implements Task {
 	}
 
 	@Override
+	public boolean isError() {
+		return isError;
+	}
+
+	@Override
 	public boolean isMultiple() {
 		boolean isMultiple = TaskCatalystCommons.hasWordBetweenDates(
 				getDescriptionRaw(), "and");
@@ -321,6 +334,10 @@ public class TaskAdvanced implements Task {
 
 	@Override
 	public int compareTo(Task o) {
+		if (isError()) {
+			return -1;
+		}
+		
 		Date thisDateTime = this.getDateStart();
 		Date otherDateTime = o.getDateStart();
 

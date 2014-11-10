@@ -19,6 +19,8 @@ public interface Task extends Comparable<Task> {
 	public void setDescription(String description);
 
 	public void setDone(boolean done);
+	
+	public void setError(boolean isError);
 
 	public void setOverlapping(boolean overlapping);
 
@@ -45,6 +47,8 @@ public interface Task extends Comparable<Task> {
 	public boolean isBlocking();
 
 	public boolean isDone();
+	
+	public boolean isError();
 
 	public boolean isMultiple();
 
