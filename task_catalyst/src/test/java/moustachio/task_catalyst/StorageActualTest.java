@@ -132,7 +132,7 @@ public class StorageActualTest {
 		List<Task> list = new ArrayList<Task>();
 		fileHandler.clear(fileName);
 		list = data.loadTasks(fileName);
-		assertEquals(list.isEmpty(), true);
+		assertEquals(true, list.isEmpty());
 	}
 
 	/* This is a boundary case for 'load one task to file' partition */
@@ -144,9 +144,9 @@ public class StorageActualTest {
 
 		List<Task> elist = new ArrayList<Task>();
 		elist = data.loadTasks(fileName);
-		assertEquals(
+		assertEquals(true,
 				list.get(0).getDescription()
-				.equals(elist.get(0).getDescription()), true);
+				.equals(elist.get(0).getDescription()));
 	}
 
 	/* This is a boundary case for 'load two tasks to file' partition */
@@ -174,7 +174,7 @@ public class StorageActualTest {
 		List<Task> list = new ArrayList<Task>();
 		list.add(task1);
 		fileHandler.clear(fileName);
-		assertEquals(data.saveTasks(list, fileName), true);
+		assertEquals(true,data.saveTasks(list, fileName));
 	}
 
 	/* This is a boundary case for 'Overwrite saving' partition */
@@ -187,10 +187,10 @@ public class StorageActualTest {
 		data.saveTasks(list, fileName);
 		List<Task> elist = new ArrayList<Task>();
 		elist = data.loadTasks(fileName);
-		assertEquals(data.saveTasks(list, fileName), true);
-		assertEquals(
+		assertEquals(true, data.saveTasks(list, fileName));
+		assertEquals(true,
 				list.get(0).getDescription()
-				.equals(elist.get(0).getDescription()), true);
+				.equals(elist.get(0).getDescription()));
 	}
 
 	/*** Save Setting ***/
@@ -209,8 +209,7 @@ public class StorageActualTest {
 	public void testLoadSettingEmptyFile() {
 		fileHandler.clear(fileName);
 		String str = "font";
-		String expectedString = data.loadSetting(str, fileName);
-		assertEquals("The file is empty.", expectedString);
+		assertEquals("The file is empty.", data.loadSetting(str, fileName));
 	}
 
 	/* This is a boundary case for 'load one setting' partition */
@@ -230,7 +229,7 @@ public class StorageActualTest {
 		data.saveSetting(font2, fileName, size2);
 		String input1 = font1 + "," + size1 + " ";
 		String input2 = font2 + "," + size2 + " ";
-		assertEquals((data.loadSetting(font1, fileName).contains(input1)), true);
-		assertEquals((data.loadSetting(font2, fileName).contains(input2)), true);
+		assertEquals(true, (data.loadSetting(font1, fileName).contains(input1)));
+		assertEquals(true, (data.loadSetting(font2, fileName).contains(input2)));
 	}
 }
