@@ -387,9 +387,11 @@ public class TaskCatalystCommons {
 		boolean isContainsDefaultHashtag = false;
 
 		for (String hashtag : defaultHashtags) {
-			String currentHashtag = "[" + hashtag + "]";
+			String startBoundary = ".*(\\s|^)";
+			String endBoundary = "(\\s|$).*";
+			String currentHashtag = startBoundary + hashtag + endBoundary;
 
-			boolean isHashtagFound = lowerCaseString.contains(currentHashtag);
+			boolean isHashtagFound = lowerCaseString.matches(currentHashtag);
 			boolean isPriority = hashtag.equals("#pri");
 
 			if (isHashtagFound && !isPriority) {
@@ -1206,8 +1208,8 @@ public class TaskCatalystCommons {
 		String newParsingInput = parsingInput;
 
 		for (String numberWord : numberWords) {
-			newParsingInput = newParsingInput.replaceAll("(\\b)(?i)(" + numberWord
-					+ ")( |$)", " ");
+			newParsingInput = newParsingInput.replaceAll("(\\b)(?i)("
+					+ numberWord + ")( |$)", " ");
 		}
 
 		return newParsingInput;

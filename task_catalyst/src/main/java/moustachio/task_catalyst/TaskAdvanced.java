@@ -338,6 +338,10 @@ public class TaskAdvanced implements Task {
 			return -1;
 		}
 		
+		if (o.isError()) {
+			return 1;
+		}
+		
 		Date thisDateTime = this.getDateStart();
 		Date otherDateTime = o.getDateStart();
 
