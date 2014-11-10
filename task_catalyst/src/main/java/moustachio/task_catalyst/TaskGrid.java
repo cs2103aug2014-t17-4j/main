@@ -43,6 +43,7 @@ public class TaskGrid extends GridPane {
 	private static final String DONE_ICON_IMAGE_PATH = "/images/done.png";
 	private static final String BLOCKING_ICON_IMAGE_PATH = "/images/blocking.png";
 	private static final String DEADLINE_ICON_IMAGE_PATH = "/images/deadline1.png";
+	private static final String ERROR_ICON_IMAGE_PATH = "/images/error.png";
 	
 	private static final String PRIORITY_LABEL_TEXT = "Priority";
 	private static final String OVERLAP_LABEL_TEXT = "Overlapping";
@@ -50,6 +51,7 @@ public class TaskGrid extends GridPane {
 	private static final String DONE_LABEL_TEXT = "Done";
 	private static final String BLOCKING_LABEL_TEXT = "Reserved";
 	private static final String DEADLINE_LABEL_TEXT = "Deadline";
+	private static final String ERROR_LABEL_TEXT = "Error";
 	
 	private static final String ALTERNATE_TIMING_TEXT = "Alternate timing(s): \n";
 	private static final String ALL_DAY_TIME_FORMAT = "00:00:01";
@@ -236,6 +238,10 @@ public class TaskGrid extends GridPane {
 		if (task.isDeadline()) {
 			iconContainer = createIconWithText(iconContainer,
 					DEADLINE_ICON_IMAGE_PATH, DEADLINE_LABEL_TEXT);
+		}
+		if (task.isError()) {
+			iconContainer = createIconWithText(iconContainer,
+					ERROR_ICON_IMAGE_PATH, ERROR_LABEL_TEXT);
 		}
 		
 		iconContainer.getStyleClass().add("iconLabelStyle");
