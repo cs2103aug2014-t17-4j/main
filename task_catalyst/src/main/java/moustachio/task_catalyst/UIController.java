@@ -395,6 +395,8 @@ public class UIController {
 
 					dateCategory = setDateCategory(startDate);
 
+				} else if(currentTask.isError()) {
+					dateCategory = "Error";
 				} else {
 					// Floating task
 					dateCategory = "Someday";
