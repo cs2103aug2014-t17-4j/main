@@ -1,22 +1,11 @@
-package moustachio.task_catalyst;
+//@author: a0112764j-reused
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.channels.FileChannel;
-import java.nio.channels.FileLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
-/**
- * This class is to create lock for global hotkeys. 
- * 
- * This was reused from a post from Rumato Estorsky posted 20th July 2012 on following blog:
- * 
- * http://nerdydevel.blogspot.com/2012/07/run-only-single-java-application-instance.html
- */
 
-//@author A0112764J -reused
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Lock.java
+	 */
+
 public class Lock {
 	private static final String EXTENSION_APP_LOCK = ".app_lock";
 	private static final String EXTIONSION_LOCK = ".lock";
@@ -193,3 +182,165 @@ public class Lock {
 		}
 	}
 }
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Lock.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	//http://docs.oracle.com/javase/tutorial/uiswing/misc/systemtray.html
+	//https://weblogs.java.net/blog/2006/05/04/using-jpopupmenu-trayicon
+	/**
+	 * This function creates a system tray with 2 popup menu Launch and Exit.
+	 * 
+	 * @param stage
+	 */
+	private static void loadSystemTray(Stage stage) {
+		// checking for support
+		if (!SystemTray.isSupported()) {
+			System.out.println(MESSAGE_SYSTEM_TRAY_NOT_SUPPORTED);
+			return;
+		}
+		// get the systemTray of the system
+		SystemTray systemTray = SystemTray.getSystemTray();
+		// get default toolkit
+		Image image = Toolkit.getDefaultToolkit().getImage(
+				TaskCatalyst.class.getResource(PATH_SYSTEM_TRAY_IMAGE));
+
+		// popupmenu
+		JPopupMenu trayPopupMenu = new JPopupMenu();
+
+		// 1st menuitem for popupmenu
+		JMenuItem launch = new JMenuItem(ACTION_LAUNCH);
+		launch.setAccelerator(KeyStroke.getKeyStroke(
+				java.awt.event.KeyEvent.VK_M,
+				java.awt.event.InputEvent.CTRL_MASK));
+		launch.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				Platform.runLater(new Runnable() {
+					@Override
+					public void run() {
+						stage.show();
+						stage.toFront();
+					}
+				});
+			}
+		});
+		trayPopupMenu.add(launch);
+		trayPopupMenu.addSeparator();
+
+		// 2nd menuitem of popupmenu
+		JMenuItem close = new JMenuItem(ACTION_EXIT);
+		close.setAccelerator(KeyStroke.getKeyStroke(
+				java.awt.event.KeyEvent.VK_E,
+				java.awt.event.InputEvent.CTRL_MASK));
+		close.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				stopHotKeys();
+				System.exit(0);
+			}
+		});
+		trayPopupMenu.add(close);
+
+		// setting tray icon
+		TrayIcon trayIcon = new TrayIcon(image, "Task Catalyst", null);
+		// adjust to default size as per system recommendation
+		trayIcon.setImageAutoSize(true);
+
+		try {
+			systemTray.add(trayIcon);
+		} catch (AWTException awtException) {
+			blackbox.info(MESSAGE_SYSTEM_TRAY_ERROR);
+		}
+
+		JDialog hiddenDialog = new JDialog();
+		hiddenDialog.setSize(10, 10);
+		hiddenDialog.setUndecorated(true);
+
+		/* Add the window focus listener to the hidden dialog */
+		hiddenDialog.addWindowFocusListener(new WindowFocusListener() {
+			@Override
+			public void windowLostFocus(WindowEvent we) {
+				hiddenDialog.setVisible(false);
+			}
+
+			@Override
+			public void windowGainedFocus(WindowEvent we) {
+			}
+		});
+
+		// Mouse Listener for trayIcon
+		// Left click Maximize and minimize main window
+		// Right click open Jpopup Menu
+		trayIcon.addMouseListener(new MouseListener() {
+
+			@Override
+			public void mouseClicked(java.awt.event.MouseEvent arg0) {
+
+			}
+
+			@Override
+			public void mouseEntered(java.awt.event.MouseEvent e) {
+
+			}
+
+			@Override
+			public void mouseExited(java.awt.event.MouseEvent e) {
+
+			}
+
+			@Override
+			public void mousePressed(java.awt.event.MouseEvent e) {
+
+			}
+
+			// Mouse event for left click, Maximize and minimize of main window
+			@Override
+			public void mouseReleased(java.awt.event.MouseEvent e) {
+				if (e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							if (stage.isShowing()) {
+								Platform.runLater(new Runnable() {
+									@Override
+									public void run() {
+										stage.hide();
+									}
+								});
+							} else {
+								Platform.runLater(new Runnable() {
+									@Override
+									public void run() {
+										stage.show();
+										stage.toFront();
+									}
+								});
+							}
+						}
+					});
+				} else if (e.getButton() == java.awt.event.MouseEvent.BUTTON3) {
+					trayPopupMenu.setInvoker(hiddenDialog);
+					hiddenDialog.setVisible(true);
+					trayPopupMenu.setVisible(true);
+					hiddenDialog.setLocation((int) e.getX(), (int) e.getY()
+							- trayPopupMenu.getHeight());
+					trayPopupMenu.setLocation((int) e.getX(), (int) e.getY()
+							- trayPopupMenu.getHeight());
+				}
+			}
+		});
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+

@@ -98,8 +98,8 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		primaryStage.setHeight(height);
 	}
 
-	//@author A0111921W - adapted from oracles
-	// http://docs.oracle.com/javase/8/javase-clienttechnologies.htm
+	//@author A0111921W - reused
+	//http://docs.oracle.com/javase/8/javase-clienttechnologies.htm
 	@Override
 	public void start(Stage primaryStage) {
 		this.primaryStage = primaryStage;
@@ -235,7 +235,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 				});
 	}
 
-	//@author A0111921W - adapted from
+	//@author A0111921W - reused
 	//http://stackoverflow.com/questions/18792822/dragging-an-undecorated-stage-in-javafx
 	/**
 	 * This function enables the UI to be draggable.
@@ -286,7 +286,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		System.exit(0);
 	}
 
-	//@author A0112764J - adapted from 
+	//@author A0112764J - reused
 	//http://docs.oracle.com/javase/tutorial/uiswing/misc/systemtray.html
 	//https://weblogs.java.net/blog/2006/05/04/using-jpopupmenu-trayicon
 	/**

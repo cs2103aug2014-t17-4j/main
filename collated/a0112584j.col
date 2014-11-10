@@ -1,0 +1,921 @@
+//@author: a0112584j
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\ListProcessorActual.java
+	 */
+
+package moustachio.task_catalyst;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.List;
+
+/**
+ * ListProcessorActual is able to filter tasks by search term, hashtags and
+ * dates and provide sorting functionality. It provides the main functionality
+ * for the Overlapping Notification System.
+ */
+public class ListProcessorActual implements ListProcessor {
+
+	private static final String KEYWORD_TO = "to";
+	private static final String KEYWORD_BETWEEN = "between";
+	private static BlackBox blackbox = BlackBox.getInstance();
+
+	@Override
+	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
+		assert list != null;
+		switch (hashtag) {
+		case "all" :
+			return searchByHashtagAll(list);
+		case "pri" :
+			return searchByHashtagPriority(list);
+		case "ovd" :
+			return searchByHashtagOverdue(list);
+		case "tdy" :
+			return searchByHashtagToday(list);
+		case "tmr" :
+			return searchByHashtagTomorrow(list);
+		case "upc" :
+			return searchByHashtagUpcoming(list);
+		case "smd" :
+			return searchByHashtagSomeday(list);
+		case "dne" :
+			return searchByHashtagDone(list);
+		case "olp" :
+			return getOverlapping(list);
+		default:
+			blackbox.fine("This is the hastag user defines: #"+hashtag);
+			return searchByHashTagUserDefined(list, hashtag);
+		}
+	}
+
+	//This method can also search by single date, multiple dates, a date range (case-insensitive).
+	//Example of single date: 31 dec
+	//Example of multiple dates: today, 12 nov, 30 nov
+	//Examples of a date range: 12 nov to 30 nov
+	//							betweeen 12 nov and 30 nov
+	@Override
+	public List<Task> searchByKeyword(List<Task> list, String keyword) {
+		assert list != null;
+		List<Task> searchList = new ArrayList<Task>();
+		boolean strict = false;
+		String interpretedString;
+			try {
+				interpretedString = TaskCatalystCommons.getInterpretedString(
+					keyword, strict);
+			} catch (UnsupportedOperationException e) {
+				blackbox.info("Parsing exception occurred: "+e.getMessage());;
+				return searchList;
+			}
+		List<Date> dates = TaskCatalystCommons.getAllDates(interpretedString);
+		Collections.sort(dates);
+
+		if (dates.isEmpty()) {
+			for (Task task : list) {
+				if (task.hasKeyword(keyword)) {
+					searchList.add(task);
+				}
+			}
+		}
+
+		if (isRanged(interpretedString, dates)) {
+			Date start = dates.get(0);
+			Date end = dates.get(dates.size() - 1);
+			searchList.addAll(searchByDateRange(list, start, end));
+		} else {
+			searchList.addAll(searchByDate(list, dates));
+		}
+
+		Collections.sort(searchList);
+		return searchList;
+	}
+
+	@Override
+	public List<Task> sortByDate(List<Task> list) {
+		assert list != null;
+		List<Task> sortList = new ArrayList<Task>(list);
+		Collections.sort(sortList);
+		return sortList;
+	}
+
+	//This method returns a list of tasks which a task in the list overlaps with at least one other task within the list.
+	@Override
+	public List<Task> getOverlapping(List<Task> list) {
+		assert list != null;
+		List<Task> overlapList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			List<Task> tempList = new ArrayList<Task>(
+					getOverlapping(task, list));
+			if (!tempList.isEmpty()) {
+				overlapList.add(task);
+				overlapList.addAll(tempList);
+			}
+		}
+
+		return new ArrayList<Task>(new LinkedHashSet<Task>(overlapList));
+	}
+
+	//This method returns a list of tasks which at least one task in the list overlaps with the task parameter.
+	@Override
+	public List<Task> getOverlapping(Task task, List<Task> list) {
+		assert list != null;
+		List<Task> overlapList = new ArrayList<Task>();
+
+		for (Task task2 : list) {
+			if (isOverlapping(task, task2)) {
+				overlapList.add(task2);
+			}
+		}
+
+		return overlapList;
+	}
+
+	private boolean hasRangeKeyword(String interpretedString) {
+		if (TaskCatalystCommons.hasWordBeforeDates(interpretedString,
+				KEYWORD_TO)
+			|| TaskCatalystCommons.hasWordBeforeDates(interpretedString,
+					KEYWORD_BETWEEN)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean isRanged(String interpretedString, List<Date> dates) {
+		if (hasRangeKeyword(interpretedString) && (dates.size() > 1)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private List<Task> searchByHashtagAll(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone()) {
+				filteredList.add(task);
+			}
+		}
+
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagPriority(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone() && task.isPriority()) {
+				filteredList.add(task);
+			}
+		}
+
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagOverdue(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone() && task.isOverdue()) {
+				filteredList.add(task);
+			}
+		}
+
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagToday(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone()
+					&& task.isRange()
+					&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) <= 0)
+					&& (TaskCatalystCommons.daysFromToday(task.getDateEnd()) >= 0)) {
+				filteredList.add(task);
+			} else if (!task.isDone() && !task.getAllDates().isEmpty()
+					&& !task.isRange()) {
+				for (Date date : task.getAllDates()) {
+					if (TaskCatalystCommons.isToday(date)) {
+						filteredList.add(task);
+					}
+				}
+			}
+		}
+
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
+	}
+
+	private List<Task> searchByHashtagTomorrow(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone()
+					&& task.isRange()
+					&& (TaskCatalystCommons.daysFromToday(task.getDateStart()) <= 1)
+					&& TaskCatalystCommons.daysFromToday(task.getDateEnd()) >= 1) {
+				filteredList.add(task);
+			} else if (!task.isDone() && !task.getAllDates().isEmpty()
+					&& !task.isRange()) {
+				for (Date date : task.getAllDates()) {
+					if (TaskCatalystCommons.isTomorrow(date)) {
+						filteredList.add(task);
+					}
+				}
+			}
+		}
+
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
+	}
+
+	private List<Task> searchByHashtagUpcoming(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone()
+					&& task.isRange()
+					&& (TaskCatalystCommons.daysFromToday(task.getDateEnd()) >= 2)) {
+				filteredList.add(task);
+			} else if (!task.isDone() && !task.getAllDates().isEmpty()
+					&& !task.isRange()) {
+				for (Date date : task.getAllDates()) {
+					if (TaskCatalystCommons.daysFromToday(date) >= 2) {
+						filteredList.add(task);
+					}
+				}
+			}
+		}
+
+		return new ArrayList<Task>(new LinkedHashSet<Task>(filteredList));
+	}
+
+	private List<Task> searchByHashTagUserDefined(List<Task> list,
+			String hashtag) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone() && task.hasHashtag(hashtag)) {
+				filteredList.add(task);
+			}
+		}
+
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagSomeday(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (!task.isDone() && task.getAllDates().isEmpty()) {
+				filteredList.add(task);
+			}
+		}
+
+		return filteredList;
+	}
+
+	private List<Task> searchByHashtagDone(List<Task> list) {
+		List<Task> filteredList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (task.isDone()) {
+				filteredList.add(task);
+			}
+		}
+
+		return filteredList;
+	}
+
+	private boolean isOverlapping(Task task1, Task task2) {
+		if (task1.isOverdue() || task2.isOverdue() || task1.isDeadline() 
+				|| task2.isDeadline() || task1.isAllDay()
+				|| task2.isAllDay() || task1.isDone() || task2.isDone()
+				|| task1.getAllDates().isEmpty()
+				|| task2.getAllDates().isEmpty() || task1.equals(task2)) {
+			return false;
+		}
+
+		if (task1.isRange() && task2.isRange()) {
+			return isOverlappingTwoRanged(task1, task2);
+		} else if (task1.isRange() && !task2.isRange()) {
+			return isOverlappingOneRanged(task1, task2);
+		} else if (!task1.isRange() && task2.isRange()) {
+			return isOverlappingOneRanged(task2, task1);
+		} else {
+			return isOverlappingNonRanged(task1, task2);
+		}
+	}
+
+	private boolean isOverlappingTwoRanged(Task task1, Task task2) {
+		if (task1.getDateStart().after(task2.getDateStart())) {
+			Task temp = task1;
+			task1 = task2;
+			task2 = temp;
+		}
+
+		if (task2.getDateStart().before(task1.getDateEnd())) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	private boolean isOverlappingOneRanged(Task task1, Task task2) {
+		List<Date> list = new ArrayList<Date>(task2.getAllDates());
+
+		for (Date date : list) {
+			if ((date.before(task1.getDateEnd()) && date.after(task1
+					.getDateStart())) || date.equals(task1.getDateStart())) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
+	private boolean isOverlappingNonRanged(Task task1, Task task2) {
+		List<Date> list1 = new ArrayList<Date>(task1.getAllDates());
+		List<Date> list2 = new ArrayList<Date>(task2.getAllDates());
+
+		for (Date date1 : list1) {
+			for (Date date2 : list2) {
+				if (date1.equals(date2)) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+
+	private List<Task> searchByDate(List<Task> list, List<Date> dates) {
+		List<Task> searchList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			for (Date date : dates) {
+				if (task.hasDate(date) && !searchList.contains(task)) {
+					searchList.add(task);
+				}
+			}
+		}
+
+		return searchList;
+	}
+
+	private List<Task> searchByDateRange(List<Task> list, Date start, Date end) {
+		List<Task> searchList = new ArrayList<Task>();
+
+		for (Task task : list) {
+			if (task.isBetweenDates(start, end) && !searchList.contains(task)) {
+				searchList.add(task);
+			}
+		}
+
+		return searchList;
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\ListProcessorActual.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\test\java\moustachio\task_catalyst\ListProcessorActualTest.java
+	 */
+
+package moustachio.task_catalyst;
+
+import static org.junit.Assert.assertEquals;
+import java.util.ArrayList;
+import java.util.List;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+public class ListProcessorActualTest {
+
+	List<Task> tasks;
+	TaskBuilder taskBuilder;
+	ListProcessorActual listProcessor;
+
+	@Before
+	public void setUp() throws Exception {
+		tasks = new ArrayList<Task>();
+		taskBuilder = new TaskBuilderAdvanced();
+		listProcessor = new ListProcessorActual();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		BlackBox.getInstance().close();
+	}
+
+	/* This is a boundary case for the case 'empty list' partition */
+	@Test
+	public void testSearchByHashtag() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "boss").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagAll() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "all").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagPriority() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "pri").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverdue() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "ovd").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagToday() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "tdy").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagTomorrow() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "tmr").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagUpcoming() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "upc").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagSomeday() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "smd").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagDone() {
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "dne").size());
+	}
+	
+	@Test
+	public void testSearchByKeyword() {
+		assertEquals(0, listProcessor.searchByKeyword(tasks, "boss").size());
+	}
+	
+	@Test
+	public void testSortByDate() {
+		assertEquals(0, listProcessor.sortByDate(tasks).size());
+	}
+	
+	/* This is a boundary case for the case 'list with at least one task' partition */
+	@Test
+	public void testSearchByHashtag2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "boss").get(0));
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "BOSS").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtag3() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "girlfriend").size());
+	}
+
+	@Test
+	public void testSearchByHashtag4() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #girlfriend at 6pm"));
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "boss").get(0));
+		assertEquals(tasks.get(1), listProcessor.searchByHashtag(tasks, "girlfriend").get(0));
+	}
+
+	@Test
+	public void testSearchByHashtag5() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife at 6pm"));
+		tasks.addAll(taskBuilder
+				.createTask("ask wife for a movie at 8pm"));
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "wife").size());
+		assertEquals(tasks.get(1), listProcessor.searchByHashtag(tasks, "wife").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtagPriority2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet wife at 6pm #pri"));
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "pri").size());
+		assertEquals(tasks.get(1), listProcessor.searchByHashtag(tasks, "pri").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtagOverdue2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("call wife on 20 oct at 12am"));
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "ovd").size());
+		assertEquals(tasks.get(1), listProcessor.searchByHashtag(tasks, "ovd").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtagAll2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife at 6pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "all").size());
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "all").get(0));
+		assertEquals(tasks.get(1), listProcessor.searchByHashtag(tasks, "all").get(1));
+	}
+	
+	@Test
+	public void testSearchByHashtagToday2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "tdy").size());
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "tdy").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtagToday3() {
+		tasks.addAll(taskBuilder.createTask("event from yesterday 5pm to tomorrow 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "tdy").size());
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "tdy").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtagTomorrow2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "tmr").size());
+		assertEquals(tasks.get(1), listProcessor.searchByHashtag(tasks, "tmr").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtagTomorrow3() {
+		tasks.addAll(taskBuilder.createTask("event from yesterday 5pm to tomorrow 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife at 6pm"));
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "tmr").size());
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "tmr").get(0));
+	}
+	
+	@Test
+	public void testSearchByHashtagUpcoming2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 6pm"));
+		tasks.addAll(taskBuilder.createTask("meet James on 31 dec 6pm"));
+		tasks.addAll(taskBuilder.createTask("event from 29 dec 6pm to 31 dec 6pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "upc").size());
+		assertEquals(tasks.get(2), listProcessor.searchByHashtag(tasks, "upc").get(0));
+		assertEquals(tasks.get(3), listProcessor.searchByHashtag(tasks, "upc").get(1));
+	}
+	
+	@Test
+	public void testSearchByHashtagSomeday2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("buy a fan"));
+		tasks.addAll(taskBuilder.createTask("fix the air con in my room"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "smd").size());
+		assertEquals(tasks.get(1), listProcessor.searchByHashtag(tasks, "smd").get(0));
+		assertEquals(tasks.get(2), listProcessor.searchByHashtag(tasks, "smd").get(1));
+	}
+	
+	@Test
+	public void testSearchByHashtagDone2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife at 6pm"));
+		tasks.get(0).setDone(true);
+		assertEquals(1, listProcessor.searchByHashtag(tasks, "dne").size());
+		assertEquals(tasks.get(0), listProcessor.searchByHashtag(tasks, "dne").get(0));
+	}
+	
+	/* This is a boundary case for the overlap method 'no tasks are overlapping' partition */
+	@Test
+	public void testSearchByHashtagOverlap2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 6pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap3() {
+		tasks.addAll(taskBuilder.createTask("meet #boss by 5pm tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 5pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap4() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 6pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 5pm to 6pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap5() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 5pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap6() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 5pm"));
+		tasks.get(0).setDone(true);
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap7() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow from 5pm to 6pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 6pm to 7pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap8() {
+		tasks.addAll(taskBuilder.createTask("meet #boss yesterday at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife yesterday at 5pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap9() {
+		tasks.addAll(taskBuilder.createTask("fix aircon at my room"));
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 5pm"));
+		assertEquals(0, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	/* This is a boundary case for the overlap method 'one task is overlapping with at least one other task' partition */
+	@Test
+	public void testSearchByHashtagOverlap10() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 5pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+
+	@Test
+	public void testSearchByHashtagOverlap11() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow at 5pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap12() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 5pm to 8pm"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow at 5pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap13() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 5pm to 8pm"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow at 6pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap14() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 5pm to 8pm"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow from 5pm to 8pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap15() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 5pm to 7pm"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow from 5pm to 8pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap16() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 6pm to 7pm"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow from 5pm to 8pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap17() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 6pm to 8pm"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow from 5pm to 8pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+	
+	@Test
+	public void testSearchByHashtagOverlap18() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow"));
+		tasks.addAll(taskBuilder.createTask("meet #wife tomorrow from 3pm to 6pm"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow from 5pm to 8pm"));
+		assertEquals(2, listProcessor.searchByHashtag(tasks, "olp").size());
+	}
+
+	@Test
+	public void testSearchByKeyword2() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		assertEquals(0, listProcessor.searchByKeyword(tasks, "wife").size());
+	}
+	
+	@Test
+	public void testSearchByKeyword3() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "boss").get(0));
+	}
+
+	@Test
+	public void testSearchByKeyword4() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 6pm today"));
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "boss").get(0));
+	}
+
+	@Test
+	public void testSearchByKeyword5() {
+		tasks.addAll(taskBuilder.createTask("meet #boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meet #wife at 5pm"));
+		tasks.addAll(taskBuilder
+				.createTask("ask wife for a movie"));
+		assertEquals(2, listProcessor.searchByKeyword(tasks, "wife").size());
+		assertEquals(tasks.get(1), listProcessor.searchByKeyword(tasks, "WIFE").get(0));
+		assertEquals(tasks.get(2), listProcessor.searchByKeyword(tasks, "wife").get(1));
+	}
+	
+	@Test
+	public void testSearchByKeyword6() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meeting with stakeholders tomorrow at 6pm"));
+		assertEquals(2, listProcessor.searchByKeyword(tasks, "mee").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "mee").get(0));
+		assertEquals(tasks.get(1), listProcessor.searchByKeyword(tasks, "mee").get(1));
+	}
+	
+	@Test
+	public void testSearchByKeyword7() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "mee boss").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "mee boss").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword8() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "meet boss").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "meet boss").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword9() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "boss meet").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "boss meet").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword10() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "meet      boss").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "meet      boss").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword11() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "boss   meet").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "boss   meet").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword12() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "meet bpss").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "meet bpss").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword13() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "mee bpss").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "mee bpss").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword14() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "out wife").size());
+		assertEquals(tasks.get(1), listProcessor.searchByKeyword(tasks, "out wife").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword15() {
+		tasks.addAll(taskBuilder.createTask("meet boss at 5pm"));
+		tasks.addAll(taskBuilder.createTask("go out with wife tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "wife out").size());
+		assertEquals(tasks.get(1), listProcessor.searchByKeyword(tasks, "wife out").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword16() {
+		tasks.addAll(taskBuilder.createTask("meet boss today at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meeting with stakeholders tomorrow at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "today").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "today").get(0));
+	}
+	
+	@Test
+	public void testSearchByKeyword17() {
+		tasks.addAll(taskBuilder.createTask("meet boss today at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meeting with stakeholders tomorrow at 6pm"));
+		tasks.addAll(taskBuilder.createTask("meet wife on 31 dec at 6pm"));
+		assertEquals(3, listProcessor.searchByKeyword(tasks, "today, tomorrow, 31 dec").size());
+		assertEquals(3, listProcessor.searchByKeyword(tasks, "today, tomorrow, and 31 dec").size());
+		assertEquals(tasks.get(0), listProcessor.searchByKeyword(tasks, "today, tomorrow, 31 dec").get(0));
+		assertEquals(tasks.get(1), listProcessor.searchByKeyword(tasks, "today, tomorrow, 31 dec").get(1));
+		assertEquals(tasks.get(2), listProcessor.searchByKeyword(tasks, "today, tomorrow, 31 dec").get(2));
+	}
+	
+	@Test
+	public void testSearchByKeyword18() {
+		tasks.addAll(taskBuilder.createTask("meet boss today at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meeting with stakeholders tomorrow at 6pm"));
+		tasks.addAll(taskBuilder.createTask("meet wife on 31 dec at 6pm"));
+		tasks.addAll(taskBuilder.createTask("watch movie from tomorrow 8pm to 10pm"));
+		assertEquals(3, listProcessor.searchByKeyword(tasks, "tomorrow to 31 dec").size());
+		assertEquals(3, listProcessor.searchByKeyword(tasks, "between tomorrow and 31 dec").size());
+		assertEquals(tasks.get(1), listProcessor.searchByKeyword(tasks, "tomorrow to 31 dec").get(0));
+		assertEquals(tasks.get(3), listProcessor.searchByKeyword(tasks, "tomorrow to 31 dec").get(1));
+		assertEquals(tasks.get(2), listProcessor.searchByKeyword(tasks, "tomorrow to 31 dec").get(2));
+	}
+	
+	@Test
+	public void testSearchByKeyword19() {
+		tasks.addAll(taskBuilder.createTask("meet boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("meeting with stakeholders [tomorrow] today at 6pm"));
+		assertEquals(1, listProcessor.searchByKeyword(tasks, "[tomorrow]").size());
+		assertEquals(tasks.get(1), listProcessor.searchByKeyword(tasks, "[tomorrow]").get(0));
+	}
+	
+	/* This is a boundary case for the case 'list with only one task' partition */
+	@Test
+	public void testSortByDate2() {
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		assertEquals(1, listProcessor.sortByDate(tasks).size());
+	}
+	
+	/* This is a boundary case for the case 'list with at least two tasks' partition */
+	@Test
+	public void testSortByDate3() {
+		tasks.addAll(taskBuilder.createTask("meet wife from 6pm to 8pm"));
+		tasks.addAll(taskBuilder.createTask("meet #boss at 5pm"));
+		assertEquals(tasks.get(1), listProcessor.sortByDate(tasks).get(0));
+		assertEquals(tasks.get(0), listProcessor.sortByDate(tasks).get(1));
+	}
+	
+	@Test
+	public void testSortByDate4() {
+		tasks.addAll(taskBuilder.createTask("meet wife at 5pm"));
+		tasks.addAll(taskBuilder.createTask("ask wife for a movie tomorrow at 11pm"));
+		tasks.addAll(taskBuilder.createTask("meet boss tomorrow at 5pm"));
+		tasks.addAll(taskBuilder.createTask("fix aircon at my room"));
+		tasks.addAll(taskBuilder.createTask("meet James tomorrow for gathering"));
+		tasks.addAll(taskBuilder.createTask("hackathon event from tomorrow 5pm to 7pm"));
+		tasks.addAll(taskBuilder.createTask("family dinner tomorrow at 8pm"));
+		assertEquals(tasks.get(0), listProcessor.sortByDate(tasks).get(0));
+		assertEquals(tasks.get(4), listProcessor.sortByDate(tasks).get(1));
+		assertEquals(tasks.get(2), listProcessor.sortByDate(tasks).get(2));
+		assertEquals(tasks.get(5), listProcessor.sortByDate(tasks).get(3));
+		assertEquals(tasks.get(6), listProcessor.sortByDate(tasks).get(4));
+		assertEquals(tasks.get(1), listProcessor.sortByDate(tasks).get(5));
+		assertEquals(tasks.get(3), listProcessor.sortByDate(tasks).get(6));
+	}
+}
+
+	// End of segment: task_catalyst\src\test\java\moustachio\task_catalyst\ListProcessorActualTest.java
+
+
+
+
+

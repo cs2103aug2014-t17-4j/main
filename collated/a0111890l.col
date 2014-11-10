@@ -1,0 +1,5970 @@
+//@author: a0111890l
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Action.java
+	 */
+
+/**
+ * Action is used to encapsulate a command's implementation and all its related
+ * hints.
+ */
+public interface Action {
+	public abstract Message execute();
+
+	public abstract Message undo();
+
+	public abstract boolean isUndoable();
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Action.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\ActionHintSystem.java
+	 */
+
+/**
+ * ActionHintSystem is used to process commands and provide live
+ * hints based on the user's input.
+ */
+public interface ActionHintSystem {
+	public void testMode();
+
+	public Message processCommand(String userCommand);
+
+	public Message getMessageTyping(String userCommand);
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\ActionHintSystem.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\ActionHintSystemActual.java
+	 */
+
+/**
+ * ActionHintSystemActual applies the Command pattern, using Action and
+ * ActionInvoker classes. When new Actions are added into the system, it must be
+ * added into the getMessageTyping() and generateAction() methods.
+ */
+public class ActionHintSystemActual implements ActionHintSystem {
+	private static final String ERROR_ACTION_UNDEFINED = "Undefined Action Encountered.";
+	private static final String FORMAT_PARTIAL_SUGGESTIONS = "Do you mean %s?";
+	private static final String HINT_MESSAGE_DEFAULT = "Type something to begin adding a task."
+			+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.";
+
+	ActionInvoker actionInvoker;
+	BlackBox blackBox;
+
+	public ActionHintSystemActual() {
+		actionInvoker = ActionInvoker.getInstance();
+		actionInvoker.setDefaultMessage(HINT_MESSAGE_DEFAULT);
+		blackBox = BlackBox.getInstance();
+	}
+
+	public void testMode() {
+		actionInvoker.testMode();
+	}
+
+	// High Level Methods
+
+	@Override
+	public Message processCommand(String userCommand) {
+		Action action = generateAction(userCommand);
+
+		Message message = actionInvoker.doAction(action);
+
+		return message;
+	}
+
+	@Override
+	public Message getMessageTyping(String userCommand) {
+		boolean isInvalidCommand = isInvalidCommand(userCommand);
+
+		if (isInvalidCommand) {
+			return new Message(MessageType.HINT, HINT_MESSAGE_DEFAULT);
+		}
+
+		CommandType COMMAND_TYPE = TaskCatalystCommons
+				.getCommandType(userCommand);
+
+		Message message;
+
+		switch (COMMAND_TYPE) {
+		case ADD :
+			message = getHintPartialAdd(userCommand);
+			break;
+
+		case DELETE :
+			message = Delete.getHint(userCommand);
+			break;
+
+		case DONE :
+			message = Done.getHint(userCommand);
+			break;
+
+		case EDIT :
+			message = Edit.getHint(userCommand);
+			break;
+
+		case HASHTAG :
+			message = Hashtag.getHint(userCommand);
+			break;
+
+		case REDO :
+			message = Redo.getHint(userCommand);
+			break;
+
+		case SEARCH :
+			message = Search.getHint(userCommand);
+			break;
+
+		case UNDO :
+			message = Undo.getHint(userCommand);
+			break;
+
+		case UNDONE :
+			message = Undone.getHint(userCommand);
+			break;
+			
+		case INVALID :
+			message = getHintDefault();
+		break;
+
+		default:
+			blackBox.severe("Unknown CommandType enumeration encountered.");
+			message = null;
+			break;
+		}
+
+		return message;
+	}
+
+	private Action generateAction(String userCommand) {
+		CommandType COMMAND_TYPE = TaskCatalystCommons
+				.getCommandType(userCommand);
+
+		Action action = null;
+
+		switch (COMMAND_TYPE) {
+		case ADD :
+			action = new Add(userCommand);
+			break;
+
+		case DELETE :
+			action = new Delete(userCommand);
+			break;
+
+		case DONE :
+			action = new Done(userCommand);
+			break;
+
+		case EDIT :
+			action = new Edit(userCommand);
+			break;
+
+		case HASHTAG :
+			action = new Hashtag(userCommand);
+			break;
+
+		case REDO :
+			action = new Redo(userCommand);
+			break;
+
+		case SEARCH :
+			action = new Search(userCommand);
+			break;
+
+		case UNDO :
+			action = new Undo(userCommand);
+			break;
+
+		case UNDONE :
+			action = new Undone(userCommand);
+			break;
+
+		case INVALID :
+			action = null;
+			break;
+
+		default:
+			throw new Error(ERROR_ACTION_UNDEFINED);
+		}
+
+		return action;
+	}
+
+	// Low-Level Methods
+
+	private boolean isInvalidCommand(String userCommand) {
+		boolean isNullCommand = (userCommand == null);
+		boolean isEmptyCommand = !isNullCommand && userCommand.trim().isEmpty();
+		boolean isInvalidCommand = isNullCommand || isEmptyCommand;
+
+		return isInvalidCommand;
+	}
+
+	private Message getHintPartialAdd(String userCommand) {
+		String matchingCommandsString = getMatchingCommandsString(userCommand);
+
+		boolean isPartialCommand = !matchingCommandsString.isEmpty();
+
+		Message message;
+
+		if (isPartialCommand) {
+			message = getHintSuggestion(matchingCommandsString);
+		} else {
+			message = Add.getHint(userCommand);
+		}
+		return message;
+	}
+
+	private Message getHintDefault() {
+		MessageType messageType = MessageType.HINT;
+
+		Message defaultHint = new Message(messageType, HINT_MESSAGE_DEFAULT);
+
+		return defaultHint;
+	}
+
+	private Message getHintSuggestion(String matchingCommandsString) {
+		MessageType messageType = MessageType.HINT;
+
+		String commandSuggestions = String.format(FORMAT_PARTIAL_SUGGESTIONS,
+				matchingCommandsString);
+
+		Message suggestionHint = new Message(messageType, commandSuggestions);
+
+		return suggestionHint;
+	}
+
+	private String getMatchingCommandsString(String firstWord) {
+		boolean isEmptyWord = firstWord.trim().isEmpty();
+
+		if (isEmptyWord) {
+			return "";
+		}
+
+		ArrayList<String[]> dictionaries = new ArrayList<String[]>();
+
+		dictionaries.add(Delete.getDictionary());
+		dictionaries.add(Done.getDictionary());
+		dictionaries.add(Edit.getDictionary());
+		dictionaries.add(Redo.getDictionary());
+		dictionaries.add(Search.getDictionary());
+		dictionaries.add(Undo.getDictionary());
+		dictionaries.add(Undone.getDictionary());
+
+		String lastComma = ", $";
+
+		String matchingCommands = getPartialString(firstWord, dictionaries);
+		matchingCommands = matchingCommands.replaceAll(lastComma, "");
+
+		return matchingCommands;
+	}
+
+	private String getPartialString(String partialCommand,
+			ArrayList<String[]> dictionaries) {
+		String partialCommandLowerCase = partialCommand.toLowerCase();
+		String matchingCommands = "";
+
+		for (String[] dictionary : dictionaries) {
+			for (String keyword : dictionary) {
+				boolean isExactCommand = keyword
+						.equals(partialCommandLowerCase);
+				boolean isStartsWithKeyword = keyword
+						.startsWith(partialCommandLowerCase);
+				boolean isPartialCommand = !isExactCommand
+						&& isStartsWithKeyword;
+
+				if (isPartialCommand) {
+					matchingCommands += "\"" + keyword + "\", ";
+				}
+			}
+		}
+
+		return matchingCommands;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\ActionHintSystemActual.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\ActionInvoker.java
+	 */
+
+/**
+ * ActionInvoker is used by ActionHintSystemActual for executing commands as
+ * well as maintaining stacks for undo/redo functionality. It applies the
+ * Singleton pattern as there should not be multiple action queues operation on
+ * the same file.
+ */
+public class ActionInvoker {
+	Stack<Action> undos;
+	Stack<Action> redos;
+	String defaultMessage;
+
+	private static ActionInvoker instance;
+
+	private ActionInvoker() {
+		undos = new Stack<Action>();
+		redos = new Stack<Action>();
+	}
+
+	public void testMode() {
+		undos.clear();
+		redos.clear();
+	}
+
+	public static ActionInvoker getInstance() {
+		if (instance == null) {
+			instance = new ActionInvoker();
+		}
+
+		return instance;
+	}
+
+	public void setDefaultMessage(String defaultMessage) {
+		this.defaultMessage = defaultMessage;
+	}
+
+	public Message doAction(Action action) {
+		Message message = new Message(MessageType.ERROR, defaultMessage);
+
+		if (action != null) {
+			message = action.execute();
+
+			boolean isSuccess = (message.getType() == MessageType.SUCCESS);
+			boolean isUndoable = action.isUndoable();
+
+			if (isSuccess && isUndoable) {
+				undos.push(action);
+				redos.clear();
+			}
+		}
+
+		return message;
+	}
+
+	public Message redoLastAction() {
+		Message message;
+
+		try {
+			Action nextAction = redos.pop();
+			undos.push(nextAction);
+
+			message = nextAction.execute();
+		} catch (Exception e) {
+			message = null;
+		}
+
+		return message;
+	}
+
+	public Message undoLastAction() {
+		Message message;
+
+		try {
+			Action previousAction = undos.pop();
+			redos.push(previousAction);
+
+			message = previousAction.undo();
+		} catch (Exception e) {
+			message = null;
+		}
+
+		return message;
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\ActionInvoker.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Add.java
+	 */
+
+/**
+ * Add Action relies on the TaskBuilder for building tasks, and the TaskManager
+ * for logical storage. It also provides Live Task Preview when hints are
+ * requested.
+ */
+public class Add implements Action {
+	private static final String EXECUTE_SUCCESS = "Task successfully added: %s";
+	private static final String EXECUTE_ERROR = "There was an error adding the task.";
+
+	private static final String UNDO_SUCCESS = "Task successfully removed: %s";
+	private static final String UNDO_ERROR = "There was an error removing the task.";
+
+	private static final String HINT_MESSAGE = "\nAdd: You can include date information. Use []s to ignore date processing.";
+
+	private TaskBuilder taskBuilder;
+	private TaskManager taskManager;
+	private List<Task> tasks;
+	private String userCommand;
+
+	public Add(String userCommand) {
+		this.taskBuilder = new TaskBuilderAdvanced();
+		this.taskManager = TaskManagerActual.getInstance();
+		this.tasks = this.taskBuilder.createTask(userCommand);
+		this.userCommand = userCommand;
+	}
+
+	@Override
+	public Message execute() {
+		MessageType messageType;
+		String message;
+
+		boolean isNullTask = (this.tasks == null);
+
+		if (isNullTask) {
+			messageType = MessageType.ERROR;
+			message = String.format(EXECUTE_ERROR);
+			message = message + HINT_MESSAGE;
+
+			return new Message(messageType, message);
+		}
+
+		int tasksAdded = this.taskManager.addTasks(this.tasks);
+
+		boolean isSuccess = tasksAdded > 0;
+
+		if (isSuccess) {
+			String taskDescription = TaskCatalystCommons
+					.getDisplayString(this.userCommand);
+			messageType = MessageType.SUCCESS;
+			message = String.format(EXECUTE_SUCCESS, taskDescription);
+		} else {
+			messageType = MessageType.ERROR;
+			message = String.format(EXECUTE_ERROR);
+			message = message + HINT_MESSAGE;
+		}
+
+		return new Message(messageType, message);
+	}
+
+	@Override
+	public Message undo() {
+		MessageType messageType;
+		String message;
+
+		int tasksRemoved = this.taskManager.removeTasks(this.tasks);
+
+		boolean isSuccess = tasksRemoved > 0;
+
+		if (isSuccess) {
+			String taskDescription = TaskCatalystCommons
+					.getDisplayString(this.userCommand);
+			messageType = MessageType.SUCCESS;
+			message = String.format(UNDO_SUCCESS, taskDescription);
+		} else {
+			messageType = MessageType.ERROR;
+			message = String.format(UNDO_ERROR);
+		}
+
+		return new Message(messageType, message);
+	}
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType;
+		String message;
+
+		try {
+			message = TaskCatalystCommons.getDisplayString(userCommand);
+			messageType = MessageType.HINT;
+		} catch (UnsupportedOperationException e) {
+			message = e.getMessage();
+			messageType = MessageType.ERROR;
+		}
+
+		message = message + HINT_MESSAGE;
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		return true;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return true;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Add.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\BlackBox.java
+	 */
+
+/**
+ * BlackBox provides the logging functionality for the system. It applies the
+ * Singleton pattern to prevent multiple access to the logging file. Do remember
+ * to close this logger after using it to release resources.
+ */
+public class BlackBox {
+
+	private static final String DEFAULT_LOG_FILE_NAME = "Task Catalyst/blackbox.log";
+	public static BlackBox blackBox;
+	private static Logger logger;
+
+	public static BlackBox getInstance() {
+		if (blackBox == null) {
+			blackBox = new BlackBox();
+		}
+		return blackBox;
+	}
+
+	private BlackBox() {
+		try {
+			initializeLogger();
+			initializeHandler();
+		} catch (IOException e) {
+		}
+	}
+
+	private void initializeLogger() {
+		logger = Logger.getLogger(BlackBox.class.getName());
+		logger.setLevel(Level.SEVERE);
+	}
+
+	private void initializeHandler() throws IOException {
+		String path = DEFAULT_LOG_FILE_NAME;
+		boolean append = true;
+		int limit = 1024000;
+		int numFiles = 2;
+
+		Handler handler = new FileHandler(path, limit, numFiles, append);
+
+		logger.addHandler(handler);
+	}
+
+	public void setLevel(Level level) {
+		logger.setLevel(level);
+	}
+
+	public void severe(String string) {
+		logger.severe(string);
+	}
+
+	public void warning(String string) {
+		logger.warning(string);
+	}
+
+	public void info(String string) {
+		logger.info(string);
+	}
+
+	public void config(String string) {
+		logger.config(string);
+	}
+
+	public void fine(String string) {
+		logger.fine(string);
+	}
+
+	public void finer(String string) {
+		logger.finer(string);
+	}
+
+	public void finest(String string) {
+		logger.finest(string);
+	}
+
+	public void close() {
+		for (Handler handler : logger.getHandlers()) {
+			handler.close();
+		}
+		logger = null;
+		blackBox = null;
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\BlackBox.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\CommandType.java
+	 */
+
+/**
+ * This enumerates the various commands used in the system. New actions need to
+ * be added here to be parsed successfully.
+ */
+public enum CommandType {
+	ADD, DELETE, DONE, EDIT, HASHTAG, INVALID, REDO, SEARCH, UNDO, UNDONE
+};
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\CommandType.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Delete.java
+	 */
+
+/**
+ * Delete Action relies on the TaskManager for retrieving and deleting tasks. It
+ * is able to delete lists of tasks based on search string and task numbers. The
+ * user can also use "all" to delete everything.
+ */
+public class Delete implements Action {
+	private static final String[] DICTIONARY = { "delete", "rm", "del" };
+
+	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to delete.";
+	private static final String EXECUTE_SUCCESS = "Task successfully deleted: %s";
+	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully deleted %d tasks.";
+
+	private static final String UNDO_ERROR = "There was an error restoring the task(s).";
+	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
+	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
+
+	private static final String HINT_EXAMPLES = "\nExamples: delete 1 2 3 4, delete all, delete apple, delete mon";
+	private static final String HINT_ALTERNATIVES = "\nAlternatives: rm, del, delete";
+	private static final String HINT_MESSAGE = "Delete: Hit enter after typing the task numbers or keyword. Use []s to ignore date processing."
+			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
+
+	private TaskManager taskManager;
+	private ListProcessor listProcessor;
+	private List<Task> tasks;
+
+	private String parameters;
+
+	// Initialization Methods
+
+	public Delete(String userCommand) {
+		initializeComponents();
+		initializeParameters(userCommand);
+		populateTasks();
+	}
+
+	private void initializeComponents() {
+		taskManager = TaskManagerActual.getInstance();
+		listProcessor = new ListProcessorActual();
+	}
+
+	private void initializeParameters(String userCommand) {
+		parameters = TaskCatalystCommons.removeFirstWord(userCommand);
+	}
+
+	private void populateTasks() {
+		String containsNonNumbers = ".*[^0-9^,^\\s]+.*";
+
+		boolean isContainsWords = parameters.matches(containsNonNumbers);
+		boolean isAllSpecified = parameters.equalsIgnoreCase("all");
+
+		if (isAllSpecified) {
+			tasks = getAllTasks();
+		} else if (isContainsWords) {
+			tasks = getTaskByKeywords(parameters);
+		} else {
+			tasks = getTasksByNumber(parameters);
+		}
+	}
+
+	private ArrayList<Task> getAllTasks() {
+		return new ArrayList<Task>(taskManager.getDisplayList());
+	}
+
+	private List<Task> getTasksByNumber(String parameters) {
+		List<Integer> taskNumbers = TaskCatalystCommons
+				.parsePositiveIntList(parameters);
+
+		List<Task> foundTasks = new ArrayList<Task>();
+
+		for (int taskNumber : taskNumbers) {
+			Task displayTask = taskManager.getDisplayTask(taskNumber);
+
+			if (displayTask != null) {
+				foundTasks.add(displayTask);
+			}
+		}
+
+		return foundTasks;
+	}
+
+	private List<Task> getTaskByKeywords(String parameter) {
+		List<Task> displayList = taskManager.getDisplayList();
+
+		return listProcessor.searchByKeyword(displayList, parameter);
+	}
+
+	// Execution/Undo Methods
+
+	@Override
+	public Message execute() {
+		boolean isTasksFound = (tasks != null);
+
+		if (!isTasksFound) {
+			MessageType messageType = MessageType.ERROR;
+			String message = String.format(EXECUTE_ERROR);
+
+			Message returnMessage = new Message(messageType, message);
+
+			return returnMessage;
+		}
+
+		int numberRemoved = taskManager.removeTasks(tasks);
+
+		boolean isSingleTask = (tasks.size() == 1);
+		boolean isRemoved = (numberRemoved > 0);
+		boolean isAllRemoved = (numberRemoved == tasks.size());
+		boolean isSuccess = (isRemoved && isAllRemoved);
+
+		MessageType messageType = generateType(isSuccess);
+		String message = generateExecuteMessage(isSingleTask, numberRemoved,
+				isSuccess);
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	@Override
+	public Message undo() {
+		int numberAdded = taskManager.addTasks(tasks);
+
+		boolean isSingleTask = (tasks.size() == 1);
+		boolean isAdded = (numberAdded > 0);
+		boolean isAllAdded = (numberAdded == tasks.size());
+		boolean isSuccess = (isAdded && isAllAdded);
+
+		MessageType messageType = generateType(isSuccess);
+		String message = generateUndoMessage(isSingleTask, numberAdded,
+				isSuccess);
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	private MessageType generateType(boolean isSuccess) {
+		MessageType messageType;
+
+		if (isSuccess) {
+			messageType = MessageType.SUCCESS;
+		} else {
+			messageType = MessageType.ERROR;
+		}
+
+		return messageType;
+	}
+
+	private String generateExecuteMessage(boolean isSingleTask,
+			int numberRemoved, boolean isSuccess) {
+		String message;
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+
+			message = String.format(EXECUTE_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberRemoved);
+		} else {
+			message = String.format(EXECUTE_ERROR);
+		}
+
+		return message;
+	}
+
+	private String generateUndoMessage(boolean isSingleTask, int numberAdded,
+			boolean isSuccess) {
+		String message;
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+
+			message = String.format(UNDO_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(UNDO_SUCCESS_MULTIPLE, numberAdded);
+		} else {
+			message = String.format(UNDO_ERROR);
+		}
+
+		return message;
+	}
+
+	// Other Methods
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType = MessageType.HINT;
+
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return true;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Delete.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\DisplayMode.java
+	 */
+
+/**
+ * This enumerates the various display modes used by TaskManager.
+ */
+public enum DisplayMode {
+	HASHTAG, SEARCH
+};
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\DisplayMode.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Done.java
+	 */
+
+/**
+ * Done Action relies on the TaskManager for retrieving and completing tasks. It
+ * is able to complete lists of tasks based on search string and task numbers.
+ * The user can also use "all" to complete everything.
+ */
+public class Done implements Action {
+	private static final String[] DICTIONARY = { "done", "complete" };
+
+	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to complete.";
+	private static final String EXECUTE_SUCCESS = "Task successfully completed: %s";
+	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully completed %d tasks.";
+
+	private static final String UNDO_ERROR = "There was an error restoring the task(s).";
+	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
+	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
+
+	private static final String HINT_EXAMPLES = "\nExamples: done 1 2 3 4, done all, done apple, done mon";
+	private static final String HINT_ALTERNATIVES = "\nAlternatives: done, complete";
+	private static final String HINT_MESSAGE = "Complete: Hit enter after typing the task numbers or keyword. Use []s to ignore date processing."
+			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
+
+	private TaskManager taskManager;
+	private ListProcessor listProcessor;
+	private List<Task> tasks;
+
+	private String parameters;
+
+	// Initialization Methods
+
+	public Done(String userCommand) {
+		initializeComponents();
+		initializeParameters(userCommand);
+		populateTasks();
+	}
+
+	private void initializeComponents() {
+		taskManager = TaskManagerActual.getInstance();
+		listProcessor = new ListProcessorActual();
+	}
+
+	private void initializeParameters(String userCommand) {
+		parameters = TaskCatalystCommons.removeFirstWord(userCommand);
+	}
+
+	private void populateTasks() {
+		String containsNonNumbers = ".*[^0-9^,^\\s]+.*";
+
+		boolean isContainsWords = parameters.matches(containsNonNumbers);
+		boolean isAllSpecified = parameters.equalsIgnoreCase("all");
+
+		if (isAllSpecified) {
+			tasks = getAllTasks();
+		} else if (isContainsWords) {
+			tasks = getTaskByKeywords(parameters);
+		} else {
+			tasks = getTasksByNumber(parameters);
+		}
+	}
+
+	private ArrayList<Task> getAllTasks() {
+		return new ArrayList<Task>(taskManager.getDisplayList());
+	}
+
+	private List<Task> getTasksByNumber(String parameters) {
+		List<Integer> taskNumbers = TaskCatalystCommons
+				.parsePositiveIntList(parameters);
+
+		List<Task> foundTasks = new ArrayList<Task>();
+
+		for (int taskNumber : taskNumbers) {
+			Task displayTask = taskManager.getDisplayTask(taskNumber);
+
+			if (displayTask != null) {
+				foundTasks.add(displayTask);
+			}
+		}
+
+		return foundTasks;
+	}
+
+	private List<Task> getTaskByKeywords(String parameter) {
+		List<Task> displayList = taskManager.getDisplayList();
+
+		return listProcessor.searchByKeyword(displayList, parameter);
+	}
+
+	// Execution/Undo Methods
+
+	@Override
+	public Message execute() {
+		boolean isTasksFound = (tasks != null);
+
+		if (!isTasksFound) {
+			MessageType messageType = MessageType.ERROR;
+			String message = String.format(EXECUTE_ERROR);
+
+			Message returnMessage = new Message(messageType, message);
+
+			return returnMessage;
+		}
+
+		int numberCompleted = taskManager.completeTasks(tasks);
+
+		boolean isSingleTask = tasks.size() == 1;
+		boolean isCompleted = numberCompleted > 0;
+		boolean isAllCompleted = numberCompleted == tasks.size();
+		boolean isSuccess = isCompleted && isAllCompleted;
+
+		MessageType messageType = generateType(isSuccess);
+		String message = generateExecuteMessage(isSingleTask, numberCompleted,
+				isSuccess);
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	@Override
+	public Message undo() {
+		int numberRestored = taskManager.uncompleteTasks(tasks);
+
+		boolean isSingleTask = (tasks.size() == 1);
+		boolean isRestored = (numberRestored > 0);
+		boolean isAllRestored = (numberRestored == tasks.size());
+		boolean isSuccess = (isRestored && isAllRestored);
+
+		MessageType messageType = generateType(isSuccess);
+		String message = generateUndoMessage(isSingleTask, numberRestored,
+				isSuccess);
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	private MessageType generateType(boolean isSuccess) {
+		MessageType messageType;
+
+		if (isSuccess) {
+			messageType = MessageType.SUCCESS;
+		} else {
+			messageType = MessageType.ERROR;
+		}
+
+		return messageType;
+	}
+
+	private String generateExecuteMessage(boolean isSingleTask,
+			int numberCompleted, boolean isSuccess) {
+		String message;
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+
+			message = String.format(EXECUTE_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberCompleted);
+		} else {
+			message = String.format(EXECUTE_ERROR);
+		}
+
+		return message;
+	}
+
+	private String generateUndoMessage(boolean isSingleTask,
+			int numberRestored, boolean isSuccess) {
+		String message;
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+
+			message = String.format(UNDO_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(UNDO_SUCCESS_MULTIPLE, numberRestored);
+		} else {
+			message = String.format(UNDO_ERROR);
+		}
+
+		return message;
+	}
+
+	// Other Methods
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType = MessageType.HINT;
+
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return true;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Done.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Edit.java
+	 */
+
+/**
+ * Edit Action relies on the TaskManager for retrieving and replacing tasks. It
+ * is able to replace single tasks with multiple tasks if the user's task is
+ * split. It provides autocomplete functionality when certain patterns are
+ * matched, and uses Live Task Preview when the user is editing the task.
+ */
+public class Edit implements Action {
+	private static final String[] DICTIONARY = { "edit" };
+
+	private static final String EXECUTE_ERROR = "Invalid task number specified.";
+	private static final String EXECUTE_SUCCESS = "Task successfully edited: %s";
+
+	private static final String UNDO_ERROR = "There was an error restoring the task.";
+	private static final String UNDO_SUCCESS = "Task successfully restored: %s";
+
+	private static final String FORMAT_AUTOCOMPLETE = "edit %d %s";
+
+	private static final String HINT_EXAMPLES = "\nExample: edit 1";
+	private static final String HINT_VALID_TASK = "\nEdit: Hit enter after making your changes."
+			+ HINT_EXAMPLES;
+	private static final String HINT_INVALID_TASK = "Invalid task number specified."
+			+ HINT_EXAMPLES;
+	private static final String HINT_MESSAGE = "Edit: Hit space or enter after typing a valid task number to continue."
+			+ HINT_EXAMPLES;
+
+	private TaskBuilder taskBuilder;
+	private static TaskManager taskManager = TaskManagerActual.getInstance();
+
+	private List<Task> targetTasks;
+	private List<Task> replacementTasks;
+
+	private int taskNumber;
+
+	private String parameters;
+	private String targetDescriptionEdit;
+	private String replacementDescriptionEdit;
+
+	// Initialization Methods
+
+	public Edit(String userCommand) {
+		initializeComponents();
+		initializeParameters(userCommand);
+		populateTargetTasks();
+		populateReplacementTasks();
+	}
+
+	private void initializeParameters(String userCommand) {
+		this.parameters = TaskCatalystCommons.removeFirstWord(userCommand);
+	}
+
+	private void initializeComponents() {
+		this.taskBuilder = new TaskBuilderAdvanced();
+	}
+
+	private void populateTargetTasks() {
+		String taskNumberString = TaskCatalystCommons
+				.getFirstWord(this.parameters);
+
+		this.taskNumber = TaskCatalystCommons
+				.parsePositiveInt(taskNumberString);
+
+		Task targetTask = taskManager.getDisplayTask(this.taskNumber);
+
+		boolean isTargetTaskValid = targetTask != null;
+
+		if (isTargetTaskValid) {
+			this.targetDescriptionEdit = targetTask.getDescriptionEdit();
+			this.targetTasks = new ArrayList<Task>();
+			this.targetTasks.add(targetTask);
+		}
+	}
+
+	private void populateReplacementTasks() {
+		String taskDescriptionString = TaskCatalystCommons
+				.removeFirstWord(this.parameters);
+
+		try {
+			this.replacementTasks = this.taskBuilder
+					.createTask(taskDescriptionString);
+			this.replacementDescriptionEdit = taskDescriptionString;
+		} catch (UnsupportedOperationException e) {
+			this.replacementTasks = null;
+			this.replacementDescriptionEdit = null;
+		}
+	}
+
+	// Execution/Undo Methods
+
+	@Override
+	public Message execute() {
+		MessageType messageType;
+		String message;
+
+		boolean isTargetTaskValid = (this.targetTasks != null);
+		boolean isReplacementTaskValid = (this.replacementTasks != null);
+		boolean isNeedAutocomplete = (isTargetTaskValid && !isReplacementTaskValid);
+		boolean isWrongTaskNumber = !isTargetTaskValid;
+
+		if (isNeedAutocomplete) {
+			messageType = MessageType.AUTOCOMPLETE;
+			message = String.format(FORMAT_AUTOCOMPLETE, this.taskNumber,
+					this.targetDescriptionEdit);
+
+			return new Message(messageType, message);
+		}
+
+		if (isWrongTaskNumber) {
+			messageType = MessageType.ERROR;
+			message = String.format(EXECUTE_ERROR) + HINT_EXAMPLES;
+
+			return new Message(messageType, message);
+		}
+
+		String taskDescription = TaskCatalystCommons
+				.getDisplayString(this.replacementDescriptionEdit);
+
+		return replace(this.targetTasks, this.replacementTasks,
+				taskDescription, EXECUTE_SUCCESS, EXECUTE_ERROR);
+	}
+
+	@Override
+	public Message undo() {
+		String taskDescription = TaskCatalystCommons
+				.getDisplayString(this.targetDescriptionEdit);
+
+		return replace(this.replacementTasks, this.targetTasks,
+				taskDescription, UNDO_SUCCESS, UNDO_ERROR);
+	}
+
+	private Message replace(List<Task> targetTasks,
+			List<Task> replacementTasks, String taskDescription,
+			String successFormat, String errorFormat) {
+		MessageType messageType;
+		String message;
+
+		int tasksDeleted = taskManager.removeTasks(targetTasks);
+		int tasksAdded = taskManager.addTasks(replacementTasks);
+
+		boolean isDeleteSuccess = tasksDeleted > 0;
+		boolean isAddSuccess = tasksAdded > 0;
+		boolean isSuccess = isDeleteSuccess && isAddSuccess;
+
+		if (isSuccess) {
+			messageType = MessageType.SUCCESS;
+			message = String.format(successFormat, taskDescription);
+		} else {
+			messageType = MessageType.ERROR;
+			message = String.format(errorFormat);
+		}
+
+		return new Message(messageType, message);
+	}
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType;
+		String message;
+
+		int taskNumber = getTaskNumber(userCommand);
+		String description = getDescription(userCommand);
+		Task targetTask = getTargetTask(taskNumber);
+
+		boolean isHasDescription = !description.isEmpty();
+		boolean isEndsWithSpace = userCommand.endsWith(" ");
+		boolean isValidTask = targetTask != null;
+		boolean isPositiveTaskNumber = taskNumber > 0;
+		boolean isInvalidTask = !isValidTask && isPositiveTaskNumber
+				&& (isEndsWithSpace || isHasDescription);
+		boolean isAutocomplete = isValidTask && isEndsWithSpace
+				&& !isHasDescription;
+		boolean isBeingEdited = isValidTask && isHasDescription;
+
+		if (isInvalidTask) {
+			messageType = MessageType.HINT;
+			message = getInvalidTaskMessage();
+		} else if (isAutocomplete) {
+			messageType = MessageType.AUTOCOMPLETE;
+			message = getAutocompleteMessage(taskNumber, targetTask);
+		} else if (isBeingEdited) {
+			try {
+				messageType = MessageType.HINT;
+				message = getLiveTaskPreviewMessage(userCommand, taskNumber);
+			} catch (UnsupportedOperationException e) {
+				messageType = MessageType.ERROR;
+				message = getErrorMessage(e);
+			}
+			message += HINT_VALID_TASK;
+		} else {
+			messageType = MessageType.HINT;
+			message = HINT_MESSAGE;
+		}
+
+		return new Message(messageType, message);
+	}
+
+	private static Task getTargetTask(int taskNumber) {
+		return taskManager.getDisplayTask(taskNumber);
+	}
+
+	private static int getTaskNumber(String userCommand) {
+		String taskNumberString;
+		taskNumberString = TaskCatalystCommons.removeFirstWord(userCommand);
+		taskNumberString = TaskCatalystCommons.getFirstWord(taskNumberString);
+
+		int taskNumber = TaskCatalystCommons.parsePositiveInt(taskNumberString);
+
+		return taskNumber;
+	}
+
+	private static String getInvalidTaskMessage() {
+		String message = HINT_INVALID_TASK;
+
+		return message;
+	}
+
+	private static String getAutocompleteMessage(int taskNumber, Task targetTask) {
+		String taskDescription = targetTask.getDescriptionEdit();
+
+		String message = String.format(FORMAT_AUTOCOMPLETE, taskNumber,
+				taskDescription);
+
+		return message;
+	}
+
+	private static String getLiveTaskPreviewMessage(String userCommand,
+			int taskNumber) {
+		String editAndTaskNumber = "edit " + taskNumber + " ";
+		String userInput = userCommand.replace(editAndTaskNumber, "");
+		String liveTaskPreviewMessage = TaskCatalystCommons
+				.getDisplayString(userInput);
+
+		return liveTaskPreviewMessage;
+	}
+
+	private static String getErrorMessage(UnsupportedOperationException e) {
+		String errorMessage = e.getMessage();
+
+		return errorMessage;
+	}
+
+	private static String getDescription(String userCommand) {
+		String description;
+		description = TaskCatalystCommons.removeFirstWord(userCommand);
+		description = TaskCatalystCommons.removeFirstWord(description);
+		description = description.trim();
+
+		return description;
+	}
+
+	// Other Methods
+
+	public static boolean isThisAction(String command) {
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return true;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Edit.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Hashtag.java
+	 */
+
+/**
+ * Hashtag Action parses the user's input and sets the TaskManager to use the
+ * specified hashtag and the correct display mode.
+ */
+public class Hashtag implements Action {
+	private static final String HINT_MESSAGE = "Hashtag: Hit enter after typing a valid hashtag to continue.";
+
+	private static final String EXECUTE_SUCCESS = "Displaying hashtag category: #%s.";
+	private static final String EXECUTE_ERROR = "Please enter a valid hashtag.";
+
+	TaskManager taskManager;
+	String hashtag;
+
+	public Hashtag(String userCommand) {
+		this.taskManager = TaskManagerActual.getInstance();
+		this.hashtag = userCommand.replaceAll("#", "");
+	}
+
+	@Override
+	public Message execute() {
+		MessageType messageType;
+		String message;
+
+		DisplayMode displayMode = DisplayMode.HASHTAG;
+		String keyword = this.hashtag;
+
+		boolean isHashtagEmpty = this.hashtag.isEmpty();
+
+		if (isHashtagEmpty) {
+			messageType = MessageType.ERROR;
+			message = EXECUTE_ERROR;
+		} else {
+			this.taskManager.setDisplayModeKeyword(displayMode, keyword);
+
+			messageType = MessageType.SUCCESS;
+			message = String.format(EXECUTE_SUCCESS, keyword);
+		}
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	@Override
+	public Message undo() {
+		Message returnMessage = execute();
+
+		return returnMessage;
+	}
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType = MessageType.HINT;
+		String message = HINT_MESSAGE;
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		boolean isThisAction = command.startsWith("#");
+
+		return isThisAction;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return false;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Hashtag.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\ListProcessor.java
+	 */
+
+/**
+ * ListProcessor is used to process lists of tasks to implement features like
+ * Search and the Overlap Warning System.
+ */
+public interface ListProcessor {
+	public List<Task> searchByHashtag(List<Task> list, String hashtag);
+
+	public List<Task> searchByKeyword(List<Task> list, String keyword);
+
+	public List<Task> sortByDate(List<Task> list);
+
+	public List<Task> getOverlapping(List<Task> list);
+
+	public List<Task> getOverlapping(Task task, List<Task> list);
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\ListProcessor.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\ListProcessorStub.java
+	 */
+
+/**
+ * This is the stub ListProcessor used for unit testing of LogicActual.
+ */
+public class ListProcessorStub implements
+		moustachio.task_catalyst.ListProcessor {
+
+	@Override
+	public List<Task> searchByHashtag(List<Task> list, String hashtag) {
+		List<Task> searchList = new ArrayList<Task>();
+		for (Task task : list) {
+			if (!task.isDone()) {
+				searchList.add(task);
+			}
+		}
+		return searchList;
+	}
+
+	@Override
+	public List<Task> searchByKeyword(List<Task> list, String keyword) {
+		List<Task> searchList = new ArrayList<Task>();
+		for (Task task : list) {
+			if (task.hasKeyword(keyword)) {
+				searchList.add(task);
+			}
+		}
+		return searchList;
+	}
+
+	@Override
+	public List<Task> sortByDate(List<Task> list) {
+		List<Task> newList = new ArrayList<Task>(list);
+		Collections.sort(newList);
+		return newList;
+	}
+
+	@Override
+	public List<Task> getOverlapping(List<Task> list) {
+		return null;
+	}
+
+	@Override
+	public List<Task> getOverlapping(Task task, List<Task> list) {
+		return null;
+	}
+
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\ListProcessorStub.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Logic.java
+	 */
+
+/**
+ * Logic is the main link between the front-end GUI and the back-end classes.
+ * Logic provides functionality for parsing commands, providing hints, providing
+ * the displaying list as well as the list of hashtags and tasks to highlight.
+ */
+public interface Logic {
+	public void testMode();
+
+	public Message processCommand(String userCommand);
+
+	public Message getMessageTyping(String userCommand);
+
+	public List<String> getHashtags();
+
+	public List<Task> getList();
+
+	public int getHashtagSelected();
+
+	public List<Integer> getTasksSelected();
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Logic.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\LogicActual.java
+	 */
+
+/**
+ * LogicActual implements the Logic interface and provides all functionality by
+ * applying the facade pattern and relaying commands to the ActionHintSystem as
+ * well as the TaskManager.
+ */
+public class LogicActual implements Logic {
+
+	ActionHintSystem actionHintSystem;
+	TaskManager taskManager;
+
+	public LogicActual() {
+		actionHintSystem = new ActionHintSystemActual();
+		taskManager = TaskManagerActual.getInstance();
+	}
+
+	public void testMode() {
+		taskManager.testMode();
+		actionHintSystem.testMode();
+	}
+
+	// ActionHintSystem Commands
+
+	@Override
+	public Message processCommand(String userCommand) {
+		return actionHintSystem.processCommand(userCommand);
+	}
+
+	@Override
+	public Message getMessageTyping(String userCommand) {
+		return actionHintSystem.getMessageTyping(userCommand);
+	}
+
+	// TaskManager Commands
+
+	@Override
+	public List<String> getHashtags() {
+		return taskManager.getHashtags();
+	}
+
+	@Override
+	public List<Task> getList() {
+		return taskManager.getDisplayList();
+	}
+
+	@Override
+	public int getHashtagSelected() {
+		return taskManager.getHashtagSelected();
+	}
+
+	@Override
+	public List<Integer> getTasksSelected() {
+		return taskManager.getTasksSelected();
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\LogicActual.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Message.java
+	 */
+
+/**
+ * The Message object encapsulates a message and a type, which is generated by
+ * the ActionHintSystem. These messages can represent a hint, status message, or
+ * an autocomplete request.
+ */
+public class Message {
+	MessageType messageType;
+	String message;
+
+	public Message(MessageType type, String message) {
+		this.messageType = type;
+		this.message = message;
+	}
+
+	public MessageType getType() {
+		return this.messageType;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
+
+	public String getMessage() {
+		return message;
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Message.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\MessageType.java
+	 */
+
+/**
+ * This enumerates the various messages used in the system. This is used by the
+ * Message class.
+ */
+public enum MessageType {
+	SUCCESS, ERROR, HINT, AUTOCOMPLETE
+};
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\MessageType.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Redo.java
+	 */
+
+/**
+ * Redo Action relies on ActionInvoker for the actual redo operation, and
+ * appends or generates the appropriate messages based on the outcome.
+ */
+public class Redo implements Action {
+	private static final String[] DICTIONARY = { "redo" };
+
+	private static final String EXECUTE_SUCCESS = "Redo: %s";
+	private static final String EXECUTE_ERROR = "There is nothing to redo.";
+
+	private static final String HINT_MESSAGE = "Redo: Hit enter to redo previous action.\nYou can also use CTRL+Y";
+
+	ActionInvoker actionInvoker;
+
+	public Redo(String userCommand) {
+		actionInvoker = ActionInvoker.getInstance();
+	}
+
+	@Override
+	public Message execute() {
+		Message returnMessage = actionInvoker.redoLastAction();
+
+		if (returnMessage != null) {
+			String appendedMessage = String.format(EXECUTE_SUCCESS,
+					returnMessage.getMessage());
+			returnMessage.setMessage(appendedMessage);
+		} else {
+			MessageType messageType = MessageType.SUCCESS;
+			returnMessage = new Message(messageType, EXECUTE_ERROR);
+		}
+
+		return returnMessage;
+	}
+
+	@Override
+	public Message undo() {
+		return execute();
+	}
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType = MessageType.HINT;
+
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return false;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Redo.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Search.java
+	 */
+
+/**
+ * Search Action parses the user's input and sets the TaskManager to use the
+ * specified hashtag and the correct display mode.
+ */
+public class Search implements Action {
+
+	private static final String[] DICTIONARY = { "search", "find" };
+
+	private static final String EXECUTE_SUCCESS = "Displaying search: %s.";
+	private static final String EXECUTE_ERROR = "Please enter a valid search term.";
+
+	private static final String HINT_EXAMPLES = "\nExamples: search apple, search mon to fri, search tomorrow";
+	private static final String HINT_ALTERNATIVES = "\nAlternatives: search, find";
+	private static final String HINT_MESSAGE = "Search: Hit enter after typing a search term to continue. Use []s to ignore date processing."
+			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
+
+	TaskManager taskManager;
+	String keyword;
+
+	public Search(String userCommand) {
+		this.taskManager = TaskManagerActual.getInstance();
+		this.keyword = TaskCatalystCommons.removeFirstWord(userCommand);
+	}
+
+	@Override
+	public Message execute() {
+		MessageType messageType;
+		String message;
+
+		boolean isKeywordEmpty = this.keyword.isEmpty();
+
+		if (isKeywordEmpty) {
+			messageType = MessageType.ERROR;
+			message = String.format(EXECUTE_ERROR);
+		} else {
+			DisplayMode displayMode = DisplayMode.SEARCH;
+			this.taskManager.setDisplayModeKeyword(displayMode, this.keyword);
+
+			messageType = MessageType.SUCCESS;
+			message = String.format(EXECUTE_SUCCESS, this.keyword);
+		}
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	@Override
+	public Message undo() {
+		Message returnMessage = execute();
+
+		return returnMessage;
+	}
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType = MessageType.HINT;
+
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return false;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Search.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Storage.java
+	 */
+
+/**
+ * Storage is used to provide physical storage capabilities for the system. It
+ * provides save and load functionalities for lists of tasks and settings.
+ */
+public interface Storage {
+
+	public boolean saveTasks(List<Task> list, String fileName);
+
+	public List<Task> loadTasks(String fileName);
+
+	public boolean saveSetting(String name, String fileName, String value);
+
+	public String loadSetting(String name, String fileName);
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Storage.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\StorageStub.java
+	 */
+
+/**
+ * This is the stub Storage used for unit testing of LogicActual.
+ */
+public class StorageStub implements Storage {
+
+	List<Task> list;
+
+	public StorageStub() {
+		this.list = new ArrayList<Task>();
+	}
+
+	@Override
+	public boolean saveTasks(List<Task> list, String fileName) {
+		this.list = list;
+		return true;
+	}
+
+	@Override
+	public List<Task> loadTasks(String fileName) {
+		return this.list;
+	}
+
+	@Override
+	public boolean saveSetting(String name, String fileName, String value) {
+		return false;
+	}
+
+	@Override
+	public String loadSetting(String name, String fileName) {
+		return null;
+	}
+
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\StorageStub.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Task.java
+	 */
+
+/**
+ * Task is used to encapsulate everything that is needed to know about a Task
+ * and is the main object used throughout the application.
+ */
+public interface Task extends Comparable<Task> {
+
+	public String getDescription();
+
+	public String getDescriptionRaw();
+
+	public String getDescriptionEdit();
+
+	public void setDescription(String description);
+
+	public void setDone(boolean done);
+	
+	public void setError(boolean isError);
+
+	public void setOverlapping(boolean overlapping);
+
+	public List<Date> getAllDates();
+
+	public Date getDateStart();
+
+	public Date getDateEnd();
+
+	public Date getNextDate();
+
+	public boolean hasDate(Date date);
+
+	public boolean isBetweenDates(Date start, Date end);
+
+	public List<String> getHashtags();
+
+	public boolean hasHashtag(String hashtag);
+
+	public boolean hasKeyword(String keyword);
+
+	public boolean isAllDay();
+
+	public boolean isBlocking();
+
+	public boolean isDone();
+	
+	public boolean isError();
+
+	public boolean isMultiple();
+
+	public boolean isOverdue();
+
+	public boolean isOverlapping();
+
+	public boolean isPriority();
+
+	public boolean isRange();
+
+	public boolean isDeadline();
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Task.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskAdvanced.java
+	 */
+
+/**
+ * TaskAdvanced is a Task object created by the TaskBuilderAdvanced. It stores
+ * information in the form of Interpreted Strings to facilitate Relative Date
+ * Display. Descriptions, dates and hashtags are populated upon initialization
+ * or modification of the stored description;
+ */
+public class TaskAdvanced implements Task {
+	String description;
+	Date dateStart;
+	Date dateEnd;
+	List<Date> allDates;
+	List<String> hashtags;
+
+	boolean isOverlapping;
+	boolean isDone;
+	boolean isError;
+
+	// Initialization Methods
+
+	public TaskAdvanced(String description) {
+		setDescription(description);
+	}
+
+	private void initializeAttributes(String description) {
+		this.description = description;
+		this.isDone = false;
+	}
+
+	private void initializeFields() {
+		String interpretedString = getDescriptionRaw();
+
+		hashtags = TaskCatalystCommons.getAllHashtags(interpretedString);
+		allDates = TaskCatalystCommons.getAllDates(interpretedString);
+
+		boolean isFloatingTask = allDates.isEmpty();
+
+		if (!isFloatingTask) {
+			int firstIndex = 0;
+			int lastIndex = allDates.size() - 1;
+
+			dateStart = allDates.get(firstIndex);
+			dateEnd = allDates.get(lastIndex);
+		}
+	}
+
+	// Public Mutators
+
+	@Override
+	public String getDescription() {
+		String interpretedString = getDescriptionRaw();
+
+		String description = TaskCatalystCommons
+				.getDisplayStringWithoutDate(interpretedString);
+
+		return description;
+	}
+
+	@Override
+	public String getDescriptionEdit() {
+		String interpretedString = getDescriptionRaw();
+
+		boolean isAlwaysShowTime = true;
+
+		String prettyString = TaskCatalystCommons.getRelativeString(
+				interpretedString, isAlwaysShowTime);
+
+		String descriptionEdit = TaskCatalystCommons
+				.removeCurlyBraces(prettyString);
+
+		return descriptionEdit;
+	}
+
+	@Override
+	public String getDescriptionRaw() {
+		String descriptionRaw = this.description;
+
+		return descriptionRaw;
+	}
+
+	@Override
+	public void setDescription(String description) {
+		initializeAttributes(description);
+		initializeFields();
+	}
+
+	@Override
+	public void setDone(boolean isDone) {
+		this.isDone = isDone;
+	}
+
+	@Override
+	public void setError(boolean isError) {
+		this.isError = isError;
+	}
+
+	@Override
+	public void setOverlapping(boolean overlapping) {
+		this.isOverlapping = overlapping;
+	}
+
+	// Date Methods
+
+	@Override
+	public List<Date> getAllDates() {
+		return this.allDates;
+	}
+
+	@Override
+	public Date getDateStart() {
+		return this.dateStart;
+	}
+
+	@Override
+	public Date getDateEnd() {
+		return this.dateEnd;
+	}
+
+	@Override
+	public Date getNextDate() {
+		if (allDates.isEmpty()) {
+			return null;
+		}
+
+		if (isRange()) {
+			return getDateStart();
+		}
+
+		Date now = new Date();
+		Date nextDate = null;
+
+		for (Date date : allDates) {
+			boolean isDateAfterNow = date.after(now);
+			if (isDateAfterNow) {
+				nextDate = date;
+				break;
+			}
+		}
+
+		return nextDate;
+	}
+
+	@Override
+	public boolean hasDate(Date date) {
+		boolean hasDate = false;
+
+		boolean isFloatingTask = (allDates == null);
+
+		if (isFloatingTask) {
+			hasDate = false;
+		} else if (isRange()) {
+			hasDate = TaskCatalystCommons.isBetweenDates(getDateStart(),
+					getDateEnd(), date);
+		} else {
+			for (Date eachDate : allDates) {
+				hasDate = TaskCatalystCommons.isSameDate(eachDate, date);
+
+				if (hasDate) {
+					break;
+				}
+			}
+		}
+
+		return hasDate;
+	}
+
+	@Override
+	public boolean isBetweenDates(Date start, Date end) {
+		boolean isBetweenDates = false;
+
+		boolean isFloatingTask = (allDates == null);
+
+		if (isFloatingTask) {
+			isBetweenDates = false;
+		} else if (isRange()) {
+			boolean startIsBetween = TaskCatalystCommons.isBetweenDates(start,
+					end, getDateStart());
+			boolean endIsBetween = TaskCatalystCommons.isBetweenDates(start,
+					end, getDateEnd());
+
+			isBetweenDates = (startIsBetween || endIsBetween);
+		} else {
+			for (Date eachDate : allDates) {
+				isBetweenDates = TaskCatalystCommons.isBetweenDates(start, end,
+						eachDate);
+
+				if (isBetweenDates) {
+					break;
+				}
+			}
+		}
+
+		return isBetweenDates;
+	}
+
+	// Hashtag / Search Methods
+
+	@Override
+	public List<String> getHashtags() {
+		return hashtags;
+	}
+
+	@Override
+	public boolean hasHashtag(String hashtag) {
+		String hashtagLowerCase = "#" + hashtag.toLowerCase();
+
+		List<String> hashtags = getHashtags();
+
+		boolean hasHashtag = hashtags.contains(hashtagLowerCase);
+
+		return hasHashtag;
+	}
+
+	@Override
+	public boolean hasKeyword(String keyword) {
+		String descriptionLowerCase = getDescription().toLowerCase();
+		String keywordProcessed = keyword.toLowerCase();
+		keywordProcessed = TaskCatalystCommons
+				.removeCurlyBraces(keywordProcessed);
+		keywordProcessed = TaskCatalystCommons
+				.removeSquareBrackets(keywordProcessed);
+		String[] tokenizedKeywords = keywordProcessed.split("\\s+");
+		boolean isKeywordFound = false;
+
+		for (String token : tokenizedKeywords) {
+			isKeywordFound = descriptionLowerCase.contains(token);
+			if (isKeywordFound) {
+				break;
+			}
+		}
+
+		return isKeywordFound;
+	}
+
+	// Marking Methods
+
+	@Override
+	public boolean isAllDay() {
+		if (getDateStart() == null || isBlocking() || isRange()) {
+			return false;
+		}
+
+		boolean isOneSecond = (TaskCatalystCommons.getSeconds(getDateStart()) == 1);
+		boolean isZeroMinutes = (TaskCatalystCommons.getMinutes(getDateStart()) == 0);
+		boolean isZeroHours = (TaskCatalystCommons.getHours(getDateStart()) == 0);
+		boolean isAllDay = (isOneSecond && isZeroMinutes && isZeroHours);
+
+		return isAllDay;
+	}
+
+	@Override
+	public boolean isBlocking() {
+		boolean hasOr = TaskCatalystCommons.hasWordBetweenDates(
+				getDescriptionRaw(), "or");
+		boolean isBlocking = (!isDone() && hasOr);
+
+		return isBlocking;
+	}
+
+	@Override
+	public boolean isDeadline() {
+		boolean hasBefore = TaskCatalystCommons.hasWordBeforeDates(
+				getDescriptionRaw(), "before");
+		boolean hasBy = TaskCatalystCommons.hasWordBeforeDates(
+				getDescriptionRaw(), "by");
+		boolean hasKeywords = (hasBefore || hasBy);
+		boolean isDeadline = (!isDone() && hasKeywords);
+
+		return isDeadline;
+	}
+
+	@Override
+	public boolean isDone() {
+		return isDone;
+	}
+
+	@Override
+	public boolean isError() {
+		return isError;
+	}
+
+	@Override
+	public boolean isMultiple() {
+		boolean isMultiple = TaskCatalystCommons.hasWordBetweenDates(
+				getDescriptionRaw(), "and");
+
+		return isMultiple;
+	}
+
+	@Override
+	public boolean isOverdue() {
+		boolean isFloatingTask = (getDateEnd() == null);
+
+		if (isFloatingTask) {
+			return false;
+		}
+
+		boolean isToday = TaskCatalystCommons.isToday(getDateStart());
+
+		if (isAllDay() && isToday) {
+			return false;
+		}
+
+		Date now = new Date();
+
+		boolean isNowAfterEnd = now.after(getDateEnd());
+		boolean isOverdue = (!isDone() && isNowAfterEnd);
+
+		return isOverdue;
+	}
+
+	@Override
+	public boolean isOverlapping() {
+		return isOverlapping;
+	}
+
+	@Override
+	public boolean isPriority() {
+		boolean isPriority = hasHashtag("pri");
+		return isPriority;
+	}
+
+	@Override
+	public boolean isRange() {
+		boolean isRange = TaskCatalystCommons.hasWordBetweenDates(
+				getDescriptionRaw(), "to");
+		return isRange;
+	}
+
+	@Override
+	public int compareTo(Task o) {
+		if (isError()) {
+			return -1;
+		}
+		
+		if (o.isError()) {
+			return 1;
+		}
+		
+		Date thisDateTime = this.getDateStart();
+		Date otherDateTime = o.getDateStart();
+
+		boolean isThisDateNull = thisDateTime == null;
+		boolean isOtherDateNull = otherDateTime == null;
+
+		if (isThisDateNull && !isOtherDateNull) {
+			return 1;
+		}
+
+		if (isOtherDateNull && !isThisDateNull) {
+			return -1;
+		}
+
+		if (isThisDateNull && isOtherDateNull) {
+			return 0;
+		}
+
+		boolean isSameDate = TaskCatalystCommons.isSameDate(thisDateTime,
+				otherDateTime);
+		boolean isThisAllDay = isAllDay();
+		boolean isOtherAllDay = o.isAllDay();
+
+		if (isSameDate && isThisAllDay && !isOtherAllDay) {
+			return -1;
+		}
+
+		return thisDateTime.compareTo(otherDateTime);
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskAdvanced.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskBuilder.java
+	 */
+
+/**
+ * TaskBuilder is used for creating a list of tasks based on user input.
+ */
+public interface TaskBuilder {
+	public List<Task> createTask(String userInput);
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskBuilder.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskBuilderAdvanced.java
+	 */
+
+/**
+ * TaskBuilderAdvanced implements the TaskBuilder interface and is able to build
+ * tasks based on user input. It is also able to split tasks if a task contains
+ * multiple dates.
+ */
+public class TaskBuilderAdvanced implements TaskBuilder {
+
+	BlackBox blackBox;
+	SimpleDateFormat formatter;
+
+	public TaskBuilderAdvanced() {
+		formatter = new SimpleDateFormat("dd MMM yyyy KK:mm:ss a");
+		blackBox = BlackBox.getInstance();
+	}
+
+	public List<Task> createTask(String userInput) {
+		if (userInput == null || userInput.trim().isEmpty()) {
+			return null;
+		}
+
+		blackBox.info("User Entered: " + userInput);
+
+		Task task = createOneTask(userInput);
+
+		List<Task> tasks;
+
+		boolean isTaskValid = (task != null);
+
+		if (isTaskValid) {
+			blackBox.info("Task built with description: "
+					+ task.getDescriptionRaw());
+
+			tasks = splitIntoMultipleTasks(task);
+
+			blackBox.info("Task split into " + tasks.size() + " tasks.");
+		} else {
+			blackBox.info("Task not built successfully.");
+
+			tasks = null;
+		}
+
+		return tasks;
+	}
+
+	public Task createOneTask(String userInput) {
+		if (userInput == null || userInput.trim().isEmpty()) {
+			return null;
+		}
+
+		Task task;
+
+		try {
+			boolean strict = true;
+			String interpretedString = TaskCatalystCommons
+					.getInterpretedString(userInput, strict);
+
+			task = new TaskAdvanced(interpretedString);
+		} catch (UnsupportedOperationException e) {
+			task = null;
+		}
+
+		return task;
+	}
+
+	public List<Task> splitIntoMultipleTasks(Task task) {
+		String wordsInCurlyBraces = "\\{.*\\}";
+		String emptyCurlyBraces = "\\{\\}";
+
+		List<Task> tasks = new ArrayList<Task>();
+
+		if (task.isMultiple()) {
+			List<Date> dates = task.getAllDates();
+
+			String descriptionModified = task.getDescriptionRaw();
+			descriptionModified = descriptionModified.replaceAll(
+					wordsInCurlyBraces, emptyCurlyBraces);
+
+			for (Date date : dates) {
+				String formattedDate = formatter.format(date);
+				formattedDate = "{" + formattedDate + "}";
+
+				Task splitTask = createOneTask(descriptionModified.replaceAll(
+						emptyCurlyBraces, formattedDate));
+
+				tasks.add(splitTask);
+			}
+		} else {
+			tasks.add(task);
+		}
+		return tasks;
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskBuilderAdvanced.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	private void pasteClipboard() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				if (clipboard.hasString()) {
+					if (!primaryStage.isShowing()) {
+						primaryStage.show();
+					}
+					primaryStage.toFront();
+					controller.setCommandBar(clipboard.getString());
+				}
+			}
+		});
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalystCommons.java
+	 */
+
+/**
+ * This class contains parsing and interpretation methods shared across multiple
+ * classes in the system. It provides methods for parsing commands as well as
+ * NLP conversion of user input into various formats (Interpreted String,
+ * Relative String, Display String, etc.).
+ */
+public class TaskCatalystCommons {
+
+	private static final String ERROR_PRETTY_TIME_CRASH = "Please check your date formats.";
+	private static final String ERROR_OVERLAPPING_INTERNALLY = "Please resolve overlapping dates in the task.";
+	private static final String ERROR_NO_DESCRIPTION = "Please type in some descriptions for the task.";
+	private static final String ERROR_MULTIPLE_CHUNKS = "Please keep all date information together.";
+	private static final String ERROR_DEFAULT_HASHTAGS = "Please remove default hashtags from your task description.";
+	private static final String ERROR_MIX_TYPES = "Please only specify one pair of date ranges per task and do not mix date types.";
+	private static final int INVALID_INTEGER = -1;
+
+	private static SimpleDateFormat formatter = new SimpleDateFormat(
+			"dd MMM yyyy KK:mm:ss a");
+	private static PrettyTimeParser prettyTimeParser = new PrettyTimeParser();
+	private static Calendar cal1 = Calendar.getInstance();
+	private static Calendar cal2 = Calendar.getInstance();
+	private static BlackBox blackBox = BlackBox.getInstance();
+
+	// Command Parsing Methods
+
+	/**
+	 * Parses and interprets the user's input and outputs the command type.
+	 * 
+	 * @param userCommand
+	 *            The entire string entered by the user.
+	 * @return A CommandType enumeration type.
+	 */
+	public static CommandType getCommandType(String userCommand) {
+		blackBox.info("User Typed: " + userCommand);
+
+		if (userCommand == null
+				|| removeSurroundingSpaces(userCommand).isEmpty()) {
+			blackBox.info("Command is invalid.");
+			return CommandType.INVALID;
+		}
+
+		String command = getFirstWord(userCommand);
+		String parameters = removeFirstWord(userCommand);
+		String commandLowerCase = command.toLowerCase();
+		String parametersTrimmed = removeSurroundingSpaces(parameters);
+
+		boolean noParameters = parametersTrimmed.isEmpty();
+
+		CommandType commandType;
+
+		if (Hashtag.isThisAction(commandLowerCase) && noParameters) {
+			commandType = CommandType.HASHTAG;
+		} else if (Delete.isThisAction(commandLowerCase)) {
+			commandType = CommandType.DELETE;
+		} else if (Done.isThisAction(commandLowerCase)) {
+			commandType = CommandType.DONE;
+		} else if (Edit.isThisAction(commandLowerCase)) {
+			commandType = CommandType.EDIT;
+		} else if (Redo.isThisAction(commandLowerCase) && noParameters) {
+			commandType = CommandType.REDO;
+		} else if (Search.isThisAction(commandLowerCase)) {
+			commandType = CommandType.SEARCH;
+		} else if (Undo.isThisAction(commandLowerCase) && noParameters) {
+			commandType = CommandType.UNDO;
+		} else if (Undone.isThisAction(commandLowerCase)) {
+			commandType = CommandType.UNDONE;
+		} else {
+			commandType = CommandType.ADD;
+		}
+
+		blackBox.info("Command interpreted: " + commandType);
+
+		return commandType;
+	}
+
+	public static String getFirstWord(String userCommand) {
+		assert userCommand != null;
+
+		String oneOrMoreSpaces = "\\s+";
+
+		String[] splitUserCommand = userCommand.split(oneOrMoreSpaces);
+		String firstWord = splitUserCommand[0];
+
+		return firstWord;
+	}
+
+	public static String removeFirstWord(String userCommand) {
+		assert userCommand != null;
+
+		String blank = "";
+
+		String firstWord = getFirstWord(userCommand);
+		firstWord = Pattern.quote(firstWord);
+
+		String removedFirstWord = userCommand.replaceFirst(firstWord, blank);
+		removedFirstWord = removeSurroundingSpaces(removedFirstWord);
+
+		return removedFirstWord;
+	}
+
+	public static int parsePositiveInt(String intString) {
+		int value;
+
+		try {
+			value = Integer.parseInt(intString);
+		} catch (Exception e) {
+			value = INVALID_INTEGER;
+		}
+
+		if (value <= 0) {
+			value = INVALID_INTEGER;
+		}
+
+		return value;
+	}
+
+	public static List<Integer> parsePositiveIntList(String intListString) {
+		assert intListString != null;
+
+		String intListStringProcessed = intListString.replaceAll(",", " ");
+		String[] splitIntStrings = intListStringProcessed.split("\\s+");
+
+		List<Integer> parsedIntegers = new ArrayList<Integer>();
+
+		for (String intString : splitIntStrings) {
+			int parsedPositiveInt = parsePositiveInt(intString);
+
+			boolean isPositive = (parsedPositiveInt > 0);
+			boolean isDuplicate = parsedIntegers.contains(parsedPositiveInt);
+
+			if (isPositive && !isDuplicate) {
+				parsedIntegers.add(parsedPositiveInt);
+			}
+		}
+
+		return parsedIntegers;
+	}
+
+	// High-Level Interpreted String Parsing Methods
+
+	/**
+	 * Parses the user's input into an Interpreted String which are specially
+	 * formatted strings with all dates replaced with absolute values enclosed
+	 * in curly braces, and all ignored text in square brackets. Interpreted
+	 * Strings are stored directly in the tasks, and then recomputed later into
+	 * Relative Strings, Display Strings, and Display Strings without Date.
+	 * 
+	 * @param userInput
+	 *            The user's input as typed.
+	 * @param strict
+	 *            Whether the parsing should raise an exception when invalid
+	 *            scenarios are encountered.
+	 * @return Interpreted String
+	 * @throws UnsupportedOperationException
+	 *             When strict mode is enabled and an invalid situation occurs.
+	 */
+	public static String getInterpretedString(String userInput, boolean strict)
+			throws UnsupportedOperationException {
+		assert userInput != null;
+
+		blackBox.fine("User Input: " + userInput);
+
+		String interpretedString = userInput;
+		interpretedString = getInterpretedStringSingleIteration(interpretedString);
+		interpretedString = removeCurlyBraces(interpretedString);
+		interpretedString = getInterpretedStringSingleIteration(interpretedString);
+
+		if (strict) {
+			exceptionIfInvalidRange(interpretedString);
+			exceptionIfOverlappingDates(interpretedString);
+			exceptionIfContainsDefaultHashtag(interpretedString);
+			exceptionIfMultipleChunks(interpretedString);
+			exceptionIfDescriptionEmpty(interpretedString);
+		}
+
+		blackBox.fine("InterpretedString: " + interpretedString);
+		return interpretedString;
+	}
+
+	private static String getInterpretedStringSingleIteration(
+			String interpretedString) {
+		assert interpretedString != null;
+
+		String interpretedStringNextPass = getInterpretedStringSinglePass(interpretedString);
+
+		boolean isNoChanges;
+
+		do {
+			interpretedString = interpretedStringNextPass;
+			interpretedStringNextPass = getInterpretedStringSinglePass(interpretedStringNextPass);
+			isNoChanges = interpretedStringNextPass.equals(interpretedString);
+		} while (!isNoChanges);
+
+		return interpretedString;
+	}
+
+	private static String getInterpretedStringSinglePass(String userInput)
+			throws UnsupportedOperationException {
+		assert userInput != null;
+
+		String interpretedInput = getInterpretedInput(userInput);
+		String parsingInput = getParsingInput(interpretedInput);
+		List<DateGroup> dateGroups = parseParsingInput(parsingInput);
+		interpretedInput = replaceDateStrings(interpretedInput, parsingInput,
+				dateGroups);
+
+		return interpretedInput;
+	}
+
+	private static String getInterpretedInput(String userInput) {
+		assert userInput != null;
+
+		String interpretedInput = userInput;
+		interpretedInput = removeRepeatedCommas(interpretedInput);
+		interpretedInput = addCommaToBraces(interpretedInput);
+		interpretedInput = addSpaceAfterCommas(interpretedInput);
+		interpretedInput = replaceTomorrowShort(interpretedInput);
+		interpretedInput = replaceTodayShort(interpretedInput);
+		interpretedInput = ignoreWordsContainingEst(interpretedInput);
+		interpretedInput = ignoreWordsContainingAted(interpretedInput);
+		interpretedInput = ignoreWordsContainingFivePlusDigits(interpretedInput);
+		interpretedInput = ignoreWordsEndingWithNumbers(interpretedInput);
+		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
+
+		return interpretedInput;
+	}
+
+	private static String getParsingInput(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String parsingInput = interpretedInput;
+		parsingInput = removeWordsInBrackets(interpretedInput);
+		parsingInput = addCommaAfterTimeAmPm(parsingInput);
+		parsingInput = addCommaAfterTimeColon(parsingInput);
+		parsingInput = removeHashtaggedWords(parsingInput);
+		parsingInput = removeSensitiveParsingWords(parsingInput);
+		parsingInput = removeNumberWords(parsingInput);
+		parsingInput = replaceCommasWithAnd(parsingInput);
+		parsingInput = removeConsecutiveAnds(parsingInput);
+		parsingInput = removeConsecutiveWhitespaces(parsingInput);
+
+		return parsingInput;
+	}
+
+	// Medium-Level Interpreted String Parsing Methods
+
+	private static List<DateGroup> parseParsingInput(String parsingInput) {
+		assert parsingInput != null;
+
+		List<DateGroup> dateGroups;
+		try {
+			dateGroups = prettyTimeParser.parseSyntax(parsingInput);
+		} catch (Exception e) {
+			throw new UnsupportedOperationException(ERROR_PRETTY_TIME_CRASH);
+		}
+
+		return dateGroups;
+	}
+
+	private static String replaceDateStrings(String interpretedInput,
+			String parsingInput, List<DateGroup> dateGroups)
+			throws UnsupportedOperationException {
+		assert interpretedInput != null;
+		assert parsingInput != null;
+		assert dateGroups != null;
+
+		for (DateGroup dateGroup : dateGroups) {
+			boolean wholeMatch = isWholeMatch(parsingInput, dateGroup);
+			boolean longMatch = isLongMatch(dateGroup);
+			boolean isValidDateGroup = longMatch && wholeMatch;
+
+			if (isValidDateGroup) {
+				List<Date> dates = dateGroup.getDates();
+				sortDates(dates);
+				removeRepeatedDates(dates);
+				truncateDateWithoutTime(dates);
+
+				String matchingText = dateGroup.getText();
+				String connector = getConnector(matchingText);
+				String dateString = getDateString(dates, connector);
+
+				interpretedInput = replaceDateString(interpretedInput,
+						matchingText, dateString);
+			}
+		}
+
+		interpretedInput = removePrepositionBeforeDateStrings(interpretedInput);
+
+		return interpretedInput;
+	}
+
+	private static String getConnector(String matchingText) {
+		assert matchingText != null;
+
+		String connector;
+
+		matchingText = matchingText.toLowerCase();
+		boolean isContainsTo = matchingText.contains(" to ");
+		boolean isContainsOr = matchingText.contains(" or ");
+		boolean isContainsDash = matchingText.contains(" - ");
+		boolean isDateRange = (isContainsTo || isContainsDash);
+
+		if (isDateRange) {
+			connector = " to ";
+		} else if (isContainsOr) {
+			connector = " or ";
+		} else {
+			connector = " and ";
+		}
+
+		return connector;
+	}
+
+	private static void exceptionIfInvalidRange(String interpretedString)
+			throws UnsupportedOperationException {
+		assert interpretedString != null;
+
+		// isRange is true when there exists a "to" between two dates,
+		// with the "to" at most 2 words away from the second date.
+		String rangeCondition = ".*\\}.*(\\bto\\b\\s)(\\b\\w*\\b\\s){0,2}\\{.*";
+
+		List<Date> dates = getAllDates(interpretedString);
+
+		boolean isRange = interpretedString.matches(rangeCondition);
+		boolean isMoreThanTwoDates = (dates.size() > 2);
+		boolean isMixedTypes = isRange && isMoreThanTwoDates;
+
+		if (isMixedTypes) {
+			blackBox.fine("Invalid Range: " + interpretedString);
+			throw new UnsupportedOperationException(ERROR_MIX_TYPES);
+		}
+	}
+
+	private static void exceptionIfOverlappingDates(String interpretedString)
+			throws UnsupportedOperationException {
+		assert interpretedString != null;
+
+		List<Date> dates = getAllDates(interpretedString);
+
+		int j = 0;
+		int secondLastElement = dates.size() - 1;
+
+		while (j < secondLastElement) {
+			// This is necessary because PrettyTime may return varying
+			// milliseconds.
+			boolean isSameDate = TaskCatalystCommons.isSameDate(dates.get(j),
+					dates.get(j + 1));
+			boolean isSameTime = TaskCatalystCommons.isSameTime(dates.get(j),
+					dates.get(j + 1));
+			boolean isOverlapping = isSameDate && isSameTime;
+
+			if (isOverlapping) {
+				blackBox.fine("Overlapping Internally: " + interpretedString);
+				throw new UnsupportedOperationException(
+						ERROR_OVERLAPPING_INTERNALLY);
+			} else {
+				j++;
+			}
+		}
+	}
+
+	private static void exceptionIfContainsDefaultHashtag(
+			String interpretedString) throws UnsupportedOperationException {
+		assert interpretedString != null;
+
+		TaskManager taskManager = TaskManagerActual.getInstance();
+
+		String[] defaultHashtags = taskManager.getDefaultHashtags();
+		String lowerCaseString = interpretedString.toLowerCase();
+
+		boolean isContainsDefaultHashtag = false;
+
+		for (String hashtag : defaultHashtags) {
+			String startBoundary = ".*(\\s|^)";
+			String endBoundary = "(\\s|$).*";
+			String currentHashtag = startBoundary + hashtag + endBoundary;
+
+			boolean isHashtagFound = lowerCaseString.matches(currentHashtag);
+			boolean isPriority = hashtag.equals("#pri");
+
+			if (isHashtagFound && !isPriority) {
+				isContainsDefaultHashtag = true;
+				break;
+			}
+		}
+
+		if (isContainsDefaultHashtag) {
+			blackBox.fine("Default Hashtags Used: " + interpretedString);
+			throw new UnsupportedOperationException(ERROR_DEFAULT_HASHTAGS);
+		}
+	}
+
+	private static void exceptionIfMultipleChunks(String interpretedString)
+			throws UnsupportedOperationException {
+		assert interpretedString != null;
+
+		String prepositions = "(?i)(,|and|or|to) \\{";
+		String spacesAfterBraces = "\\}(,)?(\\s)?";
+		String consecutiveCurly = "\\}\\{";
+		String textBetweenCurly = ".*\\}(.*?)\\{.*";
+
+		String processingString = interpretedString;
+		processingString = processingString.replaceAll(prepositions, "\\{");
+		processingString = processingString
+				.replaceAll(spacesAfterBraces, "\\}");
+		processingString = processingString.replaceAll(consecutiveCurly, "");
+
+		boolean isMultipleChunk = processingString.matches(textBetweenCurly);
+
+		if (isMultipleChunk) {
+			blackBox.fine("Multiple Chunks Encountered: " + interpretedString);
+			throw new UnsupportedOperationException(ERROR_MULTIPLE_CHUNKS);
+		}
+	}
+
+	private static void exceptionIfDescriptionEmpty(String interpretedString)
+			throws UnsupportedOperationException {
+		assert interpretedString != null;
+
+		boolean isAlwaysShowTime = false;
+
+		String relativeString = getRelativeString(interpretedString,
+				isAlwaysShowTime);
+		String withoutDates = getDisplayStringWithoutDate(relativeString);
+		withoutDates = removeSurroundingSpaces(withoutDates);
+
+		boolean isOnlyContainsDate = withoutDates.isEmpty();
+
+		if (isOnlyContainsDate) {
+			blackBox.fine("Contains Only Dates: " + interpretedString);
+			throw new UnsupportedOperationException(ERROR_NO_DESCRIPTION);
+		}
+	}
+
+	private static void truncateDateWithoutTime(List<Date> dates) {
+		assert dates != null;
+
+		for (Date date : dates) {
+			Date now = new Date();
+
+			boolean isSameTime = TaskCatalystCommons.isSameTime(now, date);
+
+			if (isSameTime) {
+				truncateTime(date);
+			}
+		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private static Date truncateTime(Date date) {
+		assert date != null;
+
+		date.setHours(0);
+		date.setMinutes(0);
+		date.setSeconds(1);
+
+		return date;
+	}
+
+	// Low-Level Interpreted String Parsing Methods
+
+	private static void sortDates(List<Date> dates) {
+		assert dates != null;
+
+		Collections.sort(dates);
+	}
+
+	// Generates a single Date String for a DateGroup.
+	// Example Date String: {date}, {date} and {date}
+	private static String getDateString(List<Date> dates, String finalConnector) {
+		assert dates != null;
+		assert finalConnector != null;
+
+		int dateCount = dates.size();
+
+		String intermediateConnector = ", ";
+		String dateString = "";
+
+		for (int i = 0; i < dateCount; i++) {
+			Date date = dates.get(i);
+
+			dateString += "{" + formatter.format(date) + "}";
+
+			boolean isSecondLastDate = (i == dateCount - 2);
+			boolean isLastDate = (i == dateCount - 1);
+
+			if (isSecondLastDate) {
+				dateString += finalConnector;
+			} else if (!isLastDate) {
+				dateString += intermediateConnector;
+			}
+		}
+
+		return dateString;
+	}
+
+	// Replace corresponding matching text with date string.
+	private static String replaceDateString(String interpretedInput,
+			String matchingText, String dateString) {
+		assert interpretedInput != null;
+		assert matchingText != null;
+		assert dateString != null;
+
+		String wordBoundaryStart = "(^|\\b)";
+		String wordBoundaryEnd = "(\\b|$)";
+		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
+
+		String matchingExpression = matchingText.replaceAll("\\.$", "");
+		matchingExpression = removeAllAnds(matchingExpression);
+		matchingExpression = removeConsecutiveWhitespaces(matchingExpression);
+		matchingExpression = replaceSpacesWithWildcard(matchingExpression);
+		matchingExpression = wordBoundaryStart + matchingExpression;
+		matchingExpression = matchingExpression + wordBoundaryEnd;
+		matchingExpression = matchingExpression + onlyOutsideBrackets;
+
+		interpretedInput = interpretedInput.replaceAll(matchingExpression,
+				dateString);
+
+		return interpretedInput;
+	}
+
+	private static boolean isLongMatch(DateGroup dateGroup) {
+		assert dateGroup != null;
+
+		return (dateGroup.getText().length() > 2);
+	}
+
+	// This checks if the match is exact
+	private static boolean isWholeMatch(String parsingInput, DateGroup dateGroup) {
+		assert parsingInput != null;
+		assert dateGroup != null;
+
+		String trailingSymbols = "[^A-Z^a-z^0-9]$";
+		String extendedText = extendMatch(parsingInput, dateGroup);
+		String matchingText = dateGroup.getText();
+		matchingText = matchingText.replaceAll(trailingSymbols, "");
+		matchingText = matchingText.replaceAll(",", "");
+		String startWordBoundary = ".*(^|\\b)";
+		String endWordBoundary = "(\\b|$).*";
+
+		boolean wholeWord = extendedText.matches(startWordBoundary
+				+ matchingText + endWordBoundary);
+
+		return wholeWord;
+	}
+
+	// This is used to extend a match of dateGroup by 1 on both sides.
+	private static String extendMatch(String parsingInput, DateGroup dateGroup) {
+		assert parsingInput != null;
+		assert dateGroup != null;
+
+		int position = dateGroup.getPosition();
+		int length = dateGroup.getText().length();
+		int startIndex = Math.max(0, position - 1);
+		int endIndex = Math.min(position + length + 1, parsingInput.length());
+
+		String extendedText = parsingInput.substring(startIndex, endIndex);
+
+		return extendedText;
+	}
+
+	// High-Level Pretty String Parsing Methods
+
+	/**
+	 * Replaces all date blocks (enclosed in curly braces) of an Interpreted
+	 * String with strings representing relative date/time, such as "today",
+	 * "tomorrow", "Monday", and so on.
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @param isAlwaysShowTime
+	 *            Always print the time, even if adjacent dates are the same
+	 *            time.
+	 * @return Relative String
+	 */
+	public static String getRelativeString(String interpretedString,
+			boolean isAlwaysShowTime) {
+		assert interpretedString != null;
+
+		String relativeString = interpretedString;
+
+		List<DateGroup> dateGroups = getRelativeStringDateGroups(interpretedString);
+
+		Date previousDate = null;
+
+		for (int i = 0; i < dateGroups.size(); i++) {
+
+			Date currentDate = dateGroups.get(i).getDates().get(0);
+			Date nextDate;
+
+			try {
+				nextDate = dateGroups.get(i + 1).getDates().get(0);
+			} catch (Exception e) {
+				nextDate = null;
+			}
+
+			SimpleDateFormat formatter = generateFormatter(previousDate,
+					currentDate, nextDate, isAlwaysShowTime);
+
+			relativeString = relativeString.replace(
+					dateGroups.get(i).getText(), formatter.format(currentDate));
+
+			previousDate = currentDate;
+		}
+
+		relativeString = replaceRelativeStringPrepositions(relativeString);
+
+		return relativeString;
+	}
+
+	/**
+	 * Automatically parses a user's input into an Interpreted String, then a
+	 * Relative String, and finally into a Display String. A Display String is a
+	 * Relative String with no square or curly brackets printed. This is useful
+	 * for Live Task Preview.
+	 * 
+	 * @param userInput
+	 *            The entire user's input exactly as he types it.
+	 * @return Display String
+	 * @throws UnsupportedOperationException
+	 *             This is thrown when the user enters an invalid combination of
+	 *             date and time.
+	 */
+	public static String getDisplayString(String userInput)
+			throws UnsupportedOperationException {
+		assert userInput != null;
+
+		boolean isAlwaysShowTime = false;
+		boolean strict = true;
+
+		String interpretedString = getInterpretedString(userInput, strict);
+		String relativeString = getRelativeString(interpretedString,
+				isAlwaysShowTime);
+		String displayString = removeSquareBrackets(relativeString);
+		displayString = removeCurlyBraces(displayString);
+
+		return displayString;
+	}
+
+	public static String getDisplayStringWithoutDate(String relativeString) {
+		assert relativeString != null;
+
+		String friendlyStringWithoutDate = relativeString;
+
+		friendlyStringWithoutDate = removeAllPrepositions(friendlyStringWithoutDate);
+		friendlyStringWithoutDate = removeEmptyPrepositions(friendlyStringWithoutDate);
+		friendlyStringWithoutDate = removeWordsInCurlyBraces(friendlyStringWithoutDate);
+		friendlyStringWithoutDate = removeSquareBrackets(friendlyStringWithoutDate);
+		friendlyStringWithoutDate = removeSpacesBeforeCommas(friendlyStringWithoutDate);
+		friendlyStringWithoutDate = removeSpacesBeforeFullstops(friendlyStringWithoutDate);
+		friendlyStringWithoutDate = removeSurroundingSpaces(friendlyStringWithoutDate);
+		friendlyStringWithoutDate = removeConsecutiveWhitespaces(friendlyStringWithoutDate);
+
+		return friendlyStringWithoutDate;
+	}
+
+	// Low-Level Pretty String Parsing Methods
+
+	private static String replaceRelativeStringPrepositions(String userInput) {
+		assert userInput != null;
+
+		String editedUserInput = userInput;
+
+		editedUserInput = removeRepeatedPrepositions(editedUserInput, "by",
+				"(on|at)");
+		editedUserInput = removeRepeatedPrepositions(editedUserInput, "to",
+				"(on|at)");
+		editedUserInput = removeRepeatedPrepositions(editedUserInput, "from",
+				"(on|at)");
+		editedUserInput = removeRepeatedPrepositions(editedUserInput, "before",
+				"(on|at)");
+		editedUserInput = removeRepeatedPrepositions(editedUserInput, "after",
+				"(on|at)");
+		editedUserInput = removeRepeatedPrepositions(editedUserInput,
+				"between", "(on|at)");
+
+		return editedUserInput;
+	}
+
+	private static SimpleDateFormat generateFormatter(Date previousDate,
+			Date currentDate, Date nextDate, boolean isAlwaysShowTime) {
+
+		String formatString = generateFormatString(previousDate, currentDate,
+				nextDate, isAlwaysShowTime);
+
+		SimpleDateFormat formatter = new SimpleDateFormat(formatString);
+
+		return formatter;
+	}
+
+	private static String generateFormatString(Date previousDate,
+			Date currentDate, Date nextDate, boolean isAlwaysShowTime) {
+		String formatString = "";
+
+		boolean isShowDate = !isSameDate(previousDate, currentDate);
+		boolean isFirstDate = (previousDate == null);
+
+		if (isShowDate) {
+			if (isYesterday(currentDate)) {
+				formatString = "'yesterday'";
+			} else if (isToday(currentDate)) {
+				formatString = "'today'";
+			} else if (isTomorrow(currentDate)) {
+				formatString = "'tomorrow'";
+			} else if (isThisWeek(currentDate) && isFirstDate) {
+				formatString = "'on' E";
+			} else if (isThisWeek(currentDate)) {
+				formatString = "E";
+			} else if (isFirstDate) {
+				formatString = "'on' d MMM";
+			} else {
+				formatString = "d MMM";
+			}
+			if (!isThisYear(currentDate)) {
+				formatString = formatString + " yyyy";
+			}
+		}
+
+		boolean isSameTimeAsNext = !isSameTime(currentDate, nextDate);
+		boolean isDateEmpty = formatString.isEmpty();
+		boolean isAllDay = !hasHours(currentDate) && !hasMinutes(currentDate)
+				&& getSeconds(currentDate) == 1;
+		boolean isShowTime = (isAlwaysShowTime || isSameTimeAsNext || isDateEmpty)
+				&& !isAllDay;
+
+		if (isShowTime) {
+			if (!isDateEmpty) {
+				formatString = formatString + " ";
+			}
+
+			formatString = formatString + "h";
+
+			if (hasMinutes(currentDate)) {
+				formatString = formatString + ":mm";
+			}
+
+			formatString = formatString + "a";
+		}
+
+		return formatString;
+	}
+
+	private static List<DateGroup> getRelativeStringDateGroups(String userInput) {
+		assert userInput != null;
+
+		String textInCurlyBraces = "\\{(.*?)\\}";
+
+		Pattern pattern = Pattern.compile(textInCurlyBraces);
+		Matcher matcher = pattern.matcher(userInput);
+
+		List<DateGroup> dateGroups = new ArrayList<DateGroup>();
+
+		while (matcher.find()) {
+			String matching = matcher.group();
+
+			List<DateGroup> parsedDateGroups = prettyTimeParser
+					.parseSyntax(matching);
+
+			dateGroups.addAll(parsedDateGroups);
+		}
+
+		return dateGroups;
+	}
+
+	// Interpreted String Operation Methods
+
+	/**
+	 * Parses an Interpreted String and returns all dates in an array.
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @return A List of Dates
+	 */
+	public static List<Date> getAllDates(String interpretedString) {
+		assert interpretedString != null;
+
+		Pattern pattern = Pattern.compile("\\{(.*?)\\}");
+		Matcher matcher = pattern.matcher(interpretedString);
+		List<Date> allDates = new ArrayList<Date>();
+
+		while (matcher.find()) {
+			String matching = matcher.group();
+			List<DateGroup> dateGroups = prettyTimeParser.parseSyntax(matching);
+			for (DateGroup dateGroup : dateGroups) {
+				List<Date> dates = dateGroup.getDates();
+				allDates.addAll(dates);
+			}
+		}
+
+		sortDates(allDates);
+
+		return allDates;
+	}
+
+	/**
+	 * Parses an Interpreted String and returns all hashtags.
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @return A List of String Hashtags
+	 */
+	public static List<String> getAllHashtags(String interpretedString) {
+		assert interpretedString != null;
+
+		List<String> hashtagList = new ArrayList<String>();
+
+		String[] descriptionTokenized = interpretedString.split(" ");
+
+		for (String token : descriptionTokenized) {
+			if (token.startsWith("#")) {
+				String tokenProcessed = token.toLowerCase();
+				tokenProcessed = removeSquareBrackets(tokenProcessed);
+				tokenProcessed = removeRepeatedHashtags(tokenProcessed);
+				tokenProcessed = removeEndingPunctuations(tokenProcessed);
+
+				boolean isValidHashtag = (tokenProcessed.length() > 1);
+
+				if (isValidHashtag) {
+					hashtagList.add(tokenProcessed);
+				}
+			}
+		}
+
+		return hashtagList;
+	}
+
+	/**
+	 * Checks for words between dates to determine user intention (to, or, and,
+	 * etc.)
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @param word
+	 *            The word to be checked.
+	 * @return Returns true if it is found, false otherwise.
+	 */
+	public static boolean hasWordBetweenDates(String interpretedString,
+			String word) {
+		assert interpretedString != null;
+		assert word != null;
+
+		String openingBrace = ".*\\}.*(\\b";
+		String closingBrace = "\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
+		String matchingCriteria = openingBrace + word + closingBrace;
+
+		boolean hasWordBetweenDates = interpretedString
+				.matches(matchingCriteria);
+
+		return hasWordBetweenDates;
+	}
+
+	/**
+	 * Checks for words before dates to determine user intention (from, between,
+	 * etc.)
+	 * 
+	 * @param interpretedString
+	 *            A String formatted as an Interpreted String.
+	 * @param word
+	 *            The word to be checked.
+	 * @return Returns true if it is found, false otherwise.
+	 */
+	public static boolean hasWordBeforeDates(String interpretedString,
+			String word) {
+		assert interpretedString != null;
+		assert word != null;
+
+		String openingBrace = ".*(\\b(";
+		String closingBrace = ")\\b\\s)(\\b\\w+\\b\\s){0,2}\\{.*";
+		String matchingCriteria = openingBrace + word + closingBrace;
+
+		boolean hasWordBeforeDates = interpretedString
+				.matches(matchingCriteria);
+
+		return hasWordBeforeDates;
+	}
+
+	// Date Time Libraries
+
+	public static boolean isBetweenDates(Date start, Date end, Date check) {
+		assert start != null;
+		assert end != null;
+		assert check != null;
+
+		boolean isSameStartDate = TaskCatalystCommons.isSameDate(start, check);
+		boolean isSameStartEnd = TaskCatalystCommons.isSameDate(end, check);
+		boolean isAfterStartDate = check.after(start);
+		boolean isBeforeEndDate = check.before(end);
+		boolean isBetweenStartAndEnd = (isAfterStartDate && isBeforeEndDate);
+		boolean isBetweenDates = (isSameStartDate || isSameStartEnd || isBetweenStartAndEnd);
+
+		return isBetweenDates;
+	}
+
+	public static boolean isSameTime(Date date, Date date2) {
+		if (date == null || date2 == null) {
+			return false;
+		}
+
+		cal1.setTime(date);
+		cal2.setTime(date2);
+
+		int hour1 = cal1.get(Calendar.HOUR_OF_DAY);
+		int hour2 = cal2.get(Calendar.HOUR_OF_DAY);
+		int minute1 = cal1.get(Calendar.MINUTE);
+		int minute2 = cal2.get(Calendar.MINUTE);
+
+		boolean isSameHour = hour1 == hour2;
+		boolean isSameMinute = minute1 == minute2;
+
+		return isSameHour && isSameMinute;
+	}
+
+	public static boolean isSameDate(Date date, Date date2) {
+		if (date == null || date2 == null) {
+			return false;
+		}
+
+		cal1.setTime(date);
+		cal2.setTime(date2);
+
+		int dateOfMonth1 = cal1.get(Calendar.DATE);
+		int dateOfMonth2 = cal2.get(Calendar.DATE);
+		int month1 = cal1.get(Calendar.MONTH);
+		int month2 = cal2.get(Calendar.MONTH);
+		int year1 = cal1.get(Calendar.YEAR);
+		int year2 = cal2.get(Calendar.YEAR);
+
+		boolean isSameDateOfMonth = dateOfMonth1 == dateOfMonth2;
+		boolean isSameMonth = month1 == month2;
+		boolean isSameYear = year1 == year2;
+		boolean isSameDate = isSameDateOfMonth && isSameMonth && isSameYear;
+
+		return isSameDate;
+	}
+
+	public static boolean hasHours(Date date) {
+		assert date != null;
+
+		return getHours(date) != 0;
+	}
+
+	public static boolean hasMinutes(Date date) {
+		assert date != null;
+
+		return getMinutes(date) != 0;
+	}
+
+	public static boolean hasSeconds(Date date) {
+		assert date != null;
+
+		return getSeconds(date) != 0;
+	}
+
+	public static int getHours(Date date) {
+		assert date != null;
+
+		cal1.setTime(date);
+
+		return cal1.get(Calendar.HOUR_OF_DAY);
+	}
+
+	public static int getMinutes(Date date) {
+		assert date != null;
+
+		cal1.setTime(date);
+
+		return cal1.get(Calendar.MINUTE);
+	}
+
+	public static int getSeconds(Date date) {
+		assert date != null;
+
+		cal1.setTime(date);
+
+		return cal1.get(Calendar.SECOND);
+	}
+
+	public static int getMilliseconds(Date date) {
+		assert date != null;
+
+		cal1.setTime(date);
+
+		return cal1.get(Calendar.MILLISECOND);
+	}
+
+	public static boolean isYesterday(Date date) {
+		assert date != null;
+
+		return daysFromToday(date) == -1;
+	}
+
+	public static boolean isToday(Date date) {
+		assert date != null;
+
+		return daysFromToday(date) == 0;
+	}
+
+	public static boolean isTomorrow(Date date) {
+		assert date != null;
+
+		return daysFromToday(date) == 1;
+	}
+
+	public static boolean isThisWeek(Date date) {
+		assert date != null;
+
+		return daysFromToday(date) <= 7 && daysFromToday(date) > 0;
+	}
+
+	public static boolean isThisYear(Date date) {
+		assert date != null;
+
+		cal1.setTime(date);
+		cal2.setTimeInMillis(System.currentTimeMillis());
+
+		return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR);
+	}
+
+	public static int daysFromToday(Date date) {
+		assert date != null;
+
+		cal1.setTime(date);
+		cal2.setTimeInMillis(System.currentTimeMillis());
+
+		int dayOfYear1 = cal1.get(Calendar.DAY_OF_YEAR);
+		int dayOfYear2 = cal2.get(Calendar.DAY_OF_YEAR);
+		int year1 = cal1.get(Calendar.YEAR);
+		int year2 = cal2.get(Calendar.YEAR);
+		int dayDifference = dayOfYear1 - dayOfYear2;
+		int yearDifference = (year1 - year2) * 365;
+
+		return dayDifference + yearDifference;
+	}
+
+	// Very Low Level Methods
+
+	private static String addSpaceAfterCommas(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String commas = ",";
+		String commasWithSpace = ", ";
+
+		interpretedInput = interpretedInput.replaceAll(commas, commasWithSpace);
+
+		return interpretedInput;
+	}
+
+	private static String addCommaToBraces(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String curlyBraces = "\\} \\{";
+		String curlyBracesWithComma = "\\}, \\{";
+
+		interpretedInput = interpretedInput.replaceAll(curlyBraces,
+				curlyBracesWithComma);
+
+		return interpretedInput;
+	}
+
+	private static String addCommaAfterTimeColon(String parsingInput) {
+		assert parsingInput != null;
+
+		String timeWithAmPm = "(?<!:)(\\d{2}:\\d{2}(?i)(am|pm)?)(?!:)(?![a-zA-Z])";
+
+		return parsingInput.replaceAll(timeWithAmPm, " $1,");
+	}
+
+	private static String addCommaAfterTimeAmPm(String parsingInput) {
+		assert parsingInput != null;
+
+		String timeWithColon = "(\\d{1,2}(?i)(am|pm))(\\s|$)(?![a-zA-Z])";
+
+		return parsingInput.replaceAll(timeWithColon, "$1,");
+	}
+
+	private static String replaceCommasWithAnd(String parsingInput) {
+		assert parsingInput != null;
+
+		return parsingInput.replaceAll(",", " and ");
+	}
+
+	private static String replaceTodayShort(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String todayShort = "(\\s|^)(?i)(tdy)(\\s|$)";
+		String today = " today ";
+
+		interpretedInput = interpretedInput.replaceAll(todayShort, today);
+
+		return interpretedInput;
+	}
+
+	private static String replaceTomorrowShort(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String tomorrowShort = "(\\s|^)(?i)(tmr|tml)(\\s|$)";
+		String tomorrow = " tomorrow ";
+
+		interpretedInput = interpretedInput.replaceAll(tomorrowShort, tomorrow);
+
+		return interpretedInput;
+	}
+
+	private static String replaceSpacesWithWildcard(String matchingExpression) {
+		assert matchingExpression != null;
+
+		String spaces = "\\s+";
+		String wildCard = "( |,|, )?(?i)(at|from|and)?( on)?( )";
+
+		return matchingExpression.replaceAll(spaces, wildCard);
+	}
+
+	private static String removeAllAnds(String matchingExpression) {
+		assert matchingExpression != null;
+
+		return matchingExpression.replaceAll(" and ", " ");
+	}
+
+	private static String removeAllPrepositions(String displayString) {
+		assert displayString != null;
+
+		String prepositions = " (?i)(from|before|after|either|by|between) \\{";
+		displayString = displayString.replaceAll(prepositions, "\\{");
+
+		return displayString;
+	}
+
+	private static String removeConsecutiveAnds(String parsingInput) {
+		assert parsingInput != null;
+
+		return parsingInput.replaceAll("(\\b)(?i)(and)+", " and ");
+	}
+
+	private static String removeConsecutiveWhitespaces(String interpretedInput) {
+		assert interpretedInput != null;
+
+		return interpretedInput.replaceAll("\\s+", " ");
+	}
+
+	public static String removeCurlyBraces(String userInput) {
+		assert userInput != null;
+
+		return userInput.replaceAll("\\{|\\}", "");
+	}
+
+	private static String removeEmptyPrepositions(String displayString) {
+		assert displayString != null;
+
+		String emptyPrepositions = "\\}(\\s)?(?i)(,|to|and|or) \\{";
+		displayString = displayString.replaceAll(emptyPrepositions, "\\}\\{");
+
+		return displayString;
+	}
+
+	private static String removeEndingPunctuations(String tokenProcessed) {
+		assert tokenProcessed != null;
+
+		String endingPunctuations = "(,|\\.|\\?|!|:|;)+(\\s|$)";
+		tokenProcessed = tokenProcessed.replaceAll(endingPunctuations, "");
+
+		return tokenProcessed;
+	}
+
+	private static String removeHashtaggedWords(String parsingInput) {
+		assert parsingInput != null;
+
+		String hashtaggedWords = "(\\s|^)(#\\w+)(\\s|$)";
+
+		return parsingInput.replaceAll(hashtaggedWords, " ");
+	}
+
+	private static String removeNumberWords(String parsingInput) {
+		assert parsingInput != null;
+
+		String[] numberWords = { "one", "two", "three", "four", "five", "six",
+				"seven", "eight", "nine", "ten", "eleven", "twelve",
+				"thirteen", "fourteen", "fifteen", "sixteen", "seventeen",
+				"eighteen", "nineteen", "twenty" };
+
+		String newParsingInput = parsingInput;
+
+		for (String numberWord : numberWords) {
+			newParsingInput = newParsingInput.replaceAll("(\\b)(?i)("
+					+ numberWord + ")( |$)", " ");
+		}
+
+		return newParsingInput;
+	}
+
+	private static String removePrepositionBeforeDateStrings(
+			String interpretedInput) {
+		assert interpretedInput != null;
+
+		interpretedInput = removePrepositionBeforeDateString(interpretedInput,
+				"on");
+		interpretedInput = removePrepositionBeforeDateString(interpretedInput,
+				"at");
+
+		return interpretedInput;
+	}
+
+	private static String removePrepositionBeforeDateString(
+			String interpretedInput, String preposition) {
+		assert interpretedInput != null;
+		assert preposition != null;
+
+		String wordBoundary = "(^|\\b)";
+		String openingCurlyBrace = "\\{";
+		String caseInsensitive = "(?i)";
+
+		return interpretedInput.replaceAll(wordBoundary + caseInsensitive
+				+ preposition + " " + openingCurlyBrace, openingCurlyBrace);
+	}
+
+	private static String removeRepeatedCommas(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String commas = ",";
+		String repeatedSpacesCommas = "\\s+,+";
+
+		interpretedInput = interpretedInput.replaceAll(repeatedSpacesCommas,
+				commas);
+
+		return interpretedInput;
+	}
+
+	private static void removeRepeatedDates(List<Date> dates) {
+		assert dates != null;
+
+		int j = 0;
+		while (j < dates.size() - 1) {
+			// This is necessary because PrettyTime may return varying
+			// milliseconds.
+			boolean isSameDate = TaskCatalystCommons.isSameDate(dates.get(j),
+					dates.get(j + 1));
+			boolean isSameTime = TaskCatalystCommons.isSameTime(dates.get(j),
+					dates.get(j + 1));
+
+			if (isSameDate && isSameTime) {
+				dates.remove(j);
+			} else {
+				j++;
+			}
+		}
+	}
+
+	private static String removeRepeatedHashtags(String tokenProcessed) {
+		assert tokenProcessed != null;
+
+		String repeatedStartingHashtags = "(\\s|^)#+";
+		tokenProcessed = tokenProcessed.replaceAll(repeatedStartingHashtags,
+				"#");
+
+		return tokenProcessed;
+	}
+
+	private static String removeRepeatedPrepositions(String userInput,
+			String kept, String removed) {
+		assert userInput != null;
+		assert kept != null;
+		assert removed != null;
+
+		String caseInsensitive = "(?i)";
+		String rightPattern = kept + " \\{";
+		String wrongPattern = rightPattern + caseInsensitive + removed + " ";
+
+		return userInput.replaceAll(wrongPattern, rightPattern);
+	}
+
+	private static String removeSpacesBeforeCommas(String displayString) {
+		assert displayString != null;
+
+		String spaceBeforeCommas = "\\s+,+";
+		displayString = displayString.replaceAll(spaceBeforeCommas, ",");
+
+		return displayString;
+	}
+
+	private static String removeSpacesBeforeFullstops(String displayString) {
+		assert displayString != null;
+
+		String spaceBeforeFullstops = "\\s+\\.";
+		displayString = displayString.replaceAll(spaceBeforeFullstops, "\\.");
+
+		return displayString;
+	}
+
+	private static String removeSensitiveParsingWords(String parsingInput) {
+		assert parsingInput != null;
+
+		String sensitiveWords = "(\\b)(?i)(at|in|from|on)(\\b|$)";
+
+		return parsingInput.replaceAll(sensitiveWords, " ");
+	}
+
+	private static String removeSurroundingSpaces(String friendlyString) {
+		assert friendlyString != null;
+
+		return friendlyString.trim();
+	}
+
+	public static String removeSquareBrackets(String userInput) {
+		assert userInput != null;
+
+		return userInput.replaceAll("\\[|\\]", "");
+	}
+
+	private static String removeWordsInBrackets(String interpretedInput) {
+		assert interpretedInput != null;
+
+		return interpretedInput.replaceAll("(\\[|\\{)(.*?)(\\]|\\})", "");
+	}
+
+	private static String removeWordsInCurlyBraces(String interpretedInput) {
+		assert interpretedInput != null;
+
+		return interpretedInput.replaceAll("(\\{)(.*?)(\\})", "");
+	}
+
+	private static String ignoreBasedOnRegex(String input, String regex) {
+		assert input != null;
+		assert regex != null;
+
+		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
+		String ignoredString = input;
+
+		Pattern pattern = Pattern.compile(regex + onlyOutsideBrackets);
+		Matcher matcher = pattern.matcher(input);
+
+		while (matcher.find()) {
+			String matching = matcher.group();
+			String replacement = "[" + matching + "]";
+			ignoredString = ignoredString.replace(matching, replacement);
+		}
+
+		return ignoredString;
+	}
+
+	private static String ignoreWordsContainingAted(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String notHashtagged = "(?<!#)";
+		String wordsContainingAted = notHashtagged + "\\w*ated\\w*";
+
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				wordsContainingAted);
+
+		return interpretedInput;
+	}
+
+	private static String ignoreWordsContainingEst(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String notHashtagged = "(?<!#)";
+		String wordsContainingEst = notHashtagged
+				+ "(?i)\\w*(?<!y)est(?!erday)\\w*";
+
+		interpretedInput = ignoreBasedOnRegex(interpretedInput,
+				wordsContainingEst);
+
+		return interpretedInput;
+	}
+
+	private static String ignoreWordsContainingFivePlusDigits(
+			String interpretedInput) {
+		assert interpretedInput != null;
+
+		String notHashtagged = "(?<!#)";
+		String fivePlusDigits = notHashtagged + "\\d{5,}";
+
+		interpretedInput = ignoreBasedOnRegex(interpretedInput, fivePlusDigits);
+
+		return interpretedInput;
+	}
+
+	private static String ignoreWordsEndingWithNumbers(String interpretedInput) {
+		assert interpretedInput != null;
+
+		String notHashtagged = "(?<!#)";
+		String endWithNumber = notHashtagged + "\\b[a-zA-Z-_$]+\\d+\\b";
+
+		interpretedInput = ignoreBasedOnRegex(interpretedInput, endWithNumber);
+
+		return interpretedInput;
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalystCommons.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskManager.java
+	 */
+
+/**
+ * TaskManager maintains the state of display (display type and keyword), as
+ * well as the tasks and hashtags to highlight.
+ */
+public interface TaskManager {
+	public void testMode();
+
+	public List<String> getHashtags();
+
+	public String[] getDefaultHashtags();
+
+	public int getHashtagSelected();
+
+	public List<Integer> getTasksSelected();
+
+	public List<Task> getList();
+
+	public List<Task> getDisplayList();
+
+	public void setDisplayModeKeyword(DisplayMode MODE, String keyword);
+
+	public Task getDisplayTask(int taskNumber);
+
+	public Task removeDisplayTask(int taskNumber);
+
+	public boolean addTask(Task task);
+
+	public int addTasks(List<Task> tasks);
+
+	public boolean removeTask(Task task);
+
+	public int removeTasks(List<Task> tasks);
+
+	public boolean editTask(Task target, Task replacement);
+
+	public boolean completeTask(Task task);
+
+	public int completeTasks(List<Task> tasks);
+
+	public boolean uncompleteTask(Task task);
+
+	public int uncompleteTasks(List<Task> tasks);
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskManager.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskManagerActual.java
+	 */
+
+/**
+ * TaskManagerActual implements the TaskManager interface to provide logical
+ * storage capabilities for the system. It relies on ListProcessor for
+ * filtering, and Storage for physical storage. It maintains the state of
+ * display (display mode, display type) and is able to provide functionality for
+ * adding, deleting, completing and restoring multiple tasks.
+ */
+public class TaskManagerActual implements TaskManager {
+	private static final String[] DEFAULT_HASHTAGS = { "#all", "#pri", "#ovd",
+			"#tdy", "#tmr", "#upc", "#smd", "#olp", "#dne" };
+	private static final DisplayMode DEFAULT_DISPLAY_MODE = DisplayMode.HASHTAG;
+	private static final String DEFAULT_DISPLAY_KEYWORD = "all";
+	private static final String DEFAULT_FILE_NAME = "tasks.txt";
+
+	private static final int ERROR_INTEGER = -1;
+
+	private Storage storage;
+	private ListProcessor listProcessor;
+
+	private DisplayMode displayMode;
+	private String displayKeyword;
+	private List<Integer> tasksSelected;
+
+	private List<Task> taskList;
+	private List<Task> displayList;
+	private List<String> hashtagList;
+
+	private static TaskManagerActual instance;
+
+	// Initialization Methods
+
+	private TaskManagerActual() {
+		initializeInstance();
+		initializeComponents();
+		initializeLists();
+		refreshLists();
+	}
+
+	public void testMode() {
+		displayMode = DEFAULT_DISPLAY_MODE;
+		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
+
+		storage = new StorageStub();
+		hashtagList = new ArrayList<String>();
+
+		clearLists();
+		refreshLists();
+	}
+
+	public static TaskManagerActual getInstance() {
+		if (instance == null) {
+			instance = new TaskManagerActual();
+		}
+		return instance;
+	}
+
+	private void initializeInstance() {
+		instance = this;
+	}
+
+	private void initializeComponents() {
+		listProcessor = new ListProcessorActual();
+		storage = new StorageActual();
+	}
+
+	private void initializeLists() {
+		displayMode = DEFAULT_DISPLAY_MODE;
+		displayKeyword = DEFAULT_DISPLAY_KEYWORD;
+		taskList = loadTasks();
+		hashtagList = new ArrayList<String>();
+		tasksSelected = new ArrayList<Integer>();
+	}
+
+	// Getter Methods
+
+	@Override
+	public List<String> getHashtags() {
+		return hashtagList;
+	}
+
+	@Override
+	public String[] getDefaultHashtags() {
+		return DEFAULT_HASHTAGS;
+	}
+
+	@Override
+	public int getHashtagSelected() {
+		boolean isHashtagMode = (displayMode == DisplayMode.HASHTAG);
+		boolean isSearchMode = (displayMode == DisplayMode.SEARCH);
+
+		int index;
+
+		if (isHashtagMode) {
+			String hashtagString = "#" + displayKeyword;
+			index = getHashtags().indexOf(hashtagString);
+		} else if (isSearchMode) {
+			String searchString = "search " + displayKeyword;
+			index = getHashtags().indexOf(searchString);
+		} else {
+			index = ERROR_INTEGER;
+		}
+
+		return index;
+	}
+
+	@Override
+	public List<Integer> getTasksSelected() {
+		return tasksSelected;
+	}
+
+	@Override
+	public List<Task> getList() {
+		return taskList;
+	}
+
+	@Override
+	public List<Task> getDisplayList() {
+		return displayList;
+	}
+
+	// Display List Methods
+
+	@Override
+	public void setDisplayModeKeyword(DisplayMode MODE, String keyword) {
+		this.displayMode = MODE;
+		this.displayKeyword = keyword;
+		refreshLists();
+	}
+
+	@Override
+	public Task getDisplayTask(int taskNumber) {
+		Task task;
+
+		try {
+			task = displayList.get(taskNumber - 1);
+		} catch (Exception e) {
+			task = null;
+		}
+
+		return task;
+	}
+
+	@Override
+	public Task removeDisplayTask(int taskNumber) {
+		Task task = getDisplayTask(taskNumber);
+
+		boolean isFound = (task != null);
+		boolean isRemoved = removeTask(task);
+		boolean isSuccess = (isRemoved && isFound);
+
+		if (isSuccess) {
+			refreshLists();
+		}
+
+		return task;
+	}
+
+	// CRUD Methods
+
+	@Override
+	public boolean addTask(Task task) {
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+
+		int tasksAdded = addTasks(tasks);
+
+		boolean isSuccess = (tasksAdded == 1);
+
+		return isSuccess;
+	}
+
+	@Override
+	public int addTasks(List<Task> tasks) {
+		int numberAdded = 0;
+
+		boolean isAdded = false;
+
+		for (Task task : tasks) {
+			isAdded = taskList.add(task);
+			if (!isAdded) {
+				break;
+			}
+			numberAdded++;
+		}
+
+		boolean isSaved = false;
+
+		if (isAdded) {
+			isSaved = saveTasks();
+		} else {
+			tasks = loadTasks();
+		}
+
+		boolean isSuccess = (isAdded && isSaved);
+
+		if (isSuccess) {
+			refreshLists();
+			for (Task task : tasks) {
+				displayAutoswitchToTask(task);
+				tasksSelected.add(0, displayList.indexOf(task));
+			}
+		}
+
+		return numberAdded;
+	}
+
+	@Override
+	public boolean removeTask(Task task) {
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+
+		int tasksRemoved = removeTasks(tasks);
+
+		boolean isSuccess = (tasksRemoved == 1);
+
+		return isSuccess;
+	}
+
+	@Override
+	public int removeTasks(List<Task> tasks) {
+		int numberRemoved = 0;
+
+		boolean isRemoved = false;
+
+		for (Task task : tasks) {
+			isRemoved = taskList.remove(task);
+			if (!isRemoved) {
+				break;
+			}
+			numberRemoved++;
+		}
+
+		boolean isSaved = false;
+
+		if (isRemoved) {
+			isSaved = saveTasks();
+		} else {
+			tasks = loadTasks();
+		}
+
+		boolean isSuccess = (isRemoved && isSaved);
+
+		if (isSuccess) {
+			refreshLists();
+			displayAutoswitchToTask(null);
+		}
+
+		return numberRemoved;
+	}
+
+	@Override
+	public boolean editTask(Task target, Task replacement) {
+		boolean isRemoved = removeTask(target);
+		boolean isAdded = false;
+
+		if (isRemoved) {
+			isAdded = addTask(replacement);
+		}
+
+		boolean isSuccess = (isRemoved && isAdded);
+
+		if (isSuccess) {
+			refreshLists();
+		}
+
+		return isSuccess;
+	}
+
+	@Override
+	public boolean completeTask(Task task) {
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+
+		int tasksCompleted = completeTasks(tasks);
+
+		boolean isSuccess = (tasksCompleted == 1);
+
+		return isSuccess;
+	}
+
+	@Override
+	public int completeTasks(List<Task> tasks) {
+		int numberCompleted = 0;
+
+		boolean isCompleted = false;
+
+		for (Task task : tasks) {
+			if (!task.isDone()) {
+				task.setDone(true);
+				isCompleted = task.isDone();
+				if (!isCompleted) {
+					break;
+				}
+				numberCompleted++;
+			}
+		}
+
+		boolean isSaved = false;
+
+		if (isCompleted) {
+			isSaved = saveTasks();
+		} else {
+			tasks = loadTasks();
+		}
+
+		boolean isSuccess = (isCompleted && isSaved);
+
+		if (isSuccess) {
+			refreshLists();
+			displayAutoswitchToTask(null);
+		}
+
+		return numberCompleted;
+	}
+
+	@Override
+	public boolean uncompleteTask(Task task) {
+		List<Task> tasks = new ArrayList<Task>();
+		tasks.add(task);
+
+		int tasksUncompleted = uncompleteTasks(tasks);
+
+		boolean isSuccess = (tasksUncompleted == 1);
+
+		return isSuccess;
+	}
+
+	@Override
+	public int uncompleteTasks(List<Task> tasks) {
+		int numberUncomplete = 0;
+
+		boolean isUndone = false;
+
+		for (Task task : tasks) {
+			if (task.isDone()) {
+				task.setDone(false);
+				isUndone = !task.isDone();
+				if (!isUndone) {
+					break;
+				}
+				numberUncomplete++;
+			}
+		}
+
+		boolean isSaved = false;
+
+		if (isUndone) {
+			isSaved = saveTasks();
+		} else {
+			tasks = loadTasks();
+		}
+
+		boolean isSuccess = (isUndone && isSaved);
+
+		if (isSuccess) {
+			refreshLists();
+			for (Task task : tasks) {
+				displayAutoswitchToTask(task);
+				tasksSelected.add(0, displayList.indexOf(task));
+			}
+		}
+
+		return numberUncomplete;
+	}
+
+	// List Administration Methods
+
+	private boolean saveTasks() {
+		boolean success;
+
+		success = storage.saveTasks(taskList, DEFAULT_FILE_NAME);
+
+		return success;
+	}
+
+	private List<Task> loadTasks() {
+		return storage.loadTasks(DEFAULT_FILE_NAME);
+	}
+
+	private void clearLists() {
+		hashtagList.clear();
+		taskList.clear();
+	}
+
+	private void refreshLists() {
+		refreshDisplayList();
+		refreshHashtagList();
+	}
+
+	private void refreshDisplayList() {
+		switch (displayMode) {
+		case HASHTAG :
+			displayList = listProcessor.searchByHashtag(taskList,
+					displayKeyword);
+			break;
+
+		case SEARCH :
+			displayList = listProcessor.searchByKeyword(taskList,
+					displayKeyword);
+			break;
+		}
+
+		displayList = listProcessor.sortByDate(displayList);
+
+		clearOverlapping(displayList);
+		setOverlapping(taskList);
+
+		tasksSelected.clear();
+	}
+
+	private void refreshHashtagList() {
+		List<String> defaultHashtags = generateDefaultHashtags();
+		List<String> customHashtags = generateCustomHashtags();
+
+		hashtagList.clear();
+
+		boolean isSearchMode = (displayMode == DisplayMode.SEARCH);
+
+		if (isSearchMode) {
+			String searchString = "search " + displayKeyword;
+			hashtagList.add(searchString);
+		}
+
+		hashtagList.addAll(defaultHashtags);
+
+		for (String hashtag : customHashtags) {
+			if (!defaultHashtags.contains(hashtag)) {
+				hashtagList.add(hashtag);
+			}
+		}
+	}
+
+	private List<String> generateDefaultHashtags() {
+		List<String> defaultHashtags = new ArrayList<String>();
+
+		for (String hashtag : DEFAULT_HASHTAGS) {
+			defaultHashtags.add(hashtag);
+		}
+
+		return defaultHashtags;
+	}
+
+	private List<String> generateCustomHashtags() {
+		SortedSet<String> allHashtagsSet = new TreeSet<String>();
+
+		for (Task task : taskList) {
+			if (!task.isDone()) {
+				List<String> taskHashtags = task.getHashtags();
+				allHashtagsSet.addAll(taskHashtags);
+			}
+		}
+
+		List<String> customHashtags = new ArrayList<String>(allHashtagsSet);
+
+		return customHashtags;
+	}
+
+	// Task Marking Methods
+
+	private void setOverlapping(List<Task> tasks) {
+		List<Task> overlapList = listProcessor.getOverlapping(tasks);
+
+		for (Task task : overlapList) {
+			task.setOverlapping(true);
+		}
+	}
+
+	private void clearOverlapping(List<Task> tasks) {
+		for (Task task : tasks) {
+			task.setOverlapping(false);
+		}
+	}
+
+	private void displayAutoswitchToTask(Task task) {
+		boolean isRemoveOperation = (task == null);
+		boolean isTaskDisplayed = displayList.contains(task);
+		boolean isListEmpty = displayList.isEmpty();
+		boolean isTaskMissing = (!isRemoveOperation && !isTaskDisplayed);
+		boolean isNeedAutoswitch = (isTaskMissing || isListEmpty);
+
+		if (isNeedAutoswitch) {
+			setDisplayModeKeyword(DEFAULT_DISPLAY_MODE, DEFAULT_DISPLAY_KEYWORD);
+			refreshLists();
+		}
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskManagerActual.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Undo.java
+	 */
+
+/**
+ * Undo Action relies on ActionInvoker for the actual undo operation, and
+ * appends or generates the appropriate messages based on the outcome.
+ */
+public class Undo implements Action {
+	private static final String[] DICTIONARY = { "undo" };
+
+	private static final String EXECUTE_SUCCESS = "Undo: %s";
+	private static final String EXECUTE_ERROR = "There is nothing to undo.";
+
+	private static final String HINT_MESSAGE = "Undo: Hit enter to undo previous action.\nYou can also use CTRL+Z";
+
+	ActionInvoker actionInvoker;
+
+	public Undo(String userCommand) {
+		actionInvoker = ActionInvoker.getInstance();
+	}
+
+	@Override
+	public Message execute() {
+		Message returnMessage = actionInvoker.undoLastAction();
+
+		if (returnMessage != null) {
+			String appendedMessage = String.format(EXECUTE_SUCCESS,
+					returnMessage.getMessage());
+			returnMessage.setMessage(appendedMessage);
+		} else {
+			MessageType messageType = MessageType.SUCCESS;
+			returnMessage = new Message(messageType, EXECUTE_ERROR);
+		}
+
+		return returnMessage;
+	}
+
+	@Override
+	public Message undo() {
+		return execute();
+	}
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType = MessageType.HINT;
+
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return false;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Undo.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\Undone.java
+	 */
+
+/**
+ * Undone Action relies on the TaskManager for retrieving and restoring tasks.
+ * It is able to restore lists of tasks based on search string and task numbers.
+ * The user can also use "all" to restore everything.
+ */
+public class Undone implements Action {
+	private static final String[] DICTIONARY = { "undone", "uncomplete",
+			"restore" };
+
+	private static final String EXECUTE_ERROR = "There was/were no matching task(s) to uncomplete.";
+	private static final String EXECUTE_SUCCESS = "Task successfully restored: %s";
+	private static final String EXECUTE_SUCCESS_MULTIPLE = "Successfully restored %d tasks.";
+
+	private static final String UNDO_ERROR = "There was an error completing the task(s).";
+	private static final String UNDO_SUCCESS = "Task successfully completed: %s";
+	private static final String UNDO_SUCCESS_MULTIPLE = "Successfully completed %d tasks.";
+
+	private static final String HINT_EXAMPLES = "\nExamples: undone 1 2 3 4, undone all, undone apple, undone mon";
+	private static final String HINT_ALTERNATIVES = "\nAlternatives: undone, uncomplete, restore";
+	private static final String HINT_MESSAGE = "Restore: Hit enter after typing the task numbers or keyword. Use []s to ignore date processing."
+			+ HINT_EXAMPLES + HINT_ALTERNATIVES;
+
+	private TaskManager taskManager;
+	private ListProcessor listProcessor;
+	private List<Task> tasks;
+
+	private String parameters;
+
+	// Initialization Methods
+
+	public Undone(String userCommand) {
+		initializeComponents();
+		initializeParameters(userCommand);
+		populateTasks();
+	}
+
+	private void initializeComponents() {
+		taskManager = TaskManagerActual.getInstance();
+		listProcessor = new ListProcessorActual();
+	}
+
+	private void initializeParameters(String userCommand) {
+		parameters = TaskCatalystCommons.removeFirstWord(userCommand);
+	}
+
+	private void populateTasks() {
+		String containsNonNumbers = ".*[^0-9^,^\\s]+.*";
+
+		boolean isContainsWords = parameters.matches(containsNonNumbers);
+		boolean isAllSpecified = parameters.equalsIgnoreCase("all");
+
+		if (isAllSpecified) {
+			tasks = getAllTasks();
+		} else if (isContainsWords) {
+			tasks = getTaskByKeywords(parameters);
+		} else {
+			tasks = getTasksByNumber(parameters);
+		}
+	}
+
+	private ArrayList<Task> getAllTasks() {
+		return new ArrayList<Task>(taskManager.getDisplayList());
+	}
+
+	private List<Task> getTasksByNumber(String parameters) {
+		List<Integer> taskNumbers = TaskCatalystCommons
+				.parsePositiveIntList(parameters);
+
+		List<Task> foundTasks = new ArrayList<Task>();
+
+		for (int taskNumber : taskNumbers) {
+			Task displayTask = taskManager.getDisplayTask(taskNumber);
+
+			if (displayTask != null) {
+				foundTasks.add(displayTask);
+			}
+		}
+
+		return foundTasks;
+	}
+
+	private List<Task> getTaskByKeywords(String parameter) {
+		List<Task> displayList = taskManager.getDisplayList();
+
+		return listProcessor.searchByKeyword(displayList, parameter);
+	}
+
+	// Execution/Undo Methods
+
+	@Override
+	public Message execute() {
+		boolean isTasksFound = (tasks != null);
+
+		if (!isTasksFound) {
+			MessageType messageType = MessageType.ERROR;
+			String message = String.format(EXECUTE_ERROR);
+
+			Message returnMessage = new Message(messageType, message);
+
+			return returnMessage;
+		}
+
+		int numberRestored = taskManager.uncompleteTasks(tasks);
+
+		boolean isSingleTask = (tasks.size() == 1);
+		boolean isRestored = (numberRestored > 0);
+		boolean isAllRestored = (numberRestored == tasks.size());
+		boolean isSuccess = (isRestored && isAllRestored);
+
+		MessageType messageType = generateType(isSuccess);
+		String message = generateExecuteMessage(isSingleTask, numberRestored,
+				isSuccess);
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	@Override
+	public Message undo() {
+		int numberCompleted = taskManager.completeTasks(tasks);
+
+		boolean isSingleTask = (tasks.size() == 1);
+		boolean isCompleted = (numberCompleted > 0);
+		boolean isAllCompleted = (numberCompleted == tasks.size());
+		boolean isSuccess = (isCompleted && isAllCompleted);
+
+		MessageType messageType = generateType(isSuccess);
+		String message = generateUndoMessage(isSingleTask, numberCompleted,
+				isSuccess);
+
+		Message returnMessage = new Message(messageType, message);
+
+		return returnMessage;
+	}
+
+	private MessageType generateType(boolean isSuccess) {
+		MessageType messageType;
+
+		if (isSuccess) {
+			messageType = MessageType.SUCCESS;
+		} else {
+			messageType = MessageType.ERROR;
+		}
+
+		return messageType;
+	}
+
+	private String generateExecuteMessage(boolean isSingleTask,
+			int numberRestored, boolean isSuccess) {
+		String message;
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+
+			message = String.format(EXECUTE_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(EXECUTE_SUCCESS_MULTIPLE, numberRestored);
+		} else {
+			message = String.format(EXECUTE_ERROR);
+		}
+
+		return message;
+	}
+
+	private String generateUndoMessage(boolean isSingleTask,
+			int numberCompleted, boolean isSuccess) {
+		String message;
+
+		if (isSuccess && isSingleTask) {
+			Task task = tasks.get(0);
+			String taskDescription = task.getDescription();
+
+			message = String.format(UNDO_SUCCESS, taskDescription);
+		} else if (isSuccess && !isSingleTask) {
+			message = String.format(UNDO_SUCCESS_MULTIPLE, numberCompleted);
+		} else {
+			message = String.format(UNDO_ERROR);
+		}
+
+		return message;
+	}
+
+	// Other Methods
+
+	public static Message getHint(String userCommand) {
+		MessageType messageType = MessageType.HINT;
+
+		Message returnMessage = new Message(messageType, HINT_MESSAGE);
+
+		return returnMessage;
+	}
+
+	public static boolean isThisAction(String command) {
+		List<String> dictionaryList = Arrays.asList(DICTIONARY);
+
+		boolean isContainsCommand = dictionaryList.contains(command);
+
+		return isContainsCommand;
+	}
+
+	public static String[] getDictionary() {
+		return DICTIONARY;
+	}
+
+	@Override
+	public boolean isUndoable() {
+		return true;
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\Undone.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\test\java\moustachio\task_catalyst\LogicActualTest.java
+	 */
+
+public class LogicActualTest {
+
+	private static final int NUM_OF_DEFAULT_HASHTAGS = 9;
+	Logic logic;
+	TaskManager taskManager;
+
+	@Before
+	public void setUp() throws Exception {
+		logic = new LogicActual();
+		logic.testMode();
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		BlackBox.getInstance().close();
+	}
+
+	// Basic Add
+	@Test
+	public void addTc1() {
+		Message message = logic.processCommand("Meet boss at MR5");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Task successfully added: Meet boss at MR5",
+				message.getMessage());
+		assertEquals("Meet boss at MR5", logic.getList().get(0)
+				.getDescription());
+	}
+
+	// Basic Add with Start Date
+	@Test
+	public void addTc2() {
+		String userCommand = "Meet boss at MR5 at 21 Sep 5pm";
+		Message message = logic.processCommand(userCommand);
+		assertEquals(MessageType.SUCCESS, message.getType());
+		// assertEquals("Task successfully added: " + userCommand,
+		// message.getMessage());
+
+		Task task = logic.getList().get(0);
+		// assertEquals(userCommand, task.getDescription());
+		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart()
+				.toString());
+	}
+
+	// Basic Add with End Date
+	@Test
+	public void addTc3() {
+		String userCommand = "Meet boss at MR5 at 21 Sep 5pm to 6pm";
+		Message message = logic.processCommand(userCommand);
+		assertEquals(MessageType.SUCCESS, message.getType());
+		// assertEquals("Task successfully added: " + userCommand,
+		// message.getMessage());
+
+		Task task = logic.getList().get(0);
+		// assertEquals(userCommand, task.getDescription());
+		assertEquals("Sun Sep 21 17:00:00 SGT 2014", task.getDateStart()
+				.toString());
+		assertEquals("Sun Sep 21 18:00:00 SGT 2014", task.getDateEnd()
+				.toString());
+	}
+
+	// Two or more basic adds
+	@Test
+	public void addTc4() {
+		String userCommand1 = "[25 Sep 6pm to 26 Sep 8pm] clients conference.";
+		String userCommand2 = "Meet boss at MR5 from [21 Sep 5pm to 6pm]";
+
+		Message message1 = logic.processCommand(userCommand1);
+		Message message2 = logic.processCommand(userCommand2);
+
+		assertEquals(MessageType.SUCCESS, message1.getType());
+		assertEquals(MessageType.SUCCESS, message2.getType());
+
+		Task task1 = logic.getList().get(0);
+		assertEquals("25 Sep 6pm to 26 Sep 8pm clients conference.",
+				task1.getDescription());
+		Task task2 = logic.getList().get(1);
+		assertEquals("Meet boss at MR5 from 21 Sep 5pm to 6pm",
+				task2.getDescription());
+	}
+
+	// Empty string
+	/* This is a boundary case for the ‘empty string’ partition */
+	@Test
+	public void addTc5() {
+		Message message = logic.processCommand("");
+		assertEquals(MessageType.ERROR, message.getType());
+		// assertEquals("Invalid Action Encountered", message.getMessage());
+	}
+
+	// Whitespace string
+	/* This is a boundary case for the ‘empty string’ partition */
+	@Test
+	public void addTc6() {
+		Message message = logic.processCommand(" ");
+		assertEquals(MessageType.ERROR, message.getType());
+		// assertEquals("Invalid Action Encountered", message.getMessage());
+	}
+
+	// Null
+	@Test
+	public void addTc7() {
+		Message message = logic.processCommand(null);
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals(
+				"Type something to begin adding a task."
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
+				message.getMessage());
+	}
+
+	// Test empty string
+	/* This is a boundary case for the ‘empty string’ partition */
+	@Test
+	public void getMessageTypingTc1() {
+		Message message = logic.getMessageTyping("");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals(
+				"Type something to begin adding a task."
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
+				message.getMessage());
+	}
+
+	// Test whitespace string
+	/* This is a boundary case for the ‘empty string’ partition */
+	@Test
+	public void getMessageTypingTc2() {
+		Message message = logic.getMessageTyping(" ");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals(
+				"Type something to begin adding a task."
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
+				message.getMessage());
+	}
+
+	// Test null
+	@Test
+	public void getMessageTypingTc3() {
+		Message message = logic.getMessageTyping(null);
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals(
+				"Type something to begin adding a task."
+						+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.",
+				message.getMessage());
+	}
+
+	// Test command partial match
+	@Test
+	public void getMessageTypingTc4() {
+		Message message = logic.getMessageTyping("e");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals("Do you mean \"edit\"?", message.getMessage());
+	}
+
+	// Test multiple command partial match
+	/* This is a boundary case for the ‘no command’ partition */
+	@Test
+	public void getMessageTypingTc5() {
+		Message message = logic.getMessageTyping("d");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals("Do you mean \"delete\", \"del\", \"done\"?",
+				message.getMessage());
+	}
+
+	// Test edit command match with no parameters
+	/* This is a boundary case for the ‘no parameter’ partition */
+	@Test
+	public void getMessageTypingTc6() {
+		Message message = logic.getMessageTyping("edit");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals(
+				"Edit: Hit space or enter after typing a valid task number to continue.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Test edit command match with space
+	/* This is a boundary case for the ‘no parameter’ partition */
+	@Test
+	public void getMessageTypingTc7() {
+		Message message = logic.getMessageTyping("edit ");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals(
+				"Edit: Hit space or enter after typing a valid task number to continue.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Test edit command match with parameter
+	/* This is a boundary case for the ‘has parameter’ partition */
+	@Test
+	public void getMessageTypingTc8() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 2");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals(
+				"Edit: Hit space or enter after typing a valid task number to continue.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Test command match with non-matching parameter and space
+	/* This is a boundary case for the ‘has parameter’ partition */
+	@Test
+	public void getMessageTypingTc9() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 2 ");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals("Invalid task number specified.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Test command match with matching parameter and space
+	/* This is a boundary case for the ‘has parameter’ partition */
+	@Test
+	public void getMessageTypingTc10() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 1 ");
+		assertEquals(MessageType.AUTOCOMPLETE, message.getType());
+		assertEquals("edit 1 item 1", message.getMessage());
+	}
+
+	// Test command match with matching parameter and double-space
+	/* This is a non-boundary case for the ‘has parameter’ partition */
+	@Test
+	public void getMessageTypingTc11() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 1  ");
+		// assertEquals(MessageType.AUTOCOMPLETE, message.getType());
+		assertEquals("edit 1 item 1", message.getMessage());
+	}
+
+	// Test command match with matching parameter and double-space
+	/* This is a boundary case for the ‘has parameter has content’ partition */
+	@Test
+	public void getMessageTypingTc12() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 1 item 1");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals(
+				"item 1\nEdit: Hit enter after making your changes.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Test command match with matching parameter and double-space
+	/* This is a boundary case for the ‘has parameter has content’ partition */
+	@Test
+	public void getMessageTypingTc13() {
+		logic.processCommand("item 1");
+		Message message = logic.getMessageTyping("edit 2 item 1");
+		assertEquals(MessageType.HINT, message.getType());
+		assertEquals("Invalid task number specified.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Delete invalid index.
+	@Test
+	public void deleteTc1() {
+		Message message = logic.processCommand("rm -1");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("There was/were no matching task(s) to delete.",
+				message.getMessage());
+	}
+
+	// Delete invalid index.
+	@Test
+	public void deleteTc2() {
+		logic.processCommand("Hello kitty!");
+		Message message = logic.processCommand("rm 2");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("There was/were no matching task(s) to delete.",
+				message.getMessage());
+	}
+
+	// Delete without parameters.
+	@Test
+	public void deleteTc3() {
+		Message message = logic.processCommand("rm");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("There was/were no matching task(s) to delete.",
+				message.getMessage());
+	}
+
+	// Delete one item.
+	@Test
+	public void deleteTc4() {
+		logic.processCommand("Hello kitty!");
+		Message message = logic.processCommand("rm 1");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Task successfully deleted: Hello kitty!",
+				message.getMessage());
+	}
+
+	// Delete all items.
+	@Test
+	public void deleteTc5() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm all");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items with space .
+	@Test
+	public void deleteTc6() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm all    ");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items space separated.
+	@Test
+	public void deleteTc7() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm 1 2");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items comma and space separated.
+	@Test
+	public void deleteTc8() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm 1, 2");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Delete all items comma and space separated.
+	@Test
+	public void deleteTc9() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		Message message = logic.processCommand("rm 1,2");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Complete invalid index.
+	@Test
+	public void doneTc1() {
+		Message message = logic.processCommand("done -1");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("There was/were no matching task(s) to complete.",
+				message.getMessage());
+	}
+
+	// Complete invalid index.
+	@Test
+	public void doneTc2() {
+		logic.processCommand("Hello kitty!");
+		Message message = logic.processCommand("done 2");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("There was/were no matching task(s) to complete.",
+				message.getMessage());
+	}
+
+	// Complete without parameters.
+	@Test
+	public void doneTc3() {
+		Message message = logic.processCommand("done");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("There was/were no matching task(s) to complete.",
+				message.getMessage());
+	}
+
+	// Complete one item.
+	@Test
+	public void doneTc4() {
+		logic.processCommand("Hello kitty!");
+		Message message = logic.processCommand("done 1");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Task successfully completed: Hello kitty!",
+				message.getMessage());
+	}
+
+	// Edit non-existing item
+	@Test
+	public void editTc1() {
+		Message message = logic.processCommand("edit 1 after!");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("Invalid task number specified.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Edit without parameters
+	@Test
+	public void editTc2() {
+		Message message = logic.processCommand("edit");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("Invalid task number specified.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Edit existing task without parameters
+	@Test
+	public void editTc3() {
+		logic.processCommand("hello kitty!");
+		Message message = logic.processCommand("edit");
+		assertEquals(MessageType.ERROR, message.getType());
+		assertEquals("Invalid task number specified.\nExample: edit 1",
+				message.getMessage());
+	}
+
+	// Edit existing task with parameters
+	@Test
+	public void editTc4() {
+		logic.processCommand("before1!");
+		logic.processCommand("before2!");
+		Message message = logic.processCommand("edit 2 after!");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Task successfully edited: after!", message.getMessage());
+	}
+
+	// Get default hashtags
+	@Test
+	public void getDefaultHashtagsTc1() {
+		List<String> defaultHashtags = logic.getHashtags();
+		assertEquals("#all", defaultHashtags.get(0));
+		assertEquals("#pri", defaultHashtags.get(1));
+		assertEquals("#ovd", defaultHashtags.get(2));
+		assertEquals("#tdy", defaultHashtags.get(3));
+		assertEquals("#tmr", defaultHashtags.get(4));
+		assertEquals("#upc", defaultHashtags.get(5));
+		assertEquals("#smd", defaultHashtags.get(6));
+		assertEquals("#olp", defaultHashtags.get(7));
+		assertEquals("#dne", defaultHashtags.get(8));
+	}
+
+	// Get hashtags on empty list.
+	@Test
+	public void getHashtagsTc1() {
+		List<String> userHashtags = logic.getHashtags();
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 0, userHashtags.size());
+	}
+
+	// Get hashtags on a list with no hashtags.
+	@Test
+	public void getHashtagsTc2() {
+		logic.processCommand("hello");
+		List<String> userHashtags = logic.getHashtags();
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 0, userHashtags.size());
+	}
+
+	// Single hashtagged item in a list.
+	@Test
+	public void getHashtagsTc3() {
+		logic.processCommand("Need to meet #boss for #client meeting.");
+		List<String> userHashtags = logic.getHashtags();
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 2, userHashtags.size());
+	}
+
+	// Two hashtagged item, no overlaps.
+	@Test
+	public void getHashtagsTc4() {
+		logic.processCommand("Need to meet #boss for #client meeting.");
+		logic.processCommand("Go do some #fishing for #charity.");
+		List<String> userHashtags = logic.getHashtags();
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 4, userHashtags.size());
+	}
+
+	// Two hashtagged item, with overlaps.
+	@Test
+	public void getHashtagsTc5() {
+		logic.processCommand("Need to meet #boss for #client meeting.");
+		logic.processCommand("Go do some #fishing for #client.");
+		List<String> userHashtags = logic.getHashtags();
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 3, userHashtags.size());
+	}
+
+	// Numbered hashtags , with overlaps.
+	@Test
+	public void getHashtagsTc6() {
+		logic.processCommand("Need to meet #boss1 for #boss2 meeting.");
+		logic.processCommand("Go do some #boss2 for #boss3.");
+		List<String> userHashtags = logic.getHashtags();
+		assertEquals(NUM_OF_DEFAULT_HASHTAGS + 3, userHashtags.size());
+	}
+
+	// Non-existent hashtags.
+	@Test
+	public void hasHashtagTc1() {
+		logic.processCommand("Not hashtagged");
+		assertEquals(false, logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Hashtag in front.
+	@Test
+	public void hasHashtagTc2() {
+		logic.processCommand("#hashtag in front");
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Hashtag behind.
+	@Test
+	public void hasHashtagTc3() {
+		logic.processCommand("behind #hashtag");
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Hashtagged, but search for non-existent.
+	@Test
+	public void hasHashtagTc4() {
+		logic.processCommand("#hashtag in front");
+		assertEquals(false, logic.getList().get(0).hasHashtag("hashtag2"));
+	}
+
+	// Ignore punctuations at the end.
+	@Test
+	public void hasHashtagTc5() {
+		logic.processCommand("Punctuations ending #hashtag.. ");
+		assertEquals(true, logic.getList().get(0).hasHashtag("hashtag"));
+	}
+
+	// Accept punctuations between.
+	@Test
+	public void hasHashtagTc6() {
+		logic.processCommand("Punctuations ending #hash.tag.. ");
+		assertEquals(true, logic.getList().get(0).hasHashtag("hash.tag"));
+	}
+
+	// Priority Recognition - Not Priority.
+	@Test
+	public void priorityTc1() {
+		logic.processCommand("task 1");
+
+		List<Task> tasks = logic.getList();
+
+		assertEquals(false, tasks.get(0).isPriority());
+	}
+
+	// Priority Recognition - Priority.
+	@Test
+	public void priorityTc2() {
+		logic.processCommand("task 1 #pri");
+
+		List<Task> tasks = logic.getList();
+
+		assertEquals(true, tasks.get(0).isPriority());
+	}
+
+	// Search for non-existent item
+	@Test
+	public void searchTc1() {
+		Message message = logic.processCommand("search hello");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Displaying search: hello.", message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Search for one matching item
+	@Test
+	public void searchTc2() {
+		logic.processCommand("apple banana");
+		logic.processCommand("apple papaya");
+		Message message = logic.processCommand("search banana");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Displaying search: banana.", message.getMessage());
+		assertEquals(1, logic.getList().size());
+	}
+
+	// Search for two or more matching item
+	@Test
+	public void searchTc3() {
+		logic.processCommand("apple banana");
+		logic.processCommand("apple papaya");
+		Message message = logic.processCommand("search apple");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Displaying search: apple.", message.getMessage());
+		assertEquals(2, logic.getList().size());
+	}
+
+	// Undo nothing.
+	@Test
+	public void undoTc1() {
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("There is nothing to undo.", message.getMessage());
+	}
+
+	// Undo add, and then redo.
+	@Test
+	public void undoTc2() {
+		logic.processCommand("this is the first item");
+		assertEquals(1, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Undo: Task successfully removed: this is the first item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Redo: Task successfully added: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+	}
+
+	// Undo multiple add, and then redo multiple add.
+	@Test
+	public void undoTc3() {
+		logic.processCommand("this is the first item");
+		logic.processCommand("this is the second item");
+		assertEquals(2, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Undo: Task successfully removed: this is the second item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Undo: Task successfully removed: this is the first item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Redo: Task successfully added: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Redo: Task successfully added: this is the second item",
+				message.getMessage());
+		assertEquals(2, logic.getList().size());
+	}
+
+	// Undo multiple deletes, and then redo multiple deletes.
+	@Test
+	public void undoTc4() {
+		logic.processCommand("this is the first item");
+		logic.processCommand("this is the second item");
+		logic.processCommand("delete 1");
+		logic.processCommand("delete 1");
+		assertEquals(0, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Undo: Task successfully restored: this is the second item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Undo: Task successfully restored: this is the first item",
+				message.getMessage());
+		assertEquals(2, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Redo: Task successfully deleted: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Redo: Task successfully deleted: this is the second item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Undo multiple completes, then redo multiple completes.
+	@Test
+	public void undoTc5() {
+		logic.processCommand("this is the first item");
+		logic.processCommand("this is the second item");
+		logic.processCommand("done 1");
+		logic.processCommand("done 1");
+		assertEquals(0, logic.getList().size());
+
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Undo: Task successfully restored: this is the second item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Undo: Task successfully restored: this is the first item",
+				message.getMessage());
+		assertEquals(2, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Redo: Task successfully completed: this is the first item",
+				message.getMessage());
+		assertEquals(1, logic.getList().size());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals(
+				"Redo: Task successfully completed: this is the second item",
+				message.getMessage());
+		assertEquals(0, logic.getList().size());
+	}
+
+	// Undo single edit.
+	@Test
+	public void undoTc6() {
+		logic.processCommand("before");
+		logic.processCommand("edit 1 after");
+
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Undo: Task successfully restored: before",
+				message.getMessage());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Redo: Task successfully edited: after",
+				message.getMessage());
+	}
+
+	// Ensure redos are cleared after doing something.
+	@Test
+	public void undoTc7() {
+		logic.processCommand("before");
+		logic.processCommand("edit 1 after");
+
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Undo: Task successfully restored: before",
+				message.getMessage());
+
+		logic.processCommand("something else");
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("There is nothing to redo.", message.getMessage());
+	}
+
+	// Test that invalid commands are not added to undo list.
+	@Test
+	public void undoTc8() {
+		logic.processCommand("before");
+		logic.processCommand("edit 1 after");
+		logic.processCommand("edit 1");
+		logic.processCommand("delete");
+
+		Message message = logic.processCommand("undo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Undo: Task successfully restored: before",
+				message.getMessage());
+
+		message = logic.processCommand("redo");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Redo: Task successfully edited: after",
+				message.getMessage());
+	}
+
+	// Undo for delete multiple / all.
+	@Test
+	public void undoTc9() {
+		logic.processCommand("Task 1!");
+		logic.processCommand("Task 2!");
+		logic.processCommand("Task 3!");
+		Message message = logic.processCommand("rm 1, 3");
+		assertEquals(MessageType.SUCCESS, message.getType());
+		assertEquals("Successfully deleted 2 tasks.", message.getMessage());
+		List<Task> tasks = logic.getList();
+		assertEquals(1, tasks.size());
+		assertEquals("Task 2!", tasks.get(0).getDescription());
+		logic.processCommand("undo");
+		tasks = logic.getList();
+		assertEquals(3, tasks.size());
+		assertEquals("Task 2!", tasks.get(0).getDescription());
+		assertEquals("Task 1!", tasks.get(1).getDescription());
+		assertEquals("Task 3!", tasks.get(2).getDescription());
+	}
+
+	// Test that display is automatically switched to added task if not in
+	// display.
+	@Test
+	public void autoswitchTc1() {
+		logic.processCommand("Hello boss1");
+		logic.processCommand("Hello boss2");
+		logic.processCommand("search boss1");
+		assertEquals(1, logic.getList().size());
+		logic.processCommand("Hello boss3");
+		assertEquals(3, logic.getList().size());
+	}
+
+	// Test autoswitching functionality for edit as well.
+	@Test
+	public void autoswitchTc2() {
+		logic.processCommand("Hello boss1");
+		logic.processCommand("Hello boss2");
+		logic.processCommand("search boss1");
+		assertEquals(1, logic.getList().size());
+		logic.processCommand("edit 1 boss3");
+		assertEquals(2, logic.getList().size());
+	}
+
+	// Ensure that switching occurs only when list is empty during remove.
+	@Test
+	public void autoswitchTc3() {
+		logic.processCommand("1");
+		logic.processCommand("2");
+		logic.processCommand("2");
+		assertEquals(3, logic.getList().size());
+		logic.processCommand("search 2");
+		assertEquals(2, logic.getList().size());
+		logic.processCommand("rm 1");
+		assertEquals(1, logic.getList().size());
+		logic.processCommand("rm 1");
+		assertEquals(1, logic.getList().size());
+	}
+
+	// Test if #all is highlighted by default.
+	@Test
+	public void highlightHashtagTc1() {
+		assertEquals(0, logic.getHashtagSelected());
+	}
+
+	// Test if #tdy is highlighted when #tdy is called.
+	@Test
+	public void highlightHashtagTc2() {
+		logic.processCommand("#tdy");
+		assertEquals(3, logic.getHashtagSelected());
+	}
+
+	// Test if search is added and highlighted.
+	@Test
+	public void highlightHashtagTc3() {
+		logic.processCommand("#tdy");
+		logic.processCommand("search fish");
+		assertEquals("search fish", logic.getHashtags().get(0));
+		assertEquals(0, logic.getHashtagSelected());
+	}
+}
+
+	// End of segment: task_catalyst\src\test\java\moustachio\task_catalyst\LogicActualTest.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\test\java\moustachio\task_catalyst\TaskBuilderAdvancedTest.java
+	 */
+
+public class TaskBuilderAdvancedTest {
+
+	TaskBuilderAdvanced taskBuilder = new TaskBuilderAdvanced();
+
+	@Before
+	public void setUp() throws Exception {
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		BlackBox.getInstance().close();
+	}
+
+	// Test for basic date recognition.
+	@Test
+	public void tc1() {
+		Task task = taskBuilder.createOneTask("Meet boss 21 Jun 10:05am");
+		assertEquals("Meet boss on 21 Jun 10:05AM", task.getDescriptionEdit());
+	}
+
+	// Test for basic date range recognition.
+	@Test
+	public void tc2() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss from 21 jun 10am to 22nd jun");
+		assertEquals("Meet boss from 21 Jun 10AM to 22 Jun 10AM",
+				task.getDescriptionEdit());
+	}
+
+	// Test for basic time range recognition.
+	@Test
+	public void tc3() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss from 21 jun 10am to 11am");
+		assertEquals("Meet boss from 21 Jun 10AM to 11AM",
+				task.getDescriptionEdit());
+	}
+
+	// Test for relative display.
+	@Test
+	public void tc4() {
+		Task task = taskBuilder.createOneTask("Meet boss tomorrow 10am");
+		assertEquals("Meet boss tomorrow 10AM", task.getDescriptionEdit());
+	}
+
+	// Test for relative display with day range.
+	@Test
+	public void tc5() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss today 10am to today 12pm");
+		assertEquals("Meet boss today 10AM to 12PM", task.getDescriptionEdit());
+	}
+
+	// Test for relative display with day range.
+	@Test
+	public void tc6() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss 21 Jun 10am to 25 sep 2015 12pm");
+		assertEquals("Meet boss on 21 Jun 10AM to 25 Sep 2015 12PM",
+				task.getDescriptionEdit());
+	}
+
+	// Ignore text+number
+	@Test
+	public void tc7() {
+		Task task = taskBuilder.createOneTask("Meet boss today 10am at LT5");
+		assertEquals("Meet boss today 10AM at [LT5]", task.getDescriptionEdit());
+	}
+
+	// Ignore text/symbol+number
+	@Test
+	public void tc8() {
+		Task task = taskBuilder.createOneTask("Meet boss today 10am at MR-23");
+		assertEquals("Meet boss today 10AM at [MR-23]",
+				task.getDescriptionEdit());
+	}
+
+	// Ignore numbers of 5 or more digits
+	@Test
+	public void tc9() {
+		Task task = taskBuilder
+				.createOneTask("Call John later 5pm at 90044174");
+		assertEquals("Call John later today 5PM at [90044174]",
+				task.getDescriptionEdit());
+	}
+
+	// Swap inverted range
+	@Test
+	public void tc10() {
+		Task task = taskBuilder.createOneTask("Meeting today 10pm to 1pm");
+		assertEquals("Meeting today 1PM to 10PM", task.getDescriptionEdit());
+	}
+
+	// Swap inverted range different date
+	@Test
+	public void tc11() {
+		Task task = taskBuilder
+				.createOneTask("Meeting tomorrow 10pm to today 1pm");
+		assertEquals("Meeting today 1PM to tomorrow 10PM",
+				task.getDescriptionEdit());
+	}
+
+	// Swap inverted multiple
+	@Test
+	public void tc12() {
+		Task task = taskBuilder
+				.createOneTask("Visitors arriving 10pm and 1pm and 2pm");
+		assertEquals("Visitors arriving today 1PM, 2PM and 10PM",
+				task.getDescriptionEdit());
+	}
+
+	// Swap inverted multiple different date
+	@Test
+	public void tc13() {
+		Task task = taskBuilder
+				.createOneTask("Visitors arriving today 10pm and tomorrow 1pm and tomorrow 2pm");
+		assertEquals("Visitors arriving today 10PM, tomorrow 1PM and 2PM",
+				task.getDescriptionEdit());
+	}
+
+	// Grammar correction at-to-on (my fail on a Friday)
+	@Test
+	public void tc14() {
+		Task task = taskBuilder.createOneTask("Meet boss at 21 oct 2003 1pm");
+		assertEquals("Meet boss on 21 Oct 2003 1PM", task.getDescriptionEdit());
+	}
+
+	// Ignore partial matches.
+	@Test
+	public void tc15() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss now 5pm knowing that I'm screwed");
+		assertEquals("Meet boss today 5PM knowing that I'm screwed",
+				task.getDescriptionEdit());
+	}
+
+	// Ignore partial matches.
+	@Test
+	public void tc16() {
+		Task task = taskBuilder
+				.createOneTask("LT5 [sep] programme on 5 sep 10am");
+		assertEquals("[LT5] [sep] programme on 5 Sep 10AM",
+				task.getDescriptionEdit());
+	}
+
+	// Ignore partial matches.
+	@Test
+	public void tc17() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss today 5pm to 6pm at LT5");
+		assertEquals("Meet boss today 5PM to 6PM at [LT5]",
+				task.getDescriptionEdit());
+	}
+
+	// Automatically remove prepositions.
+	@Test
+	public void tc18() {
+		Task task = taskBuilder.createOneTask("At at at at at at at today 5pm");
+		assertEquals(null, task);
+	}
+
+	// Able to prevent mixed date time formats.
+	@Test
+	public void tc19() {
+		Task task = taskBuilder
+					.createOneTask("Today at 5pm and tomorrow from 6pm to 7pm");
+		assertEquals(null, task);
+	}
+
+	// Test Range Recognition - No Range
+	@Test
+	public void tc20() {
+		Task task = taskBuilder.createOneTask("Meet boss at 5PM");
+		assertEquals(false, task.isRange());
+	}
+
+	// Test Range Recognition - Range
+	@Test
+	public void tc21() {
+		Task task = taskBuilder.createOneTask("Meet boss from 5PM to 6PM");
+		assertEquals(true, task.isRange());
+	}
+
+	// Repeated Date Correction
+	@Test
+	public void tc22() {
+		Task task = taskBuilder.createOneTask("Meet boss from 5PM to 5PM");
+		assertEquals("Meet boss from today 5PM", task.getDescriptionEdit());
+	}
+
+	// Displaying dates when previous day == current day, and next time ==
+	// current time.
+	@Test
+	public void tc23() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss today 1pm, 5pm and tomorrow");
+		assertEquals("Meet boss today 1PM, 5PM and tomorrow 5PM", task.getDescriptionEdit());
+	}
+
+	// Repeated Date alternate.
+	@Test
+	public void tc24() {
+		Task task = taskBuilder.createOneTask("Meet boss 5PM and today.");
+		assertEquals("Meet boss today 5PM.", task.getDescriptionEdit());
+	}
+
+	// Ignore parsing of number words
+	@Test
+	public void tc25() {
+		Task task = taskBuilder.createOneTask("Twenty four");
+		assertEquals("Twenty four", task.getDescriptionEdit());
+	}
+
+	// Ignore parsing of number words
+	@Test
+	public void tc26() {
+		Task task = taskBuilder
+				.createOneTask("one thing from 1 oct 2013 5pm to 1 oct 2013 6pm");
+		assertEquals("one thing from 1 Oct 2013 5PM to 6PM", task.getDescriptionEdit());
+	}
+
+	// Handle words like "a*", "h*", after a date range
+	@Test
+	public void tc27() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss from 5 Oct 1pm to 2pm a");
+		assertEquals("Meet boss from 5 Oct 1PM to 2PM a", task.getDescriptionEdit());
+	}
+
+	// Handle words like "test" after a date range
+	@Test
+	public void tc28() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss from 5 Oct 1pm to 2pm test");
+		assertEquals("Meet boss from 5 Oct 1PM to 2PM [test]", task.getDescriptionEdit());
+	}
+
+	// Handle words containing "ated" after a date range
+	@Test
+	public void tc29() {
+		Task task = taskBuilder.createOneTask("Get movie rated 1pm");
+		assertEquals("Get movie [rated] today 1PM", task.getDescriptionEdit());
+	}
+
+	// Display Comma Separated Items Properly (artifact problem from multi-pass
+	// parsing)
+	@Test
+	public void tc30() {
+		Task task = taskBuilder.createOneTask("Meet boss 5pm 6pm 7pm.");
+		assertEquals("Meet boss today 5PM, 6PM and 7PM.", task.getDescriptionEdit());
+	}
+
+	// Catch mixed date types in this situation.
+	@Test
+	public void tc31() {
+		Task task = taskBuilder.createOneTask("Meet boss 5pm 6pm to 7pm.");
+		assertEquals(null, task);
+	}
+
+	// Catch mixed date types, in different many characters away.
+	@Test
+	public void tc32() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss 5pm and 6pm and then meet secretary from 5pm to 7pm.");
+		assertEquals(null, task);
+	}
+
+	// Catch invalid date range in the case of tc33.
+	@Test
+	public void tc33() {
+		Task task = taskBuilder
+				.createOneTask("Meet boss at 5pm for fun to around 6pm and then at 7pm.");
+		assertEquals(null, task);
+	}
+
+		// Fixed a problem when a partial keyword is found between two valid dates.
+	@Test
+	public void tc34() {
+		Task task = taskBuilder.createOneTask("5pm mor 6pm mor 7pm.");
+		assertEquals(null, task);
+	}
+
+	// Alternate case to tc34.
+	@Test
+	public void tc35() {
+		Task task = taskBuilder.createOneTask("5pm mor even 6pm");
+		assertEquals(null, task);
+	}
+
+	// Catch mixed date types in repeated dates.
+	@Test
+	public void tc36() {
+		Task task = taskBuilder.createOneTask("5pm 5pm 5pm to 6pm and 7pm");
+		assertEquals(null, task);
+	}
+
+	// Fix "before on" preposition.
+	@Test
+	public void tc37() {
+		Task task = taskBuilder
+				.createOneTask("Complete the task before 5pm 13 Oct.");
+		assertEquals("Complete the task before 13 Oct 5PM and today 5PM.", task.getDescriptionEdit());
+	}
+
+	// Friday should show up without dates.
+	@Test
+	public void tc38() {
+		Task task = taskBuilder.createOneTask("today");
+		assertEquals(null, task);
+	}
+
+	// Commas after dates should be parsable.
+	@Test
+	public void tc39() {
+		Task task = taskBuilder.createOneTask("Something today and tomorrow,");
+		assertEquals("Something today and tomorrow, ", task.getDescriptionEdit());
+	}
+
+	// Fullstops after dates should be parsable.
+	@Test
+	public void tc40() {
+		Task task = taskBuilder
+				.createOneTask("Something today and tomorrow. then something else.");
+		assertEquals("Something today and tomorrow. then something else.", task.getDescriptionEdit());
+	}
+
+	// Overlapping dates in the same task.
+	@Test
+	public void tc41() {
+		Task task = taskBuilder.createOneTask("Something 1pm 2pm 3pm then 1pm");
+		assertEquals(null, task);
+	}
+
+	// Overlapping dates in the same task.
+	@Test
+	public void tc42() {
+		Task task = taskBuilder.createOneTask("Something today");
+		assertEquals(true, task.isAllDay());
+	}
+
+	// Be able to take time without commas correctly
+	@Test
+	public void tc43() {
+		Task task = taskBuilder.createOneTask("Something tomorrow 1pm 2pm 3pm");
+		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
+				task.getDescriptionEdit());
+	}
+
+	// Be able to take time without commas correctly
+	@Test
+	public void tc44() {
+		Task task = taskBuilder
+				.createOneTask("Something tomorrow 13:00 14:00 15:00");
+		assertEquals("Something tomorrow 1PM, 2PM and 3PM",
+				task.getDescriptionEdit());
+	}
+
+	// Test for deadline
+	@Test
+	public void tc45() {
+		Task task = taskBuilder.createOneTask("Something by today");
+		assertEquals(true, task.isDeadline());
+		task = taskBuilder.createOneTask("Something today");
+		assertEquals(false, task.isDeadline());
+	}
+}
+	// End of segment: task_catalyst\src\test\java\moustachio\task_catalyst\TaskBuilderAdvancedTest.java
+
+
+
+
+

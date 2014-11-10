@@ -1,0 +1,65 @@
+//@author: a0111921w-unused
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\SettingsController.java
+	 */
+
+public class SettingsController {
+	@FXML
+	private BorderPane rootBorderPane;
+	@FXML
+	private Button exitButton;
+	@FXML
+	private Button saveButton;
+	@FXML
+	private Button cancelButton;
+
+	/**
+	 * Initializes the controller class. This method is automatically called
+	 * after the fxml file has been loaded.
+	 */
+	@FXML
+	private void initialize() {
+		testInterface();
+	}
+
+	private void testInterface() {
+		assert rootBorderPane != null : "fx:id=\"rootBorderPane\" was not injected: check your FXML file 'settings.fxml'.";
+		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'settings.fxml'.";
+		assert saveButton != null : "fx:id=\"saveButton\" was not injected: check your FXML file 'settings.fxml'.";
+		assert cancelButton != null : "fx:id=\"cancelButton\" was not injected: check your FXML file 'settings.fxml'.";
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\SettingsController.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+	 */
+
+	//There was too little settings to implement
+	@FXML
+	private void openSettingsWindow() {
+		Pane myPane;
+		try {
+			myPane = FXMLLoader.load(getClass().getResource("settings.fxml"));
+			Stage stage = new Stage();
+			stage.setScene(new Scene(myPane));
+			stage.show();
+		} catch (IOException e) {
+			blackbox.info(MESSAGE_FXML_LOAD_EXCEPTION);
+		}
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+
+
+
+
+

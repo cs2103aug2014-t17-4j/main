@@ -10,7 +10,7 @@ import org.junit.Test;
 import org.loadui.testfx.GuiTest;
 import org.loadui.testfx.utils.FXTestUtils;
 
-//@author A0111921W - adapted from https://github.com/TestFX/TestFX/issues/57
+//@author A0111921W - reused from https://github.com/TestFX/TestFX/issues/57
 public class UITest {
 	private static GuiTest controller;
 	private static TaskCatalyst tc;

@@ -1,0 +1,1041 @@
+//@author: a0112764j
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\FileHandler.java
+	 */
+
+public class FileHandler {
+
+	private static final String FOLDER_TASK_CATALYST = "Task Catalyst";
+	private static final String PATH_TASK_CATALYST = "Task Catalyst/";
+	private static final String STRING_SPACE = " ";
+	private static final String STRING_WRITE_SETTING = "%1$s,%2$s";
+	private static final String STRING_EMPTY = "";
+	private static final String REGEX_VALID_FILE_FORMAT = "(?i)^((\\w+|\\d+)|((\\w+|\\d+)\\s*(\\w+|\\d+)))+\\.{1}(txt){1}$";
+	private static final String REGEX_VALID_PATTERN = "(?i)^\\w+|\\d+$";
+
+	private static final String MESSAGE_NOT_FOUND = "The file is not found!";
+	private static final String MESSAGE_INCORRECT_FORMAT = "Incorrect format has been found";
+	private static final String MESSAGE_EMPTY_FILE = "The file is empty.";
+	private static final String MESSAGE_IO_FAULT_READ = "IO fault has been enountered during reading from file";
+	private static final String MESSAGE_IO_FAULT_WRITE = "IO fault has been enountered during writing to file.";
+	private static final String MESSAGE_IO_FAULT_DIR = "IO fault has been encountered during creating dir";
+	private static final String MESSAGE_INVALID_FILE_FORMAT = "Invalid file format!";
+	private static final String MESSAGE_IO_FAULT_DIR_READ = "IO fault has been encountered during making folder to read task.";
+
+	private static BlackBox blackBox = BlackBox.getInstance();
+
+	public void writeTask(Task task, String fileName) throws IOException {
+		assert (task != null && fileName != null);
+		checkTaskFileFormat(fileName);
+		try {
+			createFolder();
+			writeJSONFile(task, fileName);
+		} catch (IOException e) {
+			blackBox.info(MESSAGE_IO_FAULT_WRITE);
+		}
+	}
+
+	private void createFolder() throws IOException {
+		File folder = new File(FOLDER_TASK_CATALYST);
+		if (folder.exists() && folder.isFile()) {
+			printMessage(MESSAGE_IO_FAULT_DIR);
+		} else {
+			if (!folder.exists()) {
+				folder.mkdir();
+			}
+		}
+	}
+
+	private void writeJSONFile(Task task, String fileName) throws IOException {
+		FileWriter jsonFile = new FileWriter(PATH_TASK_CATALYST + fileName,
+				true);
+		BufferedWriter writer = new BufferedWriter(jsonFile);
+		JSONObject object = new JSONObject();
+		JSONConverter objCodec = new JSONConverter();
+		object = objCodec.encode(task);
+		writer.write(object.toJSONString());
+		writer.newLine();
+		writer.flush();
+		writer.close();
+	}
+
+	public List<Task> readTask(String fileName) {
+		assert (fileName != null);
+		List<Task> list = new ArrayList<Task>();
+
+		checkTaskFileFormat(fileName);
+		doActionToCreateFolder();
+
+		File file = new File(PATH_TASK_CATALYST + fileName);
+
+		if (!file.exists() || isEmptyFile(PATH_TASK_CATALYST + fileName)) {
+			createNewTextFile(fileName);
+			return new ArrayList<Task>();
+		} else {
+			readJSONFile(PATH_TASK_CATALYST + fileName, list);
+		}
+		return list;
+	}
+
+	private void doActionToCreateFolder() {
+		try {
+			createFolder();
+		} catch (IOException e) {
+			printMessage(MESSAGE_IO_FAULT_DIR_READ);
+		}
+	}
+
+	public void createNewTextFile(String fileName) {
+		File newfileName = new File(PATH_TASK_CATALYST + fileName);
+		try {
+			writeEmpty(newfileName.getPath());
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void checkTaskFileFormat(String fileName) throws Error {
+		if (isInvalidFileFormat(fileName)) {
+			blackBox.info(MESSAGE_INVALID_FILE_FORMAT);
+			throw new Error(MESSAGE_INVALID_FILE_FORMAT);
+		}
+	}
+
+	private void readJSONFile(String fileName, List<Task> list) {
+		try {
+			readJSONFormat(fileName, list);
+		} catch (FileNotFoundException e) {
+			blackBox.info(MESSAGE_EMPTY_FILE);
+		} catch (IOException e) {
+			blackBox.info(MESSAGE_IO_FAULT_READ);
+		} catch (ParseException e) {
+			blackBox.info(MESSAGE_INCORRECT_FORMAT);
+		}
+	}
+
+	private void readJSONFormat(String fileName, List<Task> list)
+			throws FileNotFoundException, IOException, ParseException {
+		String stringLine;
+		BufferedReader breader = getReader(fileName);
+		JSONConverter objCodec = new JSONConverter();
+		while ((stringLine = breader.readLine()) != null) {
+			List<Task> tasks = objCodec.decodeToString(stringLine);
+			if (tasks != null) {
+				list.addAll(tasks);
+			}
+		}
+		breader.close();
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\FileHandler.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\HelpViewController.java
+	 */
+
+public class HelpViewController {
+	@FXML
+	private TabPane helpPane;
+	@FXML
+	private Tab hashtagTab;
+	@FXML
+	private Tab basicFeaturesTab;
+	@FXML
+	private Tab specialFeaturesTab;
+	@FXML
+	private Tab hotKeysTab;
+	@FXML
+	private Button exitButton;
+	@FXML
+	private TextArea hashTagArea;
+	@FXML
+	private ImageView basicFeatures;
+	@FXML
+	private ImageView specialFeatures;
+	@FXML
+	private ImageView hashtags;
+	@FXML
+	private ImageView hotkeys;
+
+	private Stage helpStage;
+
+	private static final String QUICKGUIDE_FXML_PATH = "/fxml/quickGuide.fxml";
+	
+	private HelpViewController controller;
+	
+	private double initialY;
+	private double initialX;
+
+	public HelpViewController() {
+		
+	}
+
+	public void setStage(Stage helpStage) {
+		this.helpStage = helpStage;
+	}
+	
+	Stage getStage() {
+		return this.helpStage;
+	}
+	
+	@FXML
+	public void initialize() {
+		assert helpPane != null : "fx:id=\"helpPane\" was not injected: check your FXML file 'interface.fxml'.";
+		assert hashtagTab != null : "fx:id=\"hashtagTab\" was not injected: check your FXML file 'interface.fxml'.";
+		assert basicFeaturesTab != null : "fx:id=\"basicFeaturesTab\" was not injected: check your FXML file 'interface.fxml'.";
+		assert specialFeaturesTab != null : "fx:id=\"specialFeaturesTab\" was not injected: check your FXML file 'interface.fxml'.";
+		assert hotKeysTab != null : "fx:id=\"hotKeysTab\" was not injected: check your FXML file 'interface.fxml'.";
+		assert exitButton != null : "fx:id=\"exitButton\" was not injected: check your FXML file 'interface.fxml'.";
+	}
+	
+	@FXML
+	public void handleExit() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				helpStage.hide();
+			}
+		});
+	}
+	
+	private void addDragListeners(final Node helpUI) {
+		helpUI.setOnMousePressed(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent me) {
+				if (me.getButton() != MouseButton.MIDDLE) {
+					initialX = me.getSceneX();
+					initialY = me.getSceneY();
+				} else {
+					helpUI.getScene().getWindow().centerOnScreen();
+					initialX = helpUI.getScene().getWindow().getX();
+					initialY = helpUI.getScene().getWindow().getY();
+				}
+			}
+		});
+
+		helpUI.setOnMouseDragged(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent me) {
+				if (me.getButton() != MouseButton.MIDDLE) {
+					helpUI.getScene().getWindow()
+					.setX(me.getScreenX() - initialX);
+					helpUI.getScene().getWindow()
+					.setY(me.getScreenY() - initialY);
+				}
+			}
+		});
+	}
+
+	public void openHelpWindow() {
+		AnchorPane helpPane;
+		if (helpStage != null) {
+			helpStage.show();
+			helpStage.toFront();
+		}
+		else {
+			try {
+				helpStage = new Stage();
+				FXMLLoader loader = new FXMLLoader(getClass().getResource(
+						QUICKGUIDE_FXML_PATH));
+				helpPane = loader.load();
+
+				controller = loader.getController();
+				addDragListeners(helpPane);
+				controller.setStage(helpStage);
+				helpStage.setScene(new Scene(helpPane));
+				helpStage.initStyle(StageStyle.UNDECORATED);
+				helpStage.setX(0);
+				helpStage.setY(30);
+				helpStage.show();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+}
+
+//quickGuide.fxml
+//<?xml version="1.0" encoding="UTF-8"?>
+//
+//<?import javafx.scene.text.*?>
+//<?import javafx.scene.web.*?>
+//<?import javafx.scene.*?>
+//<?import javafx.scene.control.*?>
+//<?import javafx.scene.image.*?>
+//<?import java.lang.*?>
+//<?import javafx.scene.layout.*?>
+//<?import javafx.scene.layout.AnchorPane?>
+//
+//<AnchorPane prefHeight="457.0" prefWidth="505.0" styleClass="theme" stylesheets="@../css/helpTheme.css" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="moustachio.task_catalyst.HelpViewController">
+//   <children>
+//      <Pane layoutX="4.0" prefHeight="52.0" prefWidth="493.0" styleClass="theme" stylesheets="@../css/helpTheme.css" AnchorPane.bottomAnchor="348.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+//         <children>
+//            <ImageView fitHeight="32.0" fitWidth="152.0" layoutX="40.0" layoutY="10.0" styleClass="helpTheme.css">
+//               <image>
+//                  <Image url="@../images/title.png" />
+//               </image>
+//            </ImageView>
+//            <ImageView fitHeight="42.0" fitWidth="46.0" layoutX="4.0" layoutY="5.0">
+//               <image>
+//                  <Image url="@../images/info.png" />
+//               </image>
+//            </ImageView>
+//            <Button fx:id="exitButton" layoutX="473.0" layoutY="8.0" mnemonicParsing="false" onAction="#handleExit" onMouseClicked="#handleExit" prefHeight="25.0" prefWidth="25.0" stylesheets="@../css/DarkTheme.css" />
+//         </children>
+//      </Pane>
+//      <TabPane fx:id="helpPane" layoutX="6.0" layoutY="50.0" prefHeight="409.0" prefWidth="491.0" tabClosingPolicy="UNAVAILABLE" tabMinWidth="104.0">
+//        <tabs>
+//          <Tab fx:id="hashtagTab" text="Hashtags">
+//            <content>
+//              <AnchorPane focusTraversable="true" minHeight="0.0" minWidth="0.0" prefHeight="379.0" prefWidth="484.0" stylesheets="@../css/helpTheme.css">
+//                     <children>
+//                        <ImageView fx:id="hashtags" fitHeight="369.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="17.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+//                           <image>
+//                              <Image url="@../images/hashtag.jpg" />
+//                           </image></ImageView>
+//                     </children></AnchorPane>
+//            </content>
+//          </Tab>
+//          <Tab fx:id="basicFeaturesTab" text="Basic Features">
+//            <content>
+//              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+//                     <children>
+//                        <ImageView fx:id="basicFeatures" fitHeight="402.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-26.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+//                           <image>
+//                              <Image url="@../images/basic.jpg" />
+//                           </image></ImageView>
+//                     </children></AnchorPane>
+//            </content>
+//          </Tab>
+//            <Tab fx:id="specialFeaturesTab" text="Special Features">
+//               <content>
+//                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="317.0" prefWidth="435.0">
+//                     <children>
+//                        <ImageView fx:id="specialFeatures" fitHeight="395.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true" AnchorPane.bottomAnchor="-19.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+//                           <image>
+//                              <Image url="@../images/special.jpg" />
+//                           </image></ImageView>
+//                     </children></AnchorPane>
+//               </content>
+//            </Tab>
+//            <Tab fx:id="hotKeysTab" text="HotKeys">
+//               <content>
+//                  <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="317.0" prefWidth="456.0">
+//                     <children>
+//                        <ImageView fitHeight="377.0" fitWidth="491.0" pickOnBounds="true" preserveRatio="true">
+//                           <image>
+//                              <Image url="@../images/hotkeys.jpg" />
+//                           </image>
+//                        </ImageView>
+//                     </children></AnchorPane>
+//               </content>
+//            </Tab>
+//        </tabs>
+//      </TabPane>
+//   </children>
+//</AnchorPane>
+
+//helpTheme.css
+//#exitButton {          
+//	   
+//    -fx-background-size: 24.0 24.0;
+//    -fx-background-repeat: no-repeat;
+//    -fx-background-position:left;   
+//    -fx-background-color: transparent;  
+//}
+//#programTitle{
+//	-fx-image: url("../images/title.png");
+//}
+//
+//.rootAnchorPane {
+//	
+//}
+//
+//.tab-header-background{
+//	-fx-background-color: lightgray;
+//}
+//
+///* GUI Interface background colour */
+//.theme {
+//    master-color: gray;
+//    -fx-background-color: lightgray;
+//    -fx-font-size: 12.0px;
+//}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\HelpViewController.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\JSONConverter.java
+	 */
+
+public class JSONConverter {
+
+	private static final String MESSAGE_FAIL_TO_WRITE_FILE = "Fail to write file.";
+	private static final String ERROR_TASK_PARSING = "[ERROR: %s]";
+	private static final String ERROR_JSON_PARSING = "[ERROR: This task cannot be parsed. Please close the program and check tasks.txt]";
+	private static final String IS_DONE = "isDone";
+	private static final String DESCRIPTION = "description";
+	private TaskBuilder taskBuilder;
+	private JSONObject jsonObject;
+	private static BlackBox blackBox = BlackBox.getInstance();
+
+	public JSONConverter() {
+		jsonObject = new JSONObject();
+		taskBuilder = new TaskBuilderAdvanced();
+	}
+
+	@SuppressWarnings("unchecked")
+	public JSONObject encode(Task task) {
+		jsonObject.put(IS_DONE, task.isDone());
+		jsonObject.put(DESCRIPTION, task.getDescriptionRaw());
+		return jsonObject;
+	}
+
+	public List<Task> decode(JSONObject obj) {
+		List<Task> tasks;
+		String description;
+		boolean isDone = false;
+		description = (String) obj.get(DESCRIPTION);
+		if (obj.containsKey(IS_DONE)) {
+			isDone = (Boolean) obj.get(IS_DONE);
+		}
+		tasks = taskBuilder.createTask(description);
+		tasks = handleTask(tasks, description, isDone);
+		return tasks;
+	}
+
+	private List<Task> handleTask(List<Task> tasks, String description,
+			boolean isDone) {
+		if (tasks != null) {
+			for (Task task : tasks) {
+				task.setDone(isDone);
+			}
+		} else {
+			tasks = handleNullTask(description);
+		}
+		return tasks;
+	}
+
+	private List<Task> handleNullTask(String description) {
+		List<Task> tasks;
+		tasks = new ArrayList<Task>();
+		String taskErrorDescription;
+		taskErrorDescription = checkDescription(description);
+		TaskAdvanced task = new TaskAdvanced(taskErrorDescription);
+		task.setError(true);
+		tasks.add(task);
+		return tasks;
+	}
+
+	private String checkDescription(String description) {
+		String taskErrorDescription;
+		if (description != null) {
+			taskErrorDescription = String.format(ERROR_TASK_PARSING,
+					description);
+		} else {
+			taskErrorDescription = ERROR_JSON_PARSING;
+		}
+		return taskErrorDescription;
+	}
+
+	public List<Task> decodeToString(String str) throws ParseException {
+		JSONObject obj = (JSONObject) JSONValue.parse(str);
+		if (obj == null) {
+			return handleNullJSONObject(str);
+		} else {
+			return decode(obj);
+		}
+	}
+
+	private List<Task> handleNullJSONObject(String str) {
+		List<Task> tasks = new ArrayList<Task>();
+		TaskAdvanced errorTask = new TaskAdvanced(ERROR_JSON_PARSING);
+		List<String> strList = new ArrayList<String>();
+		strList.add(str);
+		try {
+			writeFile(strList);
+		} catch (Exception e) {
+			blackBox.info(MESSAGE_FAIL_TO_WRITE_FILE);
+		}
+		errorTask.setError(true);
+		tasks.add(errorTask);
+		return tasks;
+	}
+
+	private void writeFile(List<String> strList) throws IOException {
+		FileWriter errorFile = new FileWriter("Task Catalyst/" +"error.txt",
+				true);
+		BufferedWriter writer = new BufferedWriter(errorFile);
+		for(int i=0; i<strList.size(); i++){
+			System.out.println(strList.get(i));
+			writer.write(strList.get(i));
+			writer.flush();
+			writer.close();
+		}
+	}
+}
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\JSONConverter.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\StorageActual.java
+	 */
+
+public class StorageActual implements Storage {
+
+	private static BlackBox blackbox = BlackBox.getInstance();
+	private static final String MESSAGE_IO_FAULT = "IO fault has been enountered.";
+	FileHandler fileHandler = new FileHandler();
+
+	@Override
+	public boolean saveTasks(List<Task> list, String fileName) {
+		return saveTasksToFile(list, fileName);
+	}
+
+	@Override
+	public List<Task> loadTasks(String fileName) {
+		return fileHandler.readTask(fileName);
+	}
+
+	@Override
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\StorageActual.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	public static void main(String[] args) {
+		try {
+			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
+				blackbox.info(MESSAGE_MULTIPLE_INSTANCE_EXCEPTION);
+			} else {
+				launch(args);
+			}
+		} finally {
+			Lock.releaseLock();
+		}
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	Stage getStage() {
+		return this.primaryStage;
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	/**
+	 * This function registers the global hotkeys: Ctrl+M and Ctrl+D.
+	 */
+	private void startHotKeys() {
+		TaskCatalyst tc = this;
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (hotKeys == null) {
+					hotKeys = Provider.getCurrentProvider(false);
+				}
+				hotKeys.reset();
+				hotKeys.register(KeyStroke.getKeyStroke(toggleLaunchHK), tc);
+				hotKeys.register(KeyStroke.getKeyStroke(pasteHK), tc);
+			}
+		}).start();
+	}
+
+	/**
+	 * This function disables the global hotkeys.
+	 */
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	private static void stopHotKeys() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				if (hotKeys != null) {
+					hotKeys.reset();
+					hotKeys.stop();
+				}
+			}
+		}).start();
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	/**
+	 * This function creates hotkeys for the actions. The hotkeys are to undo
+	 * (Ctrl+Z), redo (Ctrl+Y), exit (Ctrl+E), launch help window (Ctrl+H),
+	 * scroll up tasks' list (Shift+Up), scroll down tasks' list (Shift+Down),
+	 * scroll up hashtag list (Alt+Down), and scroll down hashtag list (Alt+Up).
+	 */
+	private void addHotKeysListeners(Stage stage, Scene scene) {
+		final KeyCombination undoHotKey = new KeyCodeCombination(KeyCode.Z,
+				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination redoHotKey = new KeyCodeCombination(KeyCode.Y,
+				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination exitHotKey = new KeyCodeCombination(KeyCode.E,
+				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination helpHotKey = new KeyCodeCombination(KeyCode.H,
+				KeyCodeCombination.CONTROL_DOWN);
+		final KeyCombination scrollTaskUpHotKey = new KeyCodeCombination(
+				KeyCode.UP, KeyCodeCombination.SHIFT_DOWN);
+		final KeyCombination scrollTaskDownHotKey = new KeyCodeCombination(
+				KeyCode.DOWN, KeyCodeCombination.SHIFT_DOWN);
+		final KeyCombination scrollHashtagUpHotKey = new KeyCodeCombination(
+				KeyCode.UP, KeyCodeCombination.ALT_DOWN);
+		final KeyCombination scrollHashtagDownHotKey = new KeyCodeCombination(
+				KeyCode.DOWN, KeyCodeCombination.ALT_DOWN);
+		scene.addEventHandler(KeyEvent.KEY_RELEASED,
+				new EventHandler<KeyEvent>() {
+
+					@Override
+					public void handle(KeyEvent event) {
+
+						if (undoHotKey.match(event)) {
+							controller.handleHotKeys(COMMAND_UNDO);
+						} else if (redoHotKey.match(event)) {
+							controller.handleHotKeys(COMMAND_REDO);
+						} else if (exitHotKey.match(event)) {
+							stop();
+						} else if (helpHotKey.match(event)) {
+							actionOnHelpWindow();
+						} else if (scrollTaskUpHotKey.match(event)) {
+							controller.scrollTaskUp();
+						} else if (scrollTaskDownHotKey.match(event)) {
+							controller.scrollTaskDown();
+						} else if (scrollHashtagUpHotKey.match(event)) {
+							controller.scrollHashtagUp();
+						} else if (scrollHashtagDownHotKey.match(event)) {
+							controller.scrollHashtagDown();
+						}
+					}
+
+					private void actionOnHelpWindow() {
+						if (helpFlag) {
+							helpController.getStage().close();
+							helpFlag = false;
+						} else {
+							helpController.openHelpWindow();
+							primaryStage.requestFocus();
+							helpFlag = true;
+						}
+					}
+				});
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	/**
+	 * This function is to exit the program and also keeps logging.
+	 */ 
+	@Override
+	public void stop() {
+		BlackBox.getInstance().close();
+		try {
+			super.stop();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	/**
+	 * This function is to execute global hot key Ctrl+M that minimizes
+	 * application while it is running, and to relaunch application while it is
+	 * minimize at system tray.
+	 * 
+	 * It is also used for another global hot key Ctrl+D to paste in command
+	 * bar.
+	 * 
+	 * @param hotKey
+	 *            The hotkey received by the listener.
+	 */
+	@Override
+	public void onHotKey(HotKey hotKey) {
+		switch (hotKey.keyStroke.getKeyCode()) {
+			case java.awt.event.KeyEvent.VK_M:
+				toggleStage();
+				break;
+			case java.awt.event.KeyEvent.VK_D:
+				pasteClipboard();
+				break;
+		}
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	private void toggleStage() {
+		if (primaryStage.isShowing()) {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					primaryStage.hide();
+				}
+			});
+		} else {
+			Platform.runLater(new Runnable() {
+				@Override
+				public void run() {
+					primaryStage.show();
+					primaryStage.toFront();
+				}
+			});
+		}
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+	 */
+
+	public void connectWithMainTaskCatalyst(TaskCatalyst tc) {
+		this.tc = tc;
+	}
+
+	/**
+	 * This function handles hotKey to execute a desired action that is done by
+	 * user.
+	 * 
+	 * @param associatedText The command associated to the hotkey.
+	 */
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+	 */
+
+	public void handleHotKeys(final String associatedText) {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				Message message = logic.processCommand(associatedText);
+				handleMessage(message);
+			}
+		});
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\test\java\moustachio\task_catalyst\StorageActualTest.java
+	 */
+
+public class StorageActualTest {
+
+	Storage data = new StorageActual();
+	FileHandler fileHandler = new FileHandler();
+	TaskBuilder taskBuilder = new TaskBuilderAdvanced();
+
+	String fileName;
+	Task task1 = taskBuilder.createTask("meet boss at 5pm tmr").get(0);
+	Task task2 = taskBuilder.createTask("go school tmr 9am").get(0);
+
+	String font1 = "font";
+	String size1 = "10";
+	String font2 = "font";
+	String size2 = "20";
+
+	@Before
+	public void setUp() throws Exception {
+		fileName = "text.txt";
+	}
+
+	@After
+	public void tearDown() throws Exception {
+		Files.deleteIfExists(Paths.get(fileName));
+		Files.createFile(Paths.get(fileName));
+		BlackBox.getInstance().close();
+	}
+
+	/*** Check fileName ***/
+
+	/* This is a boundary case for 'invalid name' partition */
+	@Test
+	public void testInvalidName1() {
+		String name = "file.1";
+		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+
+	/* This is a boundary case for 'invalid name (space)' partition */
+	@Test
+	public void testInvalidName2() {
+		String name = "file ";
+		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+
+
+	/* This is a boundary case for 'invalid regex' partition */
+	@Test
+	public void testInvalidName3() {
+		String name = "file@";
+		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+
+	/* This is a boundary case for 'empty string' partition */
+	@Test
+	public void testInvalidName4() {
+		String name = "";
+		assertEquals(true, fileHandler.isInvalidName(name));
+	}
+
+	/* This is a boundary case for 'valid name (alphaNumeric)' partition */
+	@Test
+	public void testValidName1() {
+		String name = "myTest1";
+		assertEquals(false, fileHandler.isInvalidName(name));
+	}
+
+	/* This is a boundary case for 'valid name' partition */
+	@Test
+	public void testValidName2() {
+		String name = "my_Test1";
+		assertEquals(false, fileHandler.isInvalidName(name));
+	}
+
+	/*** Check format of text file ***/
+
+	/* This is a boundary case for 'invalid file format (no extension)' partition */
+	@Test
+	public void testInvalidFormat1() {
+		String name = "file";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+
+	/* This is a boundary case for 'invalid file format (incorrect regex)' partition */
+	@Test
+	public void testInvalidFormat2() {
+		String name = "file$.txt";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+
+	/*** Check format of text file ***/
+
+	/* This is a boundary case for 'invalid file format(extension)' partition */
+	@Test
+	public void testInvalidFormat3() {
+		String name = "file.doc";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+
+	/*** Check format of text file ***/
+
+	/* This is a boundary case for 'invalid file format (Empty fileName)' partition */
+	@Test
+	public void testInvalidFormat4() {
+		String name = "";
+		assertEquals(true, fileHandler.isInvalidFileFormat(name));
+	}
+
+
+	/* This is a boundary case for 'valid file format' partition */
+	@Test
+	public void testvalidFormat() {
+		String name = "my file1_.txt";
+		assertEquals(false, fileHandler.isInvalidFileFormat(name));
+	}
+
+	/*** Load task ***/
+
+	/* This is a boundary case for 'load empty File' partition */
+	@Test
+	public void testLoadEmptyFile() {
+		List<Task> list = new ArrayList<Task>();
+		fileHandler.clear(fileName);
+		list = data.loadTasks(fileName);
+		assertEquals(true, list.isEmpty());
+	}
+
+	/* This is a boundary case for 'load one task to file' partition */
+	@Test
+	public void testLoadOneTask() {
+		List<Task> list = new ArrayList<Task>();
+		list.add(task1);
+		data.saveTasks(list, fileName);
+
+		List<Task> elist = new ArrayList<Task>();
+		elist = data.loadTasks(fileName);
+		assertEquals(true,
+				list.get(0).getDescription()
+				.equals(elist.get(0).getDescription()));
+	}
+
+	/* This is a boundary case for 'load two tasks to file' partition */
+	@Test
+	public void testLoadTasks() {
+		List<Task> list = new ArrayList<Task>();
+		list.add(task1);
+		data.saveTasks(list, fileName);
+		list.add(task2);
+		data.saveTasks(list, fileName);
+
+		List<Task> elist = new ArrayList<Task>();
+		elist = data.loadTasks(fileName);
+		assertEquals(true,list.get(0).getDescription()
+				.equals(elist.get(0).getDescription()));
+		assertEquals(true, list.get(1).getDescription()
+				.equals(elist.get(1).getDescription()));
+	}
+
+	/*** Save task ***/
+
+	/* This is a boundary case for 'Save task to Empty File' partition */
+	@Test
+	public void testSaveTaskstoEmptyFile() {
+		List<Task> list = new ArrayList<Task>();
+		list.add(task1);
+		fileHandler.clear(fileName);
+		assertEquals(true,data.saveTasks(list, fileName));
+	}
+
+	/* This is a boundary case for 'Overwrite saving' partition */
+	@Test
+	public void testOverwriteSave() {
+		List<Task> list = new ArrayList<Task>();
+		list.add(task1);
+		data.saveTasks(list, fileName);
+		list.add(task2);
+		data.saveTasks(list, fileName);
+		List<Task> elist = new ArrayList<Task>();
+		elist = data.loadTasks(fileName);
+		assertEquals(true, data.saveTasks(list, fileName));
+		assertEquals(true,
+				list.get(0).getDescription()
+				.equals(elist.get(0).getDescription()));
+	}
+
+	/*** Save Setting ***/
+
+	/* This is a boundary case for 'save single setting' partition */
+	@Test
+	public void testSaveOneSetting() {
+		fileHandler.clear(fileName);
+		assertEquals(true, data.saveSetting(font1, fileName, size1));
+	}
+
+	/*** Load Setting ***/
+
+	/* This is a boundary case for 'load setting from empty file' partition */
+	@Test
+	public void testLoadSettingEmptyFile() {
+		fileHandler.clear(fileName);
+		String str = "font";
+		assertEquals("The file is empty.", data.loadSetting(str, fileName));
+	}
+
+	/* This is a boundary case for 'load one setting' partition */
+	@Test
+	public void testLoadSetting() {
+		fileHandler.clear(fileName);
+		data.saveSetting(font1, fileName, size1);
+		String input = font1 + "," + size1 + " ";
+		assertEquals(input, data.loadSetting(font1, fileName));
+	}
+
+	/* This is a boundary case for 'load two settings' partition */
+	@Test
+	public void testLoadSettings() {
+		fileHandler.clear(fileName);
+		data.saveSetting(font1, fileName, size1);
+		data.saveSetting(font2, fileName, size2);
+		String input1 = font1 + "," + size1 + " ";
+		String input2 = font2 + "," + size2 + " ";
+		assertEquals(true, (data.loadSetting(font1, fileName).contains(input1)));
+		assertEquals(true, (data.loadSetting(font2, fileName).contains(input2)));
+	}
+}
+
+	// End of segment: task_catalyst\src\test\java\moustachio\task_catalyst\StorageActualTest.java
+
+
+
+
+

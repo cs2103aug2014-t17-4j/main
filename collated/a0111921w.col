@@ -1,0 +1,593 @@
+//@author: a0111921w
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+/**
+ * This class instantiates the JavaFX UI and caters for hotkeys and single
+ * instance locking.
+ */
+public class TaskCatalyst extends Application implements HotKeyListener {
+
+	Clipboard clipboard = Clipboard.getSystemClipboard();
+
+	private boolean helpFlag = false;
+
+	private double initialY;
+	private double initialX;
+
+	private UIController controller;
+	private Stage primaryStage;
+	private HelpViewController helpController = new HelpViewController();
+	
+	private static BlackBox blackbox = BlackBox.getInstance();
+
+	private static Provider hotKeys = null;
+	private static String toggleLaunchHK = "control M";
+	private static String pasteHK = "control D";
+
+	private static final String ACTION_EXIT = "Exit";
+	private static final String ACTION_LAUNCH = "Launch";
+	private static final String COMMAND_REDO = "redo";
+	private static final String COMMAND_UNDO = "undo";
+
+	private static final String MESSAGE_MULTIPLE_INSTANCE_EXCEPTION = "This application is single instance!";
+	private static final String MESSAGE_FXML_LOAD_EXCEPTION = "Unable to load FXML";
+	private static final String MESSAGE_SYSTEM_TRAY_NOT_SUPPORTED = "System tray is not supported!";
+	private static final String MESSAGE_SYSTEM_TRAY_ERROR = "Error occur in system tray";
+
+	private static final String PATH_UI_FXML = "/fxml/userInterface.fxml";
+	private static final String PATH_CSS = "/css/DarkTheme.css";
+	private static final String PATH_SYSTEM_TRAY_IMAGE = "/images/moustachio.png";
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+	public void setStageHeight(double height) {
+		primaryStage.setHeight(height);
+	}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+	 */
+
+//DarkTheme.css
+// #exitButton {
+// -fx-background-image: url("../images/close24.png");
+// -fx-background-size: 24.0 24.0;
+// -fx-background-repeat: no-repeat;
+// -fx-background-position:left;
+// -fx-background-color: transparent;
+// }
+// #programTitle{
+// -fx-image: url("../images/title.png");
+// }
+//
+// GUI Interface background colour
+// .theme {
+// master-color: gray;
+// -fx-background-color: #ffc107;
+// -fx-font-size: 14.0px;
+// }
+//
+// .split-pane {
+// -fx-padding: 0.0;
+// -fx-border-width: 0.0;
+// -fx-background-color: derive(master-color, 100.0%);
+// }
+//
+// Background colour for Hashtag list
+// .lightList .list-cell {
+// -fx-padding: 6.0 0.0 0.0 13.0;
+// -fx-background-color: derive(master-color, -60.0%);
+// -fx-text-fill: lightgrey;
+// }
+//
+// Selected row for Hashtag list
+// .lightList .list-cell:focused:selected {
+// -fx-text-fill: black;
+// -fx-background-color: gray;
+// }
+//
+// #cmdTextField {
+// -fx-focus-color: orange;
+// -fx-faint-focus-color: orange;
+// -fx-background-insets: 1.0,1.0,1.0,1.0;
+// }
+//
+// TaskGrid style
+// .grid {
+// -fx-border-color: black;
+// -fx-border-width: 1px;
+// -fx-border-radius: 5;
+// -fx-background-radius: 5.0;
+// }
+//
+// TaskGrid Container style
+// .vbox{
+// -fx-padding: 7px;
+// }
+//
+// TaskGrid ID label style
+// .idLabel{
+// -fx-padding: 4;
+// -fx-border-width: 1px;
+// -fx-border-radius: 5;
+// -fx-background-color: #ffc107;
+// -fx-background-radius: 5;
+// }
+// TaskGrid selected ID label style
+// .isSelected{
+// -fx-padding: 4;
+// -fx-border-width: 1px;
+// -fx-border-radius: 5;
+// -fx-background-color: turquoise;
+// -fx-background-radius: 5;
+// }
+//
+// .dateCategoryStyle{
+// -fx-padding: 4;
+// -fx-text-fill: white;
+// -fx-border-width: 1px;
+// -fx-border-radius: 5;
+// -fx-background-color: derive(master-color, -60.0%);
+// -fx-background-radius: 5;
+// }
+//
+// .iconLabelStyle{
+// -fx-alignment: center-right;
+// -fx-font-size: 12.0px;
+// -fx-spacing : 5px;
+// }
+//
+// .descTaskStyle{
+// -fx-font-size: 15.0px;
+// }
+//
+// .statusMessageVBox{
+// -fx-border-color: black;
+// }
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskCatalyst.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\TaskGrid.java
+	 */
+
+//credits:
+//icon - http://www.iconsdb.com/icon-sets/web-2-orange-icons/
+//Task table ideas from t17-3j
+public class TaskGrid extends GridPane {
+
+	private static final int COLUMN_FIRST = 0;
+	private static final int COLUMN_SECOND = 1;
+	private static final int COLUMN_THIRD = 2;
+
+	private static final int ROW_FIRST = 0;
+	private static final int ROW_SECOND = 1;
+	private static final int ROW_THIRD = 2;
+
+	private static final int WRAPPING_WIDTH_DESCRIPTION = 335;
+	private static final int WRAPPING_WIDTH_ALT_TEXT = 300;
+
+	private static final String PATH_PRIORITY_ICON_IMAGE = "/images/priority.png";
+	private static final String PATH_OVERLAP_ICON_IMAGE = "/images/overlap.png";
+	private static final String PATH_OVERDUE_ICON_IMAGE = "/images/overdue.png";
+	private static final String PATH_DONE_ICON_IMAGE = "/images/done.png";
+	private static final String PATH_BLOCKING_ICON_IMAGE = "/images/blocking.png";
+	private static final String PATH_DEADLINE_ICON_IMAGE = "/images/deadline1.png";
+	private static final String PATH_ERROR_ICON_IMAGE = "/images/error.png";
+	
+	private static final String LABEL_TEXT_PRIORITY = "Priority";
+	private static final String LABEL_TEXT_OVERLAP = "Overlapping";
+	private static final String LABEL_TEXT_OVERDUE = "Overdue";
+	private static final String LABEL_TEXT_DONE = "Done";
+	private static final String LABEL_TEXT_BLOCKING = "Reserved";
+	private static final String LABEL_TEXT_DEADLINE = "Deadline";
+	private static final String LABEL_TEXT_ERROR = "Error";
+	
+	private static final String TEXT_ALTERNATE_TIMING = "Alternate timing(s): \n";
+	private static final String TEXT_ALL_DAY_TIME_FORMAT = "00:00:01";
+	
+	private int id;
+	
+	private Label idContainer;
+
+	public TaskGrid(int id, Task task) {
+		this.id = id;
+		configureTaskGrid();
+		displayID(id, task);
+		displayTime(task);
+		displayTaskDescription(task);
+		checkAndDisplayTaskIcon(task);
+	}
+
+	private void configureTaskGrid() {
+		ColumnConstraints idColumn = new ColumnConstraints();
+		ColumnConstraints timeColumn = new ColumnConstraints();
+		
+		idColumn.setPercentWidth(8);
+		timeColumn.setPercentWidth(15);
+		
+		this.getColumnConstraints().addAll(idColumn,timeColumn);
+		
+		this.setHgap(10);
+		this.setVgap(5);
+		this.setPadding(new Insets(5));
+		this.getStyleClass().add("grid");
+		//this.setGridLinesVisible(true);
+	}
+
+	private void displayID(int id, Task task) {
+		idContainer = new Label(Integer.toString(id + 1));
+		idContainer.getStyleClass().add("idLabel");
+		this.setHalignment(idContainer, HPos.CENTER);
+		this.add(idContainer, COLUMN_FIRST, ROW_FIRST);
+	}
+
+	public void highlight() {
+		idContainer.getStyleClass().add("isSelected");
+	}
+
+	private String getTimeFormat(Date date) {
+		return new SimpleDateFormat("h:mm a").format(date);
+	}
+
+	private String getDateTimeFormat(Date date) {
+		return new SimpleDateFormat("dd MMM h:mm a").format(date);
+	}
+
+	private String getDateFormat(Date date) {
+		return new SimpleDateFormat("dd MMM").format(date);
+	}
+
+	private String getAllDayTimeFormat(Date date) {
+		return new SimpleDateFormat("HH:mm:ss").format(date);
+	}
+
+	private void displayTime(Task task) {
+		String startTime, endTime, nextTiming, lastTiming;
+		String alternateTiming = TEXT_ALTERNATE_TIMING;
+		String allDayTimeFormat = TEXT_ALL_DAY_TIME_FORMAT;
+
+		Date startDate = task.getDateStart();
+		Date endDate = task.getDateEnd();
+		Date nextDate = task.getNextDate();
+
+		List<Date> allDate = task.getAllDates();
+
+		// For displaying task that is eg. 5pm or 6pm or 7pm
+		if (task.isBlocking()) {
+			if (nextDate != null) {
+				nextTiming = getTimeFormat(nextDate);
+
+				for (int i = 0; i < allDate.size(); i++) {
+					if (allDate.get(i).after(nextDate)) {
+						alternateTiming += getDateTimeFormat(allDate.get(i));
+						if (i != allDate.size() - 1) {
+							alternateTiming += ", ";
+						}
+					}
+				}
+				
+				if (!alternateTiming.equals(TEXT_ALTERNATE_TIMING)) {
+					Text text = new Text(alternateTiming);
+					text.setFont(Font.font("System", FontWeight.BOLD, 12));
+					text.setWrappingWidth(WRAPPING_WIDTH_ALT_TEXT);
+					this.add(text, COLUMN_THIRD, ROW_SECOND);
+				}
+				
+				addStartTimeLabel(nextTiming);
+
+			} else {
+				// if there's no next date, get the last date to be displayed
+				lastTiming = getTimeFormat(endDate);
+				addStartTimeLabel(lastTiming);
+			}
+		} else if (task.isRange()) {
+			startTime = getTimeFormat(startDate);
+			
+			if (TaskCatalystCommons.isSameDate(startDate, endDate)) {
+				endTime = getTimeFormat(endDate);
+			} else {
+				endTime = getTimeFormat(endDate) + "\n("
+						+ getDateFormat(endDate) + ")";
+			}
+			
+			addStartTimeText(startTime + "\n     to");
+			addEndTimeText(endTime);
+		} else {
+			if (startDate != null) {
+				String checkAllDay = getAllDayTimeFormat(startDate);
+				
+				if (checkAllDay.equals(allDayTimeFormat)) {
+					addStartTimeLabel("All Day");
+				} else {
+					startTime = getTimeFormat(startDate);
+					addStartTimeLabel(startTime);
+				}
+			}else{
+				addStartTimeLabel("--:--");
+			}
+		}
+	}
+
+	private void addStartTimeText(String text) {
+		Text container = new Text(text);
+		this.setHalignment(container, HPos.CENTER);
+		this.add(container, COLUMN_SECOND, ROW_FIRST);
+	}
+
+	private void addEndTimeText(String text) {
+		Text container = new Text(text);
+		this.setHalignment(container, HPos.CENTER);
+		this.add(container, COLUMN_SECOND, ROW_SECOND);
+	}
+
+	private void addStartTimeLabel(String text) {
+		Text container = new Text(text);
+		this.setHalignment(container, HPos.CENTER);
+		this.add(container, COLUMN_SECOND, ROW_FIRST);
+	}
+
+	private void displayTaskDescription(Task task) {
+		Text description = new Text(task.getDescription());
+
+		description.setWrappingWidth(WRAPPING_WIDTH_DESCRIPTION);
+		description.getStyleClass().add("descTaskStyle");
+
+		this.add(description, COLUMN_THIRD, ROW_FIRST);
+		this.setPrefHeight(0); // this fix unusual row height problems
+	}
+
+	private void checkAndDisplayTaskIcon(Task task) {
+		int iconRow;
+		HBox iconContainer = new HBox();
+
+		if (task.isBlocking()) {
+			iconRow = ROW_THIRD;
+			iconContainer = createIconWithText(iconContainer,
+					PATH_BLOCKING_ICON_IMAGE, LABEL_TEXT_BLOCKING);
+		} else {
+			iconRow = ROW_SECOND;
+		}
+
+		if (task.isDone()) {
+			iconContainer = createIconWithText(iconContainer,
+					PATH_DONE_ICON_IMAGE, LABEL_TEXT_DONE);
+		}
+		if (task.isPriority()) {
+			iconContainer = createIconWithText(iconContainer,
+					PATH_PRIORITY_ICON_IMAGE, LABEL_TEXT_PRIORITY);
+		}
+		if (task.isOverdue()) {
+			iconContainer = createIconWithText(iconContainer,
+					PATH_OVERDUE_ICON_IMAGE, LABEL_TEXT_OVERDUE);
+		}
+		if (task.isOverlapping()) {
+			iconContainer = createIconWithText(iconContainer,
+					PATH_OVERLAP_ICON_IMAGE, LABEL_TEXT_OVERLAP);
+		}
+		if (task.isDeadline()) {
+			iconContainer = createIconWithText(iconContainer,
+					PATH_DEADLINE_ICON_IMAGE, LABEL_TEXT_DEADLINE);
+		}
+		if (task.isError()) {
+			iconContainer = createIconWithText(iconContainer,
+					PATH_ERROR_ICON_IMAGE, LABEL_TEXT_ERROR);
+		}
+		
+		iconContainer.getStyleClass().add("iconLabelStyle");
+		this.add(iconContainer, COLUMN_THIRD, iconRow);
+	}
+
+	private HBox createIconWithText(HBox container, String imagePath,
+			String text) {
+		Image image = new Image(imagePath);
+		Text iconText = new Text(text);
+		ImageView icon = new ImageView();
+
+		icon.setImage(image);
+		container.getChildren().add(icon);
+		container.getChildren().add(iconText);
+
+		return container;
+	}
+
+	public int getTaskGridID() {
+		return id;
+	}
+}
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\TaskGrid.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+	 */
+
+
+/**
+ * UIController is the main controller for the TaskCatalyst UI.
+ */
+
+public class UIController {
+	@FXML
+	private BorderPane rootBorderPane;
+	@FXML
+	private ScrollPane taskScrollPane;
+	@FXML
+	private ImageView programTitle;
+	@FXML
+	private ListView<String> hashTagList;
+	@FXML
+	private Label statusMessage;
+	@FXML
+	private TextField commandBar;
+	@FXML
+	private Button settingsButton;
+	@FXML
+	private Button exitButton;
+	@FXML
+	private VBox container;
+
+	private static LogicActual logic;
+
+	private static ObservableList<String> hashTagToBeDisplayed = FXCollections
+			.observableArrayList();
+
+	private TaskCatalyst tc;
+	
+	private static BlackBox blackbox = BlackBox.getInstance();
+
+	private static final String MESSAGE_EMPTY_TASKVIEW = "No tasks to display in this view!";
+	private static final String MESSAGE_FXML_LOAD_EXCEPTION = "Unable to load FXML";
+	private static final String MESSAGE_STATUS_BAR = "Type something to begin adding a task."
+			+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.";
+	
+	private static final int CONSTANT_INITIAL_INDEX = 0;
+	private static final int CONSTANT_STAGE_HEIGHT = 540;
+	/**
+	 * Initializes the controller class. This method is automatically called
+	 * after the fxml file has been loaded.
+	 */
+	@FXML
+	private void initialize() {
+		logic = new LogicActual();
+		testInterface();
+		initializeForms();
+		listChangeListener();
+		labelChangeListener();
+
+	}
+
+	@FXML
+	public void exitButtonAction() {
+		Platform.runLater(new Runnable() {
+			@Override
+			public void run() {
+				tc.getStage().hide();
+				commandBar.requestFocus();
+			}
+		});
+	}
+
+	/**
+	 * This method add a ChangeListener for ListView to look for change in focus
+	 * & display task
+	 */
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+
+
+
+
+
+	/**
+	 * origin: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+	 */
+
+// <?xml version="1.0" encoding="UTF-8"?>
+//
+// <?import javafx.scene.paint.*?>
+// <?import javafx.scene.effect.*?>
+// <?import javafx.scene.image.*?>
+// <?import javafx.scene.text.*?>
+// <?import javafx.geometry.*?>
+// <?import javafx.scene.control.*?>
+// <?import java.lang.*?>
+// <?import javafx.scene.layout.*?>
+// <?import javafx.scene.layout.AnchorPane?>
+//
+// <VBox styleClass="theme" stylesheets="@../css/DarkTheme.css"
+// xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+// fx:controller="moustachio.task_catalyst.UIController">
+// <children>
+// <BorderPane fx:id="rootBorderPane" prefHeight="520.0" prefWidth="620.0"
+// stylesheets="@../css/DarkTheme.css">
+// <top>
+// <HBox alignment="TOP_RIGHT" prefHeight="20.0" prefWidth="200.0"
+// spacing="10.0">
+// <children>
+// <ImageView fx:id="programTitle" fitHeight="24.0" fitWidth="173.0" />
+// <HBox prefHeight="24.0" prefWidth="500.0" styleClass="theme" />
+// <Button id="exitButton" fx:id="exitButton" alignment="CENTER"
+// contentDisplay="CENTER" minHeight="-Infinity" minWidth="-Infinity"
+// mnemonicParsing="false" onAction="#exitButtonAction" prefHeight="24.0"
+// prefWidth="24.0" textAlignment="CENTER" HBox.hgrow="ALWAYS" />
+// </children>
+// <BorderPane.margin>
+// <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+// </BorderPane.margin>
+// </HBox>
+// </top>
+// <bottom>
+// <AnchorPane maxHeight="1.7976931348623157E308" minHeight="-Infinity"
+// prefWidth="620.0">
+// <children>
+// <VBox id="statusMessageLabel" fx:id="container" prefWidth="618.0"
+// AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+// AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"
+// BorderPane.alignment="CENTER">
+// <children>
+// <TextField id="cmdTextField" fx:id="commandBar"
+// onAction="#handleTextFieldOnAction"
+// onKeyReleased="#handleTextFieldWhileUserTyping" prefHeight="0.0"
+// prefWidth="617.0" />
+// </children>
+// </VBox>
+// </children>
+// </AnchorPane>
+// </bottom>
+// <center>
+// <SplitPane dividerPositions="0.2" minHeight="-Infinity" prefWidth="345.0"
+// styleClass="theme" BorderPane.alignment="CENTER">
+// <items>
+// <ListView fx:id="hashTagList" prefHeight="200.0" prefWidth="200.0"
+// styleClass="lightList" />
+// <ScrollPane fx:id="taskScrollPane" fitToWidth="true" prefHeight="410.0"
+// prefWidth="470.0" />
+// </items>
+// </SplitPane>
+// </center>
+// </BorderPane>
+// <VBox fx:id="container" prefWidth="620.0"
+// stylesheets="@../css/DarkTheme.css">
+// <children>
+// <Label fx:id="statusMessage" prefWidth="618.0">
+// <VBox.margin>
+// <Insets left="5.0" right="5.0" />
+// </VBox.margin>
+// </Label>
+// </children>
+// </VBox>
+// </children>
+// </VBox>
+
+	// End of segment: task_catalyst\src\main\java\moustachio\task_catalyst\UIController.java
+
+
+
+
+
