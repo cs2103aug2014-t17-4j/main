@@ -235,7 +235,6 @@ public class TaskCatalystCommons {
 		interpretedInput = ignoreWordsContainingAted(interpretedInput);
 		interpretedInput = ignoreWordsContainingFivePlusDigits(interpretedInput);
 		interpretedInput = ignoreWordsEndingWithNumbers(interpretedInput);
-		interpretedInput = replaceDateAmericanWithBritish(interpretedInput);
 		interpretedInput = removeConsecutiveWhitespaces(interpretedInput);
 
 		return interpretedInput;
@@ -1124,18 +1123,6 @@ public class TaskCatalystCommons {
 		String wildCard = "( |,|, )?(?i)(at|from|and)?( on)?( )";
 
 		return matchingExpression.replaceAll(spaces, wildCard);
-	}
-
-	private static String replaceDateAmericanWithBritish(
-			String interpretedString) {
-		assert interpretedString != null;
-
-		String americanDate = "\\b([1-9]|[1-2][0-9]|3[0-1])\\/([1-9]|1[1-2])\\b";
-		String britishDate = "$2/$1";
-		String onlyOutsideBrackets = "(?=[^\\]]*(\\[|$))";
-
-		return interpretedString.replaceAll(americanDate + onlyOutsideBrackets,
-				britishDate);
 	}
 
 	private static String removeAllAnds(String matchingExpression) {
