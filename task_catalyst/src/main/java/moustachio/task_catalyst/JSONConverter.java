@@ -1,6 +1,8 @@
 package moustachio.task_catalyst;
 
+import java.util.ArrayList;
 import java.util.List;
+
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 import org.json.simple.parser.ParseException;
@@ -13,16 +15,20 @@ import org.json.simple.parser.ParseException;
  *
  */
 
-//@author A0112764J
+// @author A0112764J
 public class JSONConverter {
 
+	private static final String ERROR_TASK_PARSING = "[ERROR: %s]";
+	private static final String ERROR_JSON_PARSING = "[ERROR: Task cannot be parsed. Please close the program and check tasks.txt]";
 	private static final String IS_DONE = "isDone";
 	private static final String DESCRIPTION = "description";
+	private TaskBuilder taskBuilder;
 
 	private JSONObject jsonObject;
 
 	public JSONConverter() {
 		jsonObject = new JSONObject();
+		taskBuilder = new TaskBuilderAdvanced();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -38,17 +44,32 @@ public class JSONConverter {
 		boolean isDone;
 		description = (String) obj.get(DESCRIPTION);
 		isDone = (Boolean) obj.get(IS_DONE);
-		tasks = new TaskBuilderAdvanced().createTask(description);
+		tasks = taskBuilder.createTask(description);
 		if (tasks != null) {
 			for (Task task : tasks) {
 				task.setDone(isDone);
 			}
+		} else {
+			tasks = new ArrayList<Task>();
+			String taskErrorDescription = String.format(ERROR_TASK_PARSING,
+					description);
+			TaskAdvanced task = new TaskAdvanced(taskErrorDescription);
+			task.setError(true);
+			tasks.add(task);
 		}
 		return tasks;
 	}
 
 	public List<Task> decodeToString(String str) throws ParseException {
-		JSONObject obj = (JSONObject) JSONValue.parseWithException(str);
-		return decode(obj);
+		JSONObject obj = (JSONObject) JSONValue.parse(str);
+		if (obj == null) {
+			List<Task> tasks = new ArrayList<Task>();
+			TaskAdvanced errorTask = new TaskAdvanced(ERROR_JSON_PARSING);
+			errorTask.setError(true);
+			tasks.add(errorTask);
+			return tasks;
+		} else {
+			return decode(obj);
+		}
 	}
 }
