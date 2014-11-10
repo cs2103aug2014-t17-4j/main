@@ -61,13 +61,16 @@ public class UIController {
 			.observableArrayList();
 
 	private TaskCatalyst tc;
-
-	private static final String STATUS_BAR_MESSAGE = "Type something to begin adding a task."
-			+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.";
-	private static final String EMPTY_TASKVIEW_MESSAGE = "No tasks to display in this view!";
 	
-	private static final int INITIAL_INDEX = 0;
-	private static final int STAGE_HEIGHT = 540;
+	private static BlackBox blackbox = BlackBox.getInstance();
+
+	private static final String MESSAGE_EMPTY_TASKVIEW = "No tasks to display in this view!";
+	private static final String MESSAGE_FXML_LOAD_EXCEPTION = "Unable to load FXML";
+	private static final String MESSAGE_STATUS_BAR = "Type something to begin adding a task."
+			+ "\nOther Commands: delete, edit, done, restore, redo, undo, #, find. Press CTRL+H for more details.";
+	
+	private static final int CONSTANT_INITIAL_INDEX = 0;
+	private static final int CONSTANT_STAGE_HEIGHT = 540;
 	/**
 	 * Initializes the controller class. This method is automatically called
 	 * after the fxml file has been loaded.
@@ -128,7 +131,7 @@ public class UIController {
 					@Override
 					public void changed(ObservableValue<? extends Number> ov,
 							Number t, Number t1) {
-						tc.setStageHeight(STAGE_HEIGHT + container.getHeight());
+						tc.setStageHeight(CONSTANT_STAGE_HEIGHT + container.getHeight());
 					}
 				});
 	}
@@ -139,8 +142,8 @@ public class UIController {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
-				statusMessage.setText(STATUS_BAR_MESSAGE);
-				setFocusForHashTable(INITIAL_INDEX);
+				statusMessage.setText(MESSAGE_STATUS_BAR);
+				setFocusForHashTable(CONSTANT_INITIAL_INDEX);
 				commandBar.requestFocus();
 			}
 		});
@@ -439,7 +442,7 @@ public class UIController {
 	}
 
 	private StackPane createEmptyMessageLabel(StackPane container) {
-		Label messageLabel = new Label(EMPTY_TASKVIEW_MESSAGE);
+		Label messageLabel = new Label(MESSAGE_EMPTY_TASKVIEW);
 		messageLabel.setPrefHeight(taskScrollPane.getPrefHeight());
 		container.getChildren().add(messageLabel);
 		container.setAlignment(Pos.CENTER);
@@ -480,7 +483,7 @@ public class UIController {
 			stage.setScene(new Scene(myPane));
 			stage.show();
 		} catch (IOException e) {
-			e.printStackTrace();
+			blackbox.info(MESSAGE_FXML_LOAD_EXCEPTION);
 		}
 	}
 
