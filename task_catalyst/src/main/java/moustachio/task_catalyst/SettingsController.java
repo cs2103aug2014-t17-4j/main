@@ -6,9 +6,8 @@ import javafx.scene.layout.BorderPane;
 
 /**
  * This Class is not implemented
- * @author Toh Zhen Yu (A0111921W)
  */
-
+//@author A0111921W - unused
 public class SettingsController {
 	@FXML
 	private BorderPane rootBorderPane;

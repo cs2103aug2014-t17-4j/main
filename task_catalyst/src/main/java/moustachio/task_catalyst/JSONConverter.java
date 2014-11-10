@@ -19,7 +19,7 @@ import org.json.simple.parser.ParseException;
  *
  */
 
-// @author A0112764J
+//@author A0112764J
 public class JSONConverter {
 
 	private static final String MESSAGE_FAIL_TO_WRITE_FILE = "Fail to write file.";

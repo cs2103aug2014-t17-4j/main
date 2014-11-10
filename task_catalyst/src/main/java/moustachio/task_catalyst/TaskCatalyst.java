@@ -75,7 +75,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	private static final String PATH_CSS = "/css/DarkTheme.css";
 	private static final String PATH_SYSTEM_TRAY_IMAGE = "/images/moustachio.png";
 
-	// @author A0112764J
+	//@author A0112764J
 	public static void main(String[] args) {
 		try {
 			if (!Lock.setLock("CUSTOM_LOCK_KEY")) {
@@ -88,17 +88,17 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}
 	}
 
-	// @author A0112764J
+	//@author A0112764J
 	Stage getStage() {
 		return this.primaryStage;
 	}
 
-	// @author A0111921W
+	//@author A0111921W
 	public void setStageHeight(double height) {
 		primaryStage.setHeight(height);
 	}
 
-	// @author A0111921W - adapted from oracles
+	//@author A0111921W - adapted from oracles
 	// http://docs.oracle.com/javase/8/javase-clienttechnologies.htm
 	@Override
 	public void start(Stage primaryStage) {
@@ -138,7 +138,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}
 	}
 
-	// @author A0112764J
+	//@author A0112764J
 	/**
 	 * This function registers the global hotkeys: Ctrl+M and Ctrl+D.
 	 */
@@ -160,7 +160,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 	/**
 	 * This function disables the global hotkeys.
 	 */
-	// @author A0112764J
+	//@author A0112764J
 	private static void stopHotKeys() {
 		new Thread(new Runnable() {
 			@Override
@@ -173,7 +173,7 @@ public class TaskCatalyst extends Application implements HotKeyListener {
 		}).start();
 	}
 
-	// @author A0112764J
+	//@author A0112764J
 	/**
 	 * This function creates hotkeys for the actions. The hotkeys are to undo
 	 * (Ctrl+Z), redo (Ctrl+Y), exit (Ctrl+E), launch help window (Ctrl+H),

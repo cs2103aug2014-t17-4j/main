@@ -27,7 +27,7 @@ import org.json.simple.parser.ParseException;
  * 
  */
 
-// @author A0112764J
+//@author A0112764J
 public class FileHandler {
 
 	private static final String FOLDER_TASK_CATALYST = "Task Catalyst";
@@ -152,7 +152,7 @@ public class FileHandler {
 		breader.close();
 	}
 
-	// @author A0112764J -unused
+	//@author A0112764J -unused
 	/**
 	 * This function is implemented for the purpose of storing setting in
 	 * future. There is no setting to save for users but it can be useful for
@@ -179,7 +179,7 @@ public class FileHandler {
 		return isSuccess;
 	}
 
-	// @author A0112764J -unused
+	//@author A0112764J -unused
 	private void checkWriteSettingParameters(String name, String fileName,
 			String value) throws Error {
 		if (isInvalidFileFormat(fileName) || isInvalidName(name)
@@ -189,7 +189,7 @@ public class FileHandler {
 		}
 	}
 
-	// @author A0112764J -unused
+	//@author A0112764J -unused
 	private Boolean writeSettingTofile(String name, String fileName,
 			String value) throws IOException {
 		assert (value != null && name != null);
@@ -203,7 +203,7 @@ public class FileHandler {
 		return isSuccess;
 	}
 
-	// @author A0112764J -unused
+	//@author A0112764J -unused
 	/**
 	 * This function is implemented for the purpose of reading setting in
 	 * future. There is no setting to save for users but it can be useful for
@@ -239,7 +239,7 @@ public class FileHandler {
 		return value;
 	}
 
-	// @author A0112764J -unused
+	//@author A0112764J -unused
 	private void checkReadSettingParameters(String name, String fileName)
 			throws Error {
 		if (isInvalidFileFormat(fileName) || isInvalidName(name)) {
