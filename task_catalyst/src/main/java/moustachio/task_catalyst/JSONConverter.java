@@ -19,7 +19,7 @@ import org.json.simple.parser.ParseException;
 public class JSONConverter {
 
 	private static final String ERROR_TASK_PARSING = "[ERROR: %s]";
-	private static final String ERROR_JSON_PARSING = "[ERROR: Task cannot be parsed. Please close the program and check tasks.txt]";
+	private static final String ERROR_JSON_PARSING = "[ERROR: This task cannot be parsed. Please close the program and check tasks.txt]";
 	private static final String IS_DONE = "isDone";
 	private static final String DESCRIPTION = "description";
 	private TaskBuilder taskBuilder;
@@ -41,9 +41,11 @@ public class JSONConverter {
 	public List<Task> decode(JSONObject obj) {
 		List<Task> tasks;
 		String description;
-		boolean isDone;
+		boolean isDone = false;
 		description = (String) obj.get(DESCRIPTION);
-		isDone = (Boolean) obj.get(IS_DONE);
+		if (obj.containsKey(IS_DONE)) {
+			isDone = (Boolean) obj.get(IS_DONE);
+		}
 		tasks = taskBuilder.createTask(description);
 		if (tasks != null) {
 			for (Task task : tasks) {
@@ -51,8 +53,13 @@ public class JSONConverter {
 			}
 		} else {
 			tasks = new ArrayList<Task>();
-			String taskErrorDescription = String.format(ERROR_TASK_PARSING,
-					description);
+			String taskErrorDescription;
+			if (description != null) {
+				taskErrorDescription = String.format(ERROR_TASK_PARSING,
+						description);
+			} else {
+				taskErrorDescription = ERROR_JSON_PARSING;
+			}
 			TaskAdvanced task = new TaskAdvanced(taskErrorDescription);
 			task.setError(true);
 			tasks.add(task);
